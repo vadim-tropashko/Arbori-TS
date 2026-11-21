@@ -1,0 +1,17 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build lexer regression TypeScript",
+      "type": "npm",
+      "script": "build:lexer-regression",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "Build JSweet SqlInsightTest TypeScript",
+      "type": "npm",
+      "script": "build:doc-statements",
+      "problemMatcher": ["$tsc"]
+    }
+  ]
+}

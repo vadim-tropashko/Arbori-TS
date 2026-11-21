@@ -1,0 +1,200 @@
+atomic_predicate:
+    '[' node ')' payload         -- node content
+    
+  | node '<' '<' node            -- 2 synonymous syntaxes for the ancestor-descendant relation. 
+  | node '<' '=' node            -- Formally, it is condition for descendant node interval being nested inside ancestor:  
+                                 --       [ancestor <= [descendant & descendant) <= ancestor)
+                                 -- However, this formal condition over node positions not only more cumbersome,
+                                 -- but also less performant
+                                  
+  | node '<'    node             -- former irreflexive order; to become closest ancestor-descendant relationship
+                                                                   
+  | node '=' node                -- consistent with <= :
+                                 -- node1 = node2    is the same as 
+                                 -- node1 <= node2 & node2 <= node1
+                                 
+  | node_position '<' node_position  --   
+  | node_position '<' '=' node_position  --   
+  | node_position '=' node_position  --   same as nodePos1 <= nodePos2 & nodePos2 <= nodePos1
+  | node_position '<' bind_var  --  
+  | node_position '<' '=' bind_var  --  
+  | node_position '=' bind_var  --  
+  | bind_var '<' node_position  --  
+  | bind_var '<' '=' node_position  --  
+  | bind_var '=' node_position  --  
+  | '?' node '=' '?' node           -- token list of left node is identical to token list of the right one (WS & comments ignored)
+  | '?' node '=' string_literal     -- 
+  | bind_var
+  | js_condition
+  | '!' atomic_predicate
+;
+
+bind_var: 
+    ':' identifier
+;
+
+js_condition: 
+     '.' identifier
+   | '.' identifier '(' string_literal ')'
+   | '.' identifier '(' string_literal ',' string_literal ')'
+;
+
+
+node : identifier
+     | node_parent
+     | node_predecessor
+     | node_successor
+     | referenced_node
+     | parent_list
+     --| '(' node ')'
+;
+
+
+node_parent:
+  node '^' 
+;
+
+node_position:
+    '[' attribute
+  | attribute ')'
+  -- ambiguous:
+  | node_position '+' digits
+  | digits '+' node_position 
+;
+
+node_predecessor:
+  node '-' digits
+;
+
+node_successor:
+  node '+' digits
+;
+
+parent_list:
+  node '^' digits
+;
+
+
+payload:
+     identifier                                 -- grammar non-terminal
+   | string_literal                             -- grammar terminal
+   -----------------------------------------not really compelling to have:-----------------------------------------
+   | identifier '[' digits ',' digits ')'       -- grammar auxiliary non-terminal
+   | identifier '[' digits ',' digits ')' '#'   -- e.g. format.prg: [node) on_comp_partitioned_table[68,117)# 
+;    
+
+program:
+    statement
+  | program statement
+;
+
+-- influencing rule priority
+and: '&';
+Or:  '|'; 
+
+predicate: 
+             identifier
+          |  atomic_predicate 
+          |  predicate and predicate  -- result with attributes union
+          |  predicate Or predicate  -- result with attributes intersection
+          |  predicate '-' predicate  -- result with attributes of first argument
+          |  '(' predicate ')'
+          |  aggregate_operator
+          |  '[' ']'
+          |  '[' header ']'
+          |  '[' header ']' content
+;
+
+attribute:   identifier
+          |  identifier '.' identifier
+          |  '(' node ')' -- to resolve ambiguity node position vs. node sibling 
+;
+header:      attribute
+          |  header attribute
+          |  header ',' attribute
+;
+
+
+referenced_node:
+      identifier '.' identifier       -- attribute in named predicate
+    -- | referenced_node '.' identifier  -- deeper nesting
+;
+
+statement:
+      include
+    | connect  
+    | rule
+    | js_block
+    | ';'
+;
+
+include:
+      'include' identifier
+    --| 'include' identifier ';'
+;     
+
+connect:
+      'connect' identifier
+    --| 'connect' identifier ';'
+    | 'parse' identifier
+    --| 'parse' identifier ';'
+;     
+
+
+rule:
+    identifier ':' predicate ';'
+  | identifier ':' predicate '-' '>' 
+  | identifier ':' predicate '-' '>' js_block --'{' javascript '}' 
+;
+
+js_block: '{' javascript '}' 
+    |     '{' '}'
+;
+
+aggregate_operator:
+  '\' '.' '/' identifier '(' predicate ')'     
+|
+  '[' '*' '['  ')' ')'   identifier '(' predicate ')'     -- new syntax (2 versions), reminiscent of the comment below   
+|
+  '[' '['  ')' '*'  ')'   identifier '(' predicate ')'        
+|
+  '\' '/' identifier '(' predicate ')'     -- The ancestor node, containing other nodes
+                                           -- [[   )  )
+                                           -- ^       ^
+|
+  '/' '.' '\' identifier '(' predicate ')'     
+|
+  '[' '[' '*' ')' ')'   identifier '(' predicate ')'     -- new syntax, reminiscent of the comment below   
+|
+  '/' '\' identifier '(' predicate ')'     -- The descendant node, contained within
+                                           -- [[[   )  ) )
+                                           --   ^   ^
+|
+  '/' '.' '/' identifier '(' predicate ')' -- ill-conceived attempt to distinguish from JS comment; recognized as RegExpr  
+|
+  '[' ')'  '[' '*' ')' identifier '(' predicate ')'     -- new syntax, reminiscent of the comment below   
+|
+  '/' '/' identifier '(' predicate ')'     -- The youngest node 
+                                           -- [   )[   )
+                                           --      ^   ^        										
+|
+  '\' '.' '\' identifier '(' predicate ')'      
+|
+  '[' '*' ')'  '[' ')' identifier '(' predicate ')'     -- new syntax, reminiscent of the comment below   
+|
+  '\' '\' identifier '(' predicate ')'     -- The oldest node 
+                                           -- [   )[   )
+                                           -- ^   ^        										
+;
+
+content:     value
+          |  content value
+;
+
+value:     '[' digits ',' digits ')' identifier 
+         | '[' digits ',' digits ')' string_literal
+         | '[' digits ',' digits ')' digits
+;
+
+
+--concatenate "../parser/js/js.grammar"

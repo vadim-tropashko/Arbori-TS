@@ -1,0 +1,85 @@
+sql_fragment: 
+      identifier  -- doublequoted or backquoted
+    | sql_fragment identifier
+;
+
+query: sql_fragment 
+;
+
+assertion: query '-' '>' token_list ';'
+; 
+ 
+output: query ';'
+; 
+
+atest: assertion
+    |  output
+    |  comment
+    |  parameters
+    | atest assertion 
+    | atest output 
+    | atest comment 
+    | atest parameters 
+;
+
+range : '[' digits ',' digits ')'
+;
+
+token : digits range content type
+    |   digits range         type    
+;
+content: identifier
+    | string_literal
+    | content content
+    | digits
+    | ','
+    | '='
+    | '|'
+    | '('
+    | ')'
+    | '{'
+    | '}'
+    | '['
+    | ']'
+    | ':'
+    | '@'
+    | '\'
+    | '-'
+    | '&'
+    --| ';'
+;
+type: '<' 'IDENTIFIER' '>'
+    | '<' 'DIGITS' '>'
+    | '<' 'QUOTED_STRING' '>'
+    | '<' 'WS' '>'
+    | '<' 'MACRO_SKIP' '>'
+    | '<' 'COMMENT' '>'
+    | '<' 'LINE_COMMENT' '>'
+    | '<' 'DQUOTED_STRING' '>'
+    | '<' 'OPERATION' '>'
+    | '<' 'INCOMPLETE' '>'
+    | '<' 'SQLPLUS_COMMAND' '>'
+    | '<' 'HTML_CODE' '>'
+    | '<' 'UNKNOWN' '>'
+;
+
+token_list : token
+	  | token_list  token 
+;
+
+idigits : '#'
+       | '*'
+       | ':'
+       | identifier
+       | digits
+       | idigits idigits
+;
+comment : '+' '+' idigits ';'
+;
+
+parameters:
+       identifier '=' 'TRUE' ','
+     | identifier '=' 'FALSE' ','
+     | parameters identifier '=' 'true' ','
+     | parameters identifier '=' 'false' ','
+;     

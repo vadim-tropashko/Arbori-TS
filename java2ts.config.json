@@ -1,0 +1,8 @@
+{
+  "packageRoot": "src/main/typescript",
+  "outputPath": "src/main/typescript",
+  "javaLib": "jree",
+  "options": {
+    "addIndexFiles": true
+  }
+}

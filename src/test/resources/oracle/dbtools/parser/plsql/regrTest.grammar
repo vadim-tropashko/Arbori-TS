@@ -1,0 +1,58 @@
+sql_fragment: 
+      identifier  -- doublequoted or backquoted
+    | sql_fragment identifier
+;
+
+query: sql_fragment 
+;
+
+assertion: query '-' '>' tree ';'
+; 
+ 
+output: query ';'
+; 
+
+atest: assertion
+    |  output
+    |  comment
+    | atest assertion 
+    | atest output 
+    | atest comment 
+;
+
+range : '[' digits ',' digits ')'
+;
+
+any_branch: '[' '.' '.' '.' ')'
+          |     '.' '.' '.' 
+;        
+
+label : --identifier range |
+	  identifier
+	| string_literal
+	| '('
+;
+payload: label
+    | payload label
+    | payload '>' label
+;
+node : range 
+	| range payload
+	| range payload any_branch
+    | range '=' payload
+    | range '=' payload any_branch
+;
+tree : node
+	| tree node  
+;
+
+idigits : '#'
+       | '*'
+       | ':'
+       | identifier
+       | digits
+       | idigits idigits
+;
+comment : '+' '+' idigits ';'
+;
+

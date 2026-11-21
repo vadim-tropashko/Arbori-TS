@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "src/main/typescript/oracle/dbtools/parser/Lexer.ts",
+    "src/main/typescript/oracle/dbtools/arbori/Arbori.ts",
+    "src/main/typescript/oracle/dbtools/app/Format.ts",
+    "src/main/typescript/oracle/dbtools/app/SqlCompleter.ts",
+    "src/main/typescript/oracle/dbtools/parser/plsql/EarleyParser.ts",
+    "src/main/typescript/resources.d.ts",
+    "src/main/typescript/electron/SqlWorkbenchRenderer.ts"
+  ]
+}

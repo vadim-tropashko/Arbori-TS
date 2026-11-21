@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "rootDir": "./src",
+    "strict": false,
+    "noImplicitOverride": false
+  },
+  "include": [
+    "src/main/typescript/resources.d.ts",
+    "src/test/typescript/oracle/dbtools/parser/LexerRegressionTest.ts"
+  ]
+}

@@ -1,0 +1,67 @@
+pre: 'pre' 
+   | 'PRE'
+; 
+b: 'b' 
+ | 'B'
+; 
+
+--bnfIdentifiers(rules);
+identifier:
+'(' | ')' | /*'\'' |*/ /*'.' |*/ ',' | ';' | ':' | '=' | '+' | '-' | '*' | '/' | '\' | '@' | '!' | '^' | '~' | 'e' | 'f' | 'd' 
+    | '#' | '?' | '%'
+;        
+
+qualifid: identifier '.' identifier
+; 
+boldrawbnf: '<' b '>' rawbnf '<' '/' b '>'  
+          | '<' b '>' lbr '<' '/' b '>'  
+          | '<' b '>' rbr '<' '/' b '>'  
+          | '<' b '>' lcp '<' '/' b '>'  
+          | '<' b '>' rcp '<' '/' b '>'  
+          | '<' b '>' sbar '<' '/' b '>'   
+          | '<' b '>' dbar '<' '/' b '>'   
+          | '<' b '>' lt '<' '/' b '>'  
+          | '<' b '>' gt '<' '/' b '>'  
+          | '<' b '>' lt gt '<' '/' b '>'
+;   
+lt: '<'
+;        
+gt: '>'
+;        
+lbr: '['
+;        
+rbr: ']'
+; 
+lcp: '{'
+;        
+rcp: '}'
+; 
+dbar: '|' '|'
+;       
+sbar: '|' 
+;       
+-- when adding more boldrawbnf alternatives, don't forget to update boldrawbnf case in evaluate()
+block: boldrawbnf 
+     | identifier
+     | qualifid
+     --| bnfid 
+     | '[' rawbnf ']' 
+     | '{' rawbnf '}' 
+     | '{' rawbnf '}' '.' '.' '.'  
+     | '[' rawbnf ']' '.' '.' '.'
+;  
+concat: block 
+      | concat block 
+;  
+rawbnf: concat 
+      | concat '|' rawbnf
+; 
+bnf: '<' pre '>' rawbnf '<' '/' pre '>'  
+   | '<' pre identifier '>' rawbnf '<' '/' pre '>'
+   | '<' '<' identifier '>' '>' rawbnf   '<' '<' '>' '>'
+   --| identifier ':' ':' '=' rawbnf
+   --| identifier ':' ':' '=' rawbnf ';'
+;   
+bnflist: bnf 
+       | bnflist bnf
+;  

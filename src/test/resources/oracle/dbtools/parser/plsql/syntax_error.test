@@ -1,0 +1,87 @@
+++0; /* SQLCL-3070 */
+`--dbtools-dev[system]
+SELECT * FROM HR.EMPLOY
+` ->
+`Syntax Error at line 2, column 24
+
+
+SELECT * FROM HR.EMPLOY
+                        ^^^`
+`';'`
+`'.'`
+;
+
+++1; /* 36012169 */
+`select
+(select from dual)
+FROM dual
+` ->
+`Syntax Error at line 2, column 8
+
+
+(select from dual)
+        ^^^        
+Expected: select_list,'*','.',':','CAST','CASE','JSON','(','
+`
+;
+
+++2;
+`CREATE PROPERTY GRAPH "EXPORT_TEST"."SOCIAL_GRAPH"
+   VERTEX TABLES (
+     "EXPORT_TEST"."EMPLOYEES" AS "EMPLOYEES"
+       KEY ("EMPLOYEE_ID")
+       PROPERTIES (
+         "EMPLOYEE_ID", "FIRST_NAME", "LAST_NAME", "EMAIL", "PHONE_NUMBER",
+         "HIRE_DATE", "JOB_ID", "SALARY", "COMMISSION_PCT", "MANAGER_ID",
+         "DEPARTMENT_ID"
+       )
+   )
+   OPTIONS (TRUSTED MODE, ENFORCED MODE);
+` ->
+`Syntax Error at line 11, column 26
+
+
+   OPTIONS (TRUSTED MODE, ENFORCED MODE);
+                          ^^^`
+;
+
+
+++3; -- modified test case from 39120962
+`select * from t...
+` ->
+`Syntax Error at line 1, column 17
+
+select * from t...
+                 ^^^
+Expected: identifier,'$'`
+;
+
+++4;  -- modified test case from 39120962
+`select * from a..b;
+` ->
+`Syntax Error at line 1, column 18
+
+select * from a..b;
+                  ^^^
+Expected: '(',paren_expr_list,'.','%',`
+;
+
+++5;  -- modified test case from 39120962
+`select * from a.;
+` ->
+`Syntax Error at line 1, column 16
+
+select * from a.;
+                ^^^
+Expected: identifier,'.',table,'EXTERNAL','$',`
+;
+
+++6;  -- modified test case from 39120962
+`select * from &emp..;
+` ->
+`Syntax Error at line 1, column 20
+
+select * from &emp..;
+                    ^^^
+Expected: identifier,'$',`
+;

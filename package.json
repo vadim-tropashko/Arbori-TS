@@ -1,0 +1,48 @@
+{
+  "name": "arbori-ts",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/electron-main.cjs",
+  "description": "TypeScript port of the dbtools-arbori module",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "generate:arbori-grammar": "node scripts/generate-arbori-grammar-source.mjs",
+    "build": "npm run build:electron",
+    "build:electron": "node scripts/build-electron.mjs",
+    "start:electron": "npm run build && electron .",
+    "typecheck:parser": "tsc --noEmit -p tsconfig.parser.json",
+    "typecheck:earley": "tsc --noEmit -p tsconfig.earley.json",
+    "typecheck:electron": "tsc --noEmit -p tsconfig.electron.json",
+    "typecheck:sql-insight": "tsc --noEmit -p tsconfig.sql-insight.json",
+    "typecheck:lexer-regression": "tsc --noEmit -p tsconfig.lexer-test.json",
+    "build:lexer-regression": "tsc -p tsconfig.lexer-run.json",
+    "test:lexer-regression": "npm run build:lexer-regression && node dist/lexer-regression/test/typescript/oracle/dbtools/parser/LexerRegressionTest.js",
+    "typecheck:doc-statements": "tsc --noEmit -p tsconfig.doc-statements.json",
+    "build:doc-statements": "tsc -p tsconfig.doc-statements.json && node scripts/fix-emitted-import-extensions.mjs dist/doc-statements",
+    "test:doc-statements": "npm run build:doc-statements && node --import ./scripts/register-text-resource-loader.mjs dist/doc-statements/test/typescript/oracle/dbtools/parser/plsql/DocStatementsTest.js",
+    "test:sql-regression": "node --experimental-strip-types src/test/typescript/SqlRegression.ts",
+    "test:sql-insight": "npm run build:doc-statements && node --import ./scripts/register-text-resource-loader.mjs dist/doc-statements/test/typescript/oracle/dbtools/app/SqlInsightTest.js",
+    "test:grammar-extension": "node --experimental-strip-types src/test/typescript/GrammarExtensionTest.ts",
+    "test:arbori": "node --experimental-strip-types src/test/typescript/ArboriEngineTest.ts",
+    "test:arbori-unit": "node --experimental-strip-types src/test/typescript/ArboriUnitTest.ts",
+    "build:arbori-test": "tsc -p tsconfig.arbori-test.json && node scripts/fix-emitted-import-extensions.mjs dist/arbori-test",
+    "test:arbori-test": "npm run build:arbori-test && node dist/arbori-test/test/typescript/oracle/dbtools/app/ArboriTest.js",
+    "test:unified-parser": "node --experimental-strip-types src/test/typescript/UnifiedParserTest.ts",
+    "build:msc-preprocess": "tsc -p tsconfig.msc-preprocess.json",
+    "benchmark:msc-preprocess": "npm run build:msc-preprocess && node dist/msc-preprocess/test/typescript/oracle/dbtools/parser/plsql/MscPreProccessTest.js",
+    "dump:sql-matrix": "node --experimental-strip-types src/test/typescript/SqlMatrixDump.ts"
+  },
+  "dependencies": {
+    "oracledb": "^26.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/oracledb": "^26.0.1",
+    "electron": "^45.3.4",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.7.0"
+  }
+}

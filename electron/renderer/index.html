@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'" />
+    <title>Arbori SQL Workbench</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="page-header">
+        <div>
+          <p class="eyebrow">Arbori-TS · Electron</p>
+          <h1>SQL parser workbench</h1>
+          <p class="subtitle">Edit SQL, inspect the parse, and request database-aware completions at the cursor.</p>
+        </div>
+        <span id="status" class="status" role="status">Choose a SQL file to begin.</span>
+      </header>
+
+      <section class="input-panel" aria-label="SQL input">
+        <div class="file-controls">
+          <div class="file-picker">
+            <span class="file-icon" aria-hidden="true">↑</span>
+            <span><strong>SQL input</strong><small id="file-name">Default: /Users/vtropash/sandbox/example.sql</small></span>
+          </div>
+          <button id="load-file-button" class="secondary-button" type="button">Load file</button>
+          <input id="sql-file" class="visually-hidden" type="file" accept=".sql,.pls,.plsql,text/plain" aria-label="Select SQL file to load" />
+        </div>
+        <div class="input-actions">
+          <button id="parse-button" class="primary-button" type="button" disabled>Parse</button>
+          <button id="sql-insight-button" class="secondary-button" type="button" disabled>SQL Insight</button>
+          <div class="connection-settings" aria-label="Oracle connection settings">
+            <label class="connection-field connection-user" for="connection-user">
+              <span>Username</span>
+              <input id="connection-user" type="text" value="hr" autocomplete="username" />
+            </label>
+            <label class="connection-field connection-password" for="connection-password">
+              <span>Password</span>
+              <input id="connection-password" type="password" value="oracle" autocomplete="current-password" />
+            </label>
+            <label class="connection-field connection-string" for="connection-string">
+              <span>Oracle connection string</span>
+              <input id="connection-string" type="text" value="dbtools-dev.oraclecorp.com:2600/DB26P" autocomplete="off" spellcheck="false" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="results-panel" aria-label="SQL parser output">
+        <div class="tab-list" role="tablist" aria-label="SQL parser output views">
+          <button class="tab is-active" id="tab-sql" role="tab" aria-selected="true" aria-controls="panel-sql" tabindex="0">SQL</button>
+          <button class="tab" id="tab-lexed" role="tab" aria-selected="false" aria-controls="panel-lexed" tabindex="-1">Lexed</button>
+          <button class="tab" id="tab-matrix" role="tab" aria-selected="false" aria-controls="panel-matrix" tabindex="-1">Matrix</button>
+          <button class="tab" id="tab-tree" role="tab" aria-selected="false" aria-controls="panel-tree" tabindex="-1">Parse tree</button>
+          <button class="tab" id="tab-insight" role="tab" aria-selected="false" aria-controls="panel-insight" tabindex="-1">SQL Insight</button>
+        </div>
+        <div class="view-heading"><h2 id="view-title">SQL</h2><span id="view-meta"></span></div>
+        <section class="tab-panel sql-panel" id="panel-sql" role="tabpanel" aria-labelledby="tab-sql" tabindex="0">
+          <div id="sql-editor-wrap" class="sql-editor-wrap">
+            <pre id="syntax-highlight" aria-hidden="true"></pre>
+            <textarea id="sql-editor" spellcheck="false" aria-label="SQL input" aria-describedby="syntax-tooltip"></textarea>
+            <div id="syntax-tooltip" class="syntax-tooltip" role="tooltip" hidden></div>
+          </div>
+        </section>
+        <section class="tab-panel" id="panel-lexed" role="tabpanel" aria-labelledby="tab-lexed" tabindex="0" hidden>
+          <div class="table-scroll"><table id="lexed-table"><thead><tr><th>#</th><th>Span</th><th>Type</th><th>Content</th></tr></thead><tbody></tbody></table></div>
+          <p class="empty-state">Choose <strong>Parse</strong> to view tokens.</p>
+        </section>
+        <section class="tab-panel" id="panel-matrix" role="tabpanel" aria-labelledby="tab-matrix" tabindex="0" hidden>
+          <div class="matrix-toolbar"><span>SqlEarley matrix · hover a cell to inspect items and completion joins.</span></div>
+          <div class="matrix-layout">
+            <div class="matrix-scroll" id="matrix-view"></div>
+            <div class="matrix-splitter" role="separator" aria-orientation="vertical" aria-label="Resize matrix and cell inspector" aria-valuemin="30" aria-valuemax="80" aria-valuenow="68" tabindex="0"></div>
+            <aside class="matrix-inspector" id="matrix-inspector" aria-live="polite">
+              <p class="matrix-hint">Hover over a matrix cell to inspect its Earley items. Red guides show completion joins; drag the divider to resize the matrix and inspector.</p>
+            </aside>
+          </div>
+          <p class="empty-state">Choose <strong>Parse</strong> to build the SqlEarley matrix.</p>
+        </section>
+        <section class="tab-panel" id="panel-tree" role="tabpanel" aria-labelledby="tab-tree" tabindex="0" hidden>
+          <div id="tree-view" class="tree-view"></div>
+          <p class="empty-state">Choose <strong>Parse</strong> to build the SqlEarley parse tree.</p>
+        </section>
+        <section class="tab-panel" id="panel-insight" role="tabpanel" aria-labelledby="tab-insight" tabindex="0" hidden>
+          <ul id="sql-insight-results" class="suggestion-list" aria-label="SQL completion suggestions"></ul>
+          <p class="empty-state">Choose <strong>SQL Insight</strong> to view completion suggestions.</p>
+          <section class="log-panel insight-log" aria-labelledby="query-log-title">
+            <div class="log-panel-heading">
+              <h2 id="query-log-title">Dictionary query log</h2>
+              <span id="query-log-count">0 queries</span>
+            </div>
+            <div id="query-log" class="query-log" role="log" aria-live="polite">
+              <p class="log-empty">Dictionary queries issued by SQL Insight will appear here.</p>
+            </div>
+          </section>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

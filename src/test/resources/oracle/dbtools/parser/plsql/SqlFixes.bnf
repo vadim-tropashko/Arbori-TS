@@ -1,0 +1,1047 @@
+/*
+  The rules from this file are NOT processed recursively.
+  For example, json_table refers to JSON_table_on_empty_clause
+  which is defined in the documentation. 
+  This symbols has to be added to the todo list manually
+*/  
+
+
+-- query_block == max subquery  
+-- for backward compatibility
+-- ensured programmatically by overriding Earley.tree()
+query_block::=
+     dummyRule
+   | notToReduce  
+;   
+  
+/*sim_expr::=
+     dummyRule
+   | notToReduce  
+;*/    
+
+
+
+/***** Json fixes ****/
+
+
+JSON_object_access_expr ::=
+    /*table_alias "." JSON_column ( "." JSON_object_key (array_step | "(" ")")* )+ 
+    format_clause?                                         -- e.g.  m.json.actors[0] FORMAT JSON,
+    |
+    table_alias "." JSON_column ( ("." JSON_object_key)? (array_step | "(" ")")+ )+ 
+    format_clause? */                                        -- e.g.  jtab.jcol[*].maxNumber()
+    
+    table_alias "." JSON_column ( "." JSON_object_key | array_step  )+ 
+    -- too ambiguous: ("AS" datatype)?
+;    
+    
+array_step ::=
+    "[" ( -- missing "("
+         integer ( "TO" integer )? ( "," integer ( "TO" integer )? )* 
+         | "*" 
+         )
+    "]"
+|   "(" ")"    
+;    
+
+json_table ::=
+    ("JSON_TABLE"|'JSON_EXPAND_ARRAY') "(" "NESTED"? expr format_clause? ("," JSON_basic_path_expression)?
+		 (JSON_table_on_error_clause)? (JSON_table_on_empty_clause)? ('NULL' 'ON' 'MISMATCH')?
+		  JSON_columns_clause 
+		  ")"
+;		 
+		
+
+JSON_value_column ::=    /* unified with JSON_query_column */
+  column_name JSON_value_return_type? format_clause? 
+  JSON_query_wrapper_clause? 
+  JSON_query_returning_clause?  -- JSON_TABLE(t.json COLUMNS(actors FORMAT JSON PRETTY ASCII))
+  ("ORDERED"? "PATH" JSON_path)? json_value_on__*
+; 
+
+ 
+  
+  
+JSON_exists_column ::=
+  column_name JSON_value_return_type?
+  "EXISTS"  ("PATH" JSON_path)? JSON_exists_on_error_clause? 
+  allow_boolean_number_conversion?     
+;  
+  
+JSON_nested_path ::=
+  "NESTED" "PATH"? JSON_path JSON_columns_clause
+;  
+
+JSON_path ::=
+   JSON_basic_path_expression | JSON_relative_object_access
+;   
+
+JSON_relative_object_access ::=
+   JSON_object_key array_step? ("." JSON_object_key array_step?)*
+;
+
+
+nested_clause_1 ::=
+
+  --table_reference
+   ("NESTED" "PATH"?) 
+      (
+         JSON_relative_object_access |
+         identifier ("," JSON_basic_path_expression)
+      )?
+      JSON_table_on_error_clause?
+      --"COLUMNS" "(" JSON_column_definition+ ")"
+      JSON_columns_clause
+;
+
+nested_clause ::=
+      nested_clause_1
+    | nested_clause_1 identifier
+    | nested_clause nested_clause 
+;
+
+
+
+/* now in the 21c doc
+JSON_ARRAY ::=
+  "JSON_ARRAY" "(" JSON_ARRAY_content ")" | "JSON" "[" JSON_ARRAY_content "]"
+;
+*/
+
+JSON_ARRAY_content ::=
+  (JSON_ARRAY_element ( "," JSON_ARRAY_element )* )?
+  (JSON_on_null_clause)* JSON_returning_clause? "STRICT"? format_clause?
+; 
+ 
+JSON_ARRAY_element ::=
+   expr format_clause?
+  |  JSON_ARRAY
+  |  json_object
+;   
+
+
+json_object ::= 
+    ("JSON_OBJECT"|"JSON")? "{" JSON_OBJECT_content "}"   
+  | ("JSON_OBJECT"|"JSON")? "[" JSON_OBJECT_content "]"     
+  | ("JSON_OBJECT"|"JSON")? "[" "{" JSON_OBJECT_content "}" "]"     
+  | ("JSON_OBJECT"|"JSON"|"BSON"|"OSON") "(" JSON_OBJECT_content ")"    
+  -- derived from possibility of content being empty:
+  --| "JSON_OBJECT" "{"  "}"      | "JSON" "{"  "}"           -- empty constructor examples
+  --| "JSON_OBJECT" "["  "]"      | "JSON" "["  "]"            
+; 
+
+JSON_OBJECT_content ::= 
+ (
+     "*" | 
+     entry ( "," entry )*
+  )?                                              
+  (
+   JSON_on_null_clause | JSON_returning_clause |    
+   ("STRICT"|"EXTENDED") |
+   (("WITH"|"WITHOUT") ("UNIQUE" "KEYS"?|"TYPENAME") ) |
+   JSON_on_error_clause |
+   type_strict_lax |
+   inline_constraint
+  )*
+;
+
+
+entry ::= (
+  regular_entry 
+   column_tags_clause?   -- added to parse example#2 https://docs-stage.oracle.com/en/database/oracle/oracle-database/23/sqlrf/create-json-relational-duality-view.html
+   format_clause? 
+   JSON_on_null_clause? 
+  | wildcard
+  | json_name_value_pair 
+  | json_name_value_pair format_clause? JSON_returning_clause 
+  | 'UNNEST' '(' duality_subquery ')'
+  | duality_subquery
+  | key_value_clause
+) 'HIDDEN'?    
+;
+
+json_name_value_pair: pls_expr 'IS' pls_expr
+              | string_literal 'IS' expr
+;
+
+regular_entry ::=
+  "KEY"? expr "VALUE" expr |
+   expr (":" (expr))? |
+   --expr ":" "{" JSON_OBJECT_content "}" |   --will amend json_object
+   column 
+;    
+wildcard ::=  (id ".")? id "." "*"
+;
+
+-- doesn't fit "delete" and "update" returning_clause; 
+JSON_returning_clause::= "RETURNING" datatype ('ETAG'|'REFERENCE'|'VALUE')? 'INCLUDE'? format_clause?
+;
+
+format_clause ::=  "FORMAT" "JSON" | "FORMAT" "OSON" | "FORMAT" "BSON"
+                 | "FORMAT" "DENSE" | "FORMAT" "SPARSE"
+;
+
+
+JSON_on_null_clause::= ("SQL"? "NULL" | "ABSENT" ) "ON" ("NULL" | "EMPTY")
+;
+
+
+json_transform ::= 'JSON_TRANSFORM' '(' json_transform_col (',' json_transform_col)* ')'
+; 
+
+json_transform_col ::=
+    input_expr 
+    ( format_clause
+    | ',' json_oper
+    | JSON_TRANSFORM_returning_clause  
+    | JSON_passing_clause
+    | format_clause
+    | 'NO_PARTIAL_OSON_UPDATE'
+    | type_strict_lax
+    )*
+    ('AS' identifier)?
+;
+
+JSON_TRANSFORM_returning_clause: 
+'RETURNING' ( 
+     'VARCHAR2' ( '(' size ('BYTE' | 'CHAR')? ')' )?
+     | 'CLOB'
+     | 'BLOB'
+     | 'JSON'
+    )
+   ('ALLOW' | 'DISALLOW' | 'PRETTY')?
+;
+
+transform_directive ::= (('CREATE' 'OBJECT'? | 'REPLACE' | 'IGNORE' | 'ERROR') 'ON' ('EXISTING'|'MISSING'|'NULL'))
+;
+
+keep_op ::= 'KEEP' (pathExpr (('IGNORE' | 'ERROR') 'ON' 'MISSING')? )
+(',' pathExpr (('IGNORE' | 'ERROR') 'ON' 'MISSING')? )*
+;
+rename_op ::= 'RENAME' pathExpr ('WITH'|'=') string_literal (('IGNORE' |
+'ERROR') 'ON' 'MISSING')?
+;
+assign_op ::= 'ASSIGN' pathExp '=' rhsExpr (('IGNORE' | 'ERROR' | 'REPLACE')
+'ON' 'EXISTING')?(('CREATE' |'IGNORE' | 'ERROR') 'ON' 'MISSING')?
+(('NULL' | 'IGNORE' | 'ERROR') 'ON' 'NULL')?
+;
+
+/*json_oper ::= --(removeOp | insertOp | replaceOp | appendOp | setOp | renameOp | keepOp | assignOp | unionOp | sortOp | mergeOp )
+    add_set_op
+  | append_op 
+  | case_op
+  | copy_op
+  | insert_op
+  | intersect_op
+  | keep_op
+  | merge_op
+  | minus_op  
+  | nested_path_op
+  | prepend_op
+  | remove_op
+  | remove_set_op
+  | rename_op
+  | replace_op   
+  | set_op  
+  | sort_op
+  | union_op
+ ;
+
+insertOp ::= 'INSERT' pathExp '=' rhsExpr transform_directive? 
+                                          (('NULL' | 'IGNORE' | 'ERROR' | 'REMOVE') 'ON' ('EXISTING'|'MISSING'|'NULL'))?
+;
+removeOp ::= 'REMOVE' pathExp (('IGNORE' | 'ERROR') 'ON' 'MISSING')?
+;
+
+replaceOp ::= 'REPLACE' pathExp '=' rhsExpr (('CREATE' | 'IGNORE' |
+'ERROR') 'ON' 'MISSING')? (('NULL' | 'IGNORE' | 'ERROR' | 'REMOVE')
+'ON' 'NULL')?
+;
+appendOp ::= 'APPEND' pathExp '=' rhsExpr (('CREATE' | 'IGNORE' |
+'ERROR') 'ON' 'MISSING')? (('NULL' | 'IGNORE' | 'ERROR') 'ON' 'NULL')?
+;
+setOp ::= ('SET'|'LET') pathExp '=' rhsExpr transform_directive? (('CREATE' |'IGNORE' | 'ERROR') 'ON' 'MISSING')?
+(('NULL' | 'IGNORE' | 'ERROR') 'ON' 'NULL')?
+;
+renameOp ::= 'RENAME' pathExpr ('WITH'|'=') string_literal (('IGNORE' |
+'ERROR') 'ON' 'MISSING')?
+;
+keepOp ::= 'KEEP' (pathExpr (('IGNORE' | 'ERROR') 'ON' 'MISSING')? )
+(',' pathExpr (('IGNORE' | 'ERROR') 'ON' 'MISSING')? )*
+;
+assignOp ::= 'ASSIGN' pathExp '=' rhsExpr (('IGNORE' | 'ERROR' | 'REPLACE')
+'ON' 'EXISTING')?(('CREATE' |'IGNORE' | 'ERROR') 'ON' 'MISSING')?
+(('NULL' | 'IGNORE' | 'ERROR') 'ON' 'NULL')?
+;
+unionOp ::= 'UNION' pathExp '=' rhsExpr (('IGNORE' | 'ERROR' | 'REPLACE')
+'ON' 'EXISTING')?(('CREATE' |'IGNORE' | 'ERROR') 'ON' 'MISSING')?
+(('NULL' | 'IGNORE' | 'ERROR') 'ON' 'NULL')?
+;
+sortOp ::= 'SORT' expr 
+;
+mergeOp ::= 'MERGE' pathExp '=' rhsExpr 
+;
+*/
+
+rhsExpr ::= ('PATH')? expr  ('FORMAT' 'JSON')? 
+;
+
+/* doesn't match doc, addendum? Amended table_partition_description by adding JSON_storage_clause in SqlRules.extractRules()
+table_partition_description ::= segment_attributes_clause? (table_compression | key_compression)?
+('OVERFLOW' segment_attributes_clause?)? ((LOB_storage_clause | varray_col_properties |
+JSON_storage_clause)+ )?
+;
+*/
+
+JSON_storage_clause ::= 'JSON' '(' json_column (',' json_column)* ')' 'STORE' 'AS' ( ( '('
+JSON_parameters ')') | (identifier) | ( identifier '(' JSON_parameters ')' ) )
+;
+JSON_parameters ::= ( ('TABLESPACE' tablespace ) | storage_clause | ('CHUNK' integer) |
+('PCTVERSION' integer) | 'RETENTION' | ('FREEPOOLS' integer) 
+   | 'COMPRESS' | 'HIGH' | 'CACHE' | 'NOCACHE'
+   | 'DISABLE' 'STORAGE' 'IN' 'ROW'
+) * 
+;
+
+/*json_serialize ::= 'JSON_SERIALIZE' '(' expr JSON_returning_clause? 'PRETTY'? 'ASCII'? 'TRUNCATE'? JSON_on_error_clause? ')'
+;*/
+
+JSON_on_error_clause ::= ('NULL' | 'ERROR') 'ON' 'ERROR'
+;
+
+json_equal: 'JSON_EQUAL' '(' expr /*JSON_function ('FORMAT' 'JSON')?*/ 
+             ',' expr /*JSON_function ('FORMAT' 'JSON')?*/ ')'
+;
+
+-- addendum
+JSON_condition: json_equal
+;
+
+
+/* can't parse the key, recognizing it on lexical level
+soda_command: 'SODA' 'CREATE' identifier
+     -- Example:  soda create fruit   
+|  'SODA' 'INSERT' identifier (hvalue | filename)
+     -- Example: 
+     --soda insert fruit {"name" : "orange", "quantity" : 20} 
+|   'SODA' 'GET' identifier (('-' 'ALL' | '-' 'F' | '-' 'K' | '-' 'KLIST') (hvalue)?)?
+     -- Example: 
+     --soda get fruit 
+     --soda get fruit -f {"name" : "orange"}
+     --soda get fruit -f {"quantity" : {"$lt" : 50}} 
+     --
+|    'SODA' 'REMOVE' identifier (('-' 'ALL' | '-' 'F' | '-' 'K' | '-' 'KLIST') (hvalue)?)?
+|    'SODA' 'REPLACE' identifier string_literal (hvalue)?
+      -- Example: 
+      --soda replace fruit 5B34ED2FDCE643A1AAA2519B47B18ED0
+      --{"name":"pear","quantity":10} 
+|   'SODA' 'HELP'
+|   'SODA' 'LIST'
+|   'SODA' 'DROP' identifier
+|   'SODA' 'COUNT' identifier (hvalue)?
+;*/
+
+json_collection_table::=
+'WITH' 'ETAG' 
+; 
+
+json_datatype::= 'JSON' 
+               | 'JSON' '(' 'OBJECT' ')'
+               | 'JSON' '(' 'LIMIT' expr ')'
+;
+
+/**** end of json addendum ****/
+
+create_json_relational_duality_view::=
+'CREATE' 
+('OR' 'REPLACE')? ( 'NO'? 'FORCE' )? 
+( 'EDITIONABLE' | 'NONEDITIONABLE' )? 
+'JSON' 'RELATIONAL'? 
+'DUALITY' 'VIEW' 'FROM'? json_table_ref 'AS' (duality_subquery|jsonize)
+
+where_tags_clause_option::=  
+where_clause (table_tags_clause 'OPTION')?                             
+ 
+json_table_ref::=
+ ( identifier '.' )? identifier
+ 
+table_tags_clause::=
+'WITH' json_obj_tags ( json_obj_tags)*
+| 'WITH' '(' json_obj_tags ( json_obj_tags)* ')'
+| 'WITH' json_obj_tags ( ',' json_obj_tags)*
+| 'WITH' '(' json_obj_tags (',' json_obj_tags)* ')'
+;
+
+object_gen_clause::= 'JSON' json_obj_payload
+| '*'
+| JSON_function
+ 
+json_obj_payload::= '{' key_value_clause ( ',' key_value_clause )*  '}' 
+ 
+key_value_clause::= 
+'KEY'? string ( ':' | 'IS' ) 
+  ( json_column_ref column_tags_clause? 'HIDDEN'?
+    |
+    generated_value --duplicate: 'HIDDEN'?
+    | 
+   '(' duality_subquery ')' 
+    | 
+    '[' duality_subquery ']'
+    |
+    --'{' JSON_OBJECT_content '}'
+    json_obj_payload
+    ) 
+    JSON_on_null_clause?
+| 
+ 'UNNEST' '(' duality_subquery ')'
+| 
+  flex_column
+|
+  json_column_ref  
+  
+generated_value ::= 'GENERATED' ('AS' /*datatype_name*/identifier)? 
+'USING' (
+   'PATH' JSON_basic_path_expression 
+  | 'DIRECTIVE' 
+  | '(' /*sql query*/ subquery ')'
+  | expr
+ )  'HIDDEN'?   
+  
+  
+flex_column::=   
+   json_column_ref 'AS' 'FLEX' 'COLUMN'?
+   (('KEEP' 'NESTED'? | 'ARRAY' | 'IGNORE' | 'ERROR' )
+     'ON' 'NAME'? 'CONFLICT')?
+
+column_tags_clause::= 
+  'WITH' json_col_tags ( json_col_tags)*
+| 'WITH' '(' json_col_tags ( json_col_tags)* ')'
+| 'WITH' json_col_tags (',' json_col_tags)*
+| 'WITH' '(' json_col_tags (',' json_col_tags)* ')'
+
+
+json_col_tags::=  ( 'CHECK' | 'NOCHECK' )  'ETAG'? 
+| 'UPDATE' 
+| 'NOUPDATE' 
+
+json_obj_tags::=
+( 'CHECK' | 'NOCHECK' ) 'ETAG'? 
+| 'INSERT' | 'NOINSERT' | 'UPDATE' | 'NOUPDATE' | 'DELETE' | 'NODELETE' 
+
+
+duality_subquery::=
+     /*'SELECT' object_gen_clause 
+     'FROM' (json_table_ref|jsonize) table_alias? table_tags_clause? where_tags_clause_option?
+|*/  
+  json_table_ref directive* document
+|
+  subquery /*table_tags_clause?*/ where_tags_clause_option?
+
+
+--------------- GRAPH_TABLE ---------------
+
+
+graph_table ::=
+'GRAPH_TABLE' '(' graph_reference flashback_query_clause? graph_pattern graph_table_shape ')'
+
+graph_table_shape ::=
+graph_table_rows_clause? graph_table_columns_clause
+
+graph_table_rows_clause ::=
+'ONE' 'ROW' 'PER' 'MATCH' | one_row_per_iteration 
+
+one_row_per_iteration ::=
+  ONE ROW PER VERTEX '(' vertex_variable ')' 
+| ONE ROW PER STEP '(' vertex_variable ',' edge_variable ',' vertex_variable ')'
+| one_row_per_iteration IN '(' expr ')'
+
+
+
+graph_table_columns_clause ::=
+'COLUMNS' '('
+graph_table_column_definition
+ ( ',' graph_table_column_definition )*
+')'
+
+graph_table_column_definition ::=
+  value_expression  ('AS' column_name)? 
+--| all_properties_reference   
+
+-- all_properties_reference ::= identifier '.' '*'
+
+value_expression ::=
+    identifier '.' '*'
+ |  expr
+ |  value_expression 'IS' ('NOT')? 'LABELED' identifier
+
+graph_pattern ::=
+'MATCH' 
+--( identifier '=' )? moved to path_pattern
+path_pattern_list
+graph_pattern_where_clause?
+
+path_pattern_list ::=
+path_pattern  ( ',' path_pattern )* 
+
+path_pattern ::= ( identifier '=' )? path_pattern_expression
+path_pattern_expression ::= path_term
+
+path_term ::=
+path_factor
+| path_concatenation
+
+path_concatenation ::=
+path_term path_factor
+
+path_factor ::=
+path_primary
+| quantified_path_primary
+
+quantified_path_primary ::=
+path_primary graph_pattern_quantifier
+
+path_primary ::=
+element_pattern
+| parenthesized_path_pattern_expression
+
+element_pattern ::=
+vertex_pattern
+| edge_pattern
+
+vertex_pattern ::=
+'(' optional_element_pattern_filter
+')'
+
+optional_element_pattern_filter ::=
+graph_pattern_variable_declaration?
+is_label_expression?
+element_pattern_where_clause?
+
+graph_pattern_variable_declaration ::=
+graph_pattern_variable
+
+graph_pattern_variable ::=
+identifier
+
+is_label_expression ::=
+'IS' label_expression
+
+element_pattern_where_clause ::=
+where_clause_w_boolean
+
+edge_pattern ::=
+full_edge_pattern
+| abbreviated_edge_pattern
+
+full_edge_pattern ::=
+full_edge_pointing_right
+| full_edge_pointing_left
+| full_edge_any_direction
+
+full_edge_pointing_right ::=
+'-' '['
+optional_element_pattern_filter
+']' '-' '>'
+
+full_edge_pointing_left ::=
+'<' '-' '['
+optional_element_pattern_filter
+']' '-'
+
+full_edge_any_direction ::=
+'-' '['
+optional_element_pattern_filter
+']' '-'
+
+abbreviated_edge_pattern ::=
+'-' '>'
+| '<' '-'
+| '-'
+| '<' '-' '>'
+
+
+graph_pattern_quantifier ::=
+'?'
+| '+'
+| '*'
+| fixed_quantifier
+| general_quantifier
+
+fixed_quantifier ::=
+'{' integer '}'
+
+general_quantifier ::=
+'{'  lower_bound? ',' upper_bound '}'
+
+lower_bound ::=
+integer
+
+upper_bound ::=
+integer
+
+parenthesized_path_pattern_expression ::=
+'('
+path_pattern_expression
+parenthesized_path_pattern_where_clause ?
+')'
+| '['
+path_pattern_expression
+parenthesized_path_pattern_where_clause ?
+']'
+
+parenthesized_path_pattern_where_clause ::=
+where_clause_w_boolean     
+
+graph_pattern_where_clause ::=
+where_clause_w_boolean
+
+where_clause_w_boolean::= 'WHERE' compound_condition_w_boolean
+
+compound_condition_w_boolean::=
+    condition
+  | expr
+  | column 'IS' 'LABELED' column
+  | column 'IS' 'SOURCE' 'OF' expr
+  | compound_condition_w_boolean 'BETWEEN' compound_condition_w_boolean
+  | compound_condition_w_boolean 'AND' compound_condition_w_boolean
+  | compound_condition_w_boolean 'OR' compound_condition_w_boolean
+  | '(' compound_condition_w_boolean ')'
+
+label_expression ::=
+    label 
+  | label_expression ('|' | '&') label_expression
+  | '(' label_expression ')'
+  | '!' label_expression
+
+label ::=
+identifier
+
+graph_reference ::=
+graph_element_object_name
+
+
+source_destination_predicate ::=
+     identifier 'IS' 'SOURCE' 'OF' identifier
+   | identifier 'IS' 'NOT' 'SOURCE' 'OF' identifier
+   | identifier 'IS' 'DESTINATION' 'OF' identifier
+   | identifier 'IS' 'NOT' 'DESTINATION' 'OF' identifier
+
+
+--JSON_Duality_Views.docx
+jsonize ::= ('JSONIZE'|'SHELL') '(' table_hier_cons ')'
+
+table_hier_cons ::= table_name_id 
+  | table_name_id  json_object --'{'  itemlist '}' 
+  | table_name_id table_tags_clause json_object 
+  --| table_name_id table_tags_clause "{" string_literal ':' expr ( ',' string_literal ':' expr )* "}"
+    
+table_name_id ::=
+  json_table_ref /*tab_tag_status? -->*/ table_tags_clause?
+  key_col_clause? where_clause?
+  
+json_column_ref::=
+  identifier  
+| identifier '.'  identifier
+
+json_common_flag:   -- defined in plsql.y, addendum: 
+    JSON_value_on_empty_clause
+  | JSON_value_on_error_clause
+;  
+
+JSON_value_mapper_clause:
+    'USING' 'CASE_SENSITIVE' 'MAPPING'
+  | 'USING' 'CASE_INSENSITIVE' 'MAPPING'
+  | 'USING' 'CASE' '-' 'SENSITIVE' 'MAPPING'
+  | 'USING' 'CASE' '-' 'INSENSITIVE' 'MAPPING'
+;
+
+index_expr:
+ ( column | column_expression ) ('AS' datatype)?
+;
+
+
+clause_options
+    : 'OPTION' ( '=' '(' string_list ')'
+             | '=' '(' string_literal ')' option_values+
+             | 'ALL' ('EXCEPT' '=' '(' string_list ')')?
+             )
+    ;
+
+option_values
+    : 'VALUE' '=' '(' string_list ')'
+    | ('MINVALUE' | 'MAXVALUE') '=' string_literal
+    ;
+
+string_list
+    : string_literal (',' string_literal)*
+    ;
+		 
+zero_downtime_software_patching_clauses
+    : 'SWITCHOVER' 'TO'? 'LIBRARY' string_literal 'FOR' 'ALL' 'CONTAINERS' 
+    ;
+
+tablespace_encryption_clause
+    : 'ENCRYPTION' (tablespace_encryption_spec? 'ENCRYPT'? | 'DECRYPT')
+    ;
+
+password_value
+    : identifier
+    | numeric
+    | 'VALUES' string_literal
+    | '*'
+    | '*' '*'
+    | '*' '*' '*'
+    | '*' '*' '*' '*'
+    | '*' '*' '*' '*' '*'
+    ;  
+    
+partition_extended_names
+    : ('PARTITION' | 'PARTITIONS') ( partition_name (',' partition_name)*
+                               | '(' partition_name (',' partition_name)* ')'
+                               | 'FOR' '('? partition_key_value (',' partition_key_value)* ')'? )
+    ;
+
+subpartition_extended_names
+    : ('SUBPARTITION' | 'SUBPARTITIONS') ( partition_name ('UPDATE' 'INDEXES')?
+                                     | '(' partition_name (',' partition_name)* ')'
+                                     |     partition_name (',' partition_name)*  
+                                     | 'FOR' '('? subpartition_key_value (',' subpartition_key_value)* ')'? )
+    ;
+    
+memoptimize_read_clause
+    : 'NO'? 'MEMOPTIMIZE' 'FOR' 'READ'
+    ;
+memoptimize_write_clause
+    : 'NO'? 'MEMOPTIMIZE' 'FOR' 'WRITE'
+    ;        
+      
+      
+--------------      
+      
+alter_diskgroup
+    : ALTER DISKGROUP ( id_expression (((add_disk_clause | drop_disk_clause)+ | resize_disk_clause) rebalance_diskgroup_clause?
+                                      | ( replace_disk_clause
+                                        | rename_disk_clause
+                                        | disk_online_clause
+                                        | disk_offline_clause
+                                        | rebalance_diskgroup_clause
+                                        | check_diskgroup_clause
+                                        | diskgroup_template_clauses
+                                        | diskgroup_directory_clauses
+                                        | diskgroup_alias_clauses
+                                        | diskgroup_volume_clauses
+                                        | diskgroup_attributes
+                                        | drop_diskgroup_file_clause
+                                        | convert_redundancy_clause
+                                        | usergroup_clauses
+                                        | user_clauses
+                                        | file_permissions_clause
+                                        | file_owner_clause
+                                        | scrub_clause
+                                        | quotagroup_clauses
+                                        | filegroup_clauses
+                                        )
+                                      )
+                      | (id_expression (',' id_expression)* | ALL) (undrop_disk_clause | diskgroup_availability | enable_disable_volume)
+                      )
+    ;
+
+add_disk_clause
+    : ADD ( (SITE sn=id_expression)? quorum_regular? (FAILGROUP fgn=id_expression)? DISK qualified_disk_clause (',' qualified_disk_clause)*)+
+    ;
+
+drop_disk_clause
+    : DROP ( quorum_regular? DISK id_expression force_noforce? (',' id_expression force_noforce?)*
+           | DISKS IN quorum_regular? FAILGROUP id_expression force_noforce? (',' id_expression force_noforce?)*
+           )
+    ;
+
+resize_disk_clause
+    : RESIZE ALL (SIZE size_clause)?
+    ;
+
+replace_disk_clause
+    : REPLACE DISK id_expression WITH string_literal force_noforce? (',' id_expression WITH string_literal force_noforce?)*
+        (POWER numeric)?
+        wait_nowait?
+    ;
+
+wait_nowait
+    : WAIT
+    | NOWAIT
+    ;
+
+rename_disk_clause
+    : RENAME ( DISK id_expression TO id_expression (',' id_expression TO id_expression)*
+             | DISKS ALL
+             )
+    ;
+
+disk_online_clause
+    : ONLINE ( (quorum_regular? DISK id_expression (',' id_expression)* | DISKS IN quorum_regular? FAILGROUP id_expression (',' id_expression)*)+
+             | ALL
+             )
+        (POWER numeric)?
+        wait_nowait?
+    ;
+
+disk_offline_clause
+    : OFFLINE ( quorum_regular? DISK id_expression (',' id_expression)*
+              | DISKS IN quorum_regular? FAILGROUP id_expression (',' id_expression)*
+              ) timeout_clause?
+    ;
+
+timeout_clause
+    : DROP AFTER numeric (M_LETTER | H_LETTER)
+    ;
+
+rebalance_diskgroup_clause
+    : REBALANCE ( ((WITH | WITHOUT) phase+)? (POWER numeric) (WAIT | NOWAIT)?
+                | MODIFY POWER numeric?
+                )
+    ;
+
+phase
+    : id_expression 
+    ;
+
+check_diskgroup_clause
+    : CHECK ALL? (REPAIR | NOREPAIR)? //inconsistent documentation
+    ;
+
+diskgroup_template_clauses
+    : (ADD | MODIFY) TEMPLATE id_expression qualified_template_clause (',' id_expression qualified_template_clause)*
+    | DROP TEMPLATE id_expression (',' id_expression)*
+    ;
+
+qualified_template_clause
+    : ATTRIBUTES '(' redundancy_clause? striping_clause? ')' //inconsistent documentation
+    ;
+
+redundancy_clause
+    : MIRROR
+    | HIGH
+    | UNPROTECTED
+    | PARITY
+    | DOUBLE
+    ;
+
+striping_clause
+    : FINE
+    | COARSE
+    ;
+
+force_noforce
+    : FORCE
+    | NOFORCE
+    ;
+
+diskgroup_directory_clauses
+    : ADD DIRECTORY filename (',' filename)*
+    | DROP DIRECTORY filename force_noforce? (','filename force_noforce?)*
+    | RENAME DIRECTORY dir_name TO dir_name (',' dir_name TO dir_name)*
+    ;
+
+dir_name
+    : string_literal
+    ;
+
+diskgroup_alias_clauses
+    : ADD ALIAS string_literal FOR string_literal (',' string_literal FOR string_literal)*
+    | DROP ALIAS string_literal (',' string_literal)*
+    | RENAME ALIAS string_literal TO string_literal (',' string_literal TO string_literal)*
+    ;
+
+diskgroup_volume_clauses
+    : add_volume_clause
+    | modify_volume_clause
+    | RESIZE VOLUME id_expression SIZE size_clause
+    | DROP VOLUME id_expression
+    ;
+
+add_volume_clause
+    : ADD VOLUME id_expression SIZE size_clause redundancy_clause?
+        (STRIPE_WIDTH numeric (K_LETTER | M_LETTER))?
+        (STRIPE_COLUMNS numeric)?
+    ;
+
+modify_volume_clause
+    : MODIFY VOLUME id_expression (MOUNTPATH string_literal)?
+        (USAGE string_literal)?
+    ;
+
+diskgroup_attributes
+    : SET ATTRIBUTE string_literal '=' string_literal
+    ;
+
+modify_diskgroup_file
+    : MODIFY FILE string_literal ATTRIBUTE '(' disk_region_clause ')' (',' string_literal ATTRIBUTE '(' disk_region_clause ')')*
+    ;
+
+disk_region_clause
+    :
+    ;
+
+drop_diskgroup_file_clause
+    : DROP FILE filename (',' filename)*
+    ;
+
+convert_redundancy_clause
+    : CONVERT REDUNDANCY TO FLEX
+    ;
+
+usergroup_clauses
+    : ADD USERGROUP string_literal WITH MEMBER string_literal (',' string_literal)*
+    | MODIFY USERGROUP string_literal (ADD | DROP) MEMBER string_literal (',' string_literal)*
+    | DROP USERGROUP string_literal
+    ;
+
+user_clauses
+    : ADD USER string_literal (',' string_literal)*
+    | DROP USER string_literal (',' string_literal)* CASCADE?
+    | REPLACE USER string_literal WITH string_literal (',' string_literal WITH string_literal)*
+    ;
+
+file_permissions_clause
+    : SET PERMISSION (OWNER | GROUP | OTHER) '=' (NONE | READ (ONLY | WRITE)) (',' (OWNER | GROUP | OTHER) '=' (NONE | READ (ONLY | WRITE)))*
+        FOR FILE string_literal (',' string_literal)*
+    ;
+
+file_owner_clause
+    : SET OWNERSHIP (OWNER | GROUP) '=' string_literal (',' (OWNER | GROUP) '=' string_literal)* FOR FILE string_literal (',' string_literal)*
+    ;
+
+scrub_clause
+    : SCRUB (FILE string_literal | DISK id_expression)?
+        (REPAIR | NOREPAIR)?
+        (POWER (AUTO | LOW | HIGH | MAX))?
+        wait_nowait?
+        force_noforce?
+        STOP?
+    ;
+
+quotagroup_clauses
+    : ADD QUOTAGROUP id_expression (SET property_name '=' property_value)?
+    | MODIFY QUOTAGROUP id_expression SET property_name '=' property_value
+    | MOVE QUOTAGROUP id_expression TO id_expression
+    | DROP QUOTAGROUP id_expression
+    ;
+
+property_name
+    : id_expression
+    ;
+
+property_value
+    : id_expression
+    ;
+
+filegroup_clauses
+    : add_filegroup_clause
+    | modify_filegroup_clause
+    | move_to_filegroup_clause
+    | drop_filegroup_clause
+    ;
+
+add_filegroup_clause
+    : ADD FILEGROUP id_expression ((DATABASE | CLUSTER | VOLUME) id_expression | TEMPLATE) (FROM TEMPLATE id_expression)?
+        (SET string_literal '=' string_literal)?
+    ;
+
+modify_filegroup_clause
+    : MODIFY FILEGROUP id_expression
+        SET string_literal '=' string_literal
+    ;
+
+move_to_filegroup_clause
+    : MOVE FILE string_literal TO FILEGROUP id_expression
+    ;
+
+drop_filegroup_clause
+    : DROP FILEGROUP id_expression CASCADE?
+    ;
+
+
+quorum_regular
+    : QUORUM
+    | REGULAR
+    ;
+
+undrop_disk_clause
+    : UNDROP DISKS
+    ;
+
+diskgroup_availability
+    : MOUNT (RESTRICTED | NORMAL)? (FORCE | NOFORCE)?
+    | DISMOUNT (FORCE | NOFORCE)?
+    ;
+
+enable_disable_volume
+    : (ENABLE | DISABLE) VOLUME ( id_expression (',' id_expression)* | ALL)
+    ;
+
+id_expression: identifier;  
+property_value: expr;
+numeric: digits;  
+
+-- end alter_diskgroup  
+
+drop_database
+    : DROP DATABASE (INCLUDING BACKUPS)? NOPROMPT?
+    ;
+    
+    
+/*datatype::= ... | vector_type     
+addendum to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Data-Types.html*/
+    
+vector_type::= 
+      'VECTOR' 
+	| 'VECTOR' '(' vector_dimension ')'
+	| 'VECTOR' '(' vector_dimension ',' vector_format ')'
+    | 'VECTOR' '(' vector_dimension ',' vector_format ',' storage_format ')'
+    | vector_type 'PARAMETERIZED' 'BY' '(' identifier ')'
+    
+vector_dimension::= digits | '*'
+
+vector_format::= 'INT8' | 'FLOAT32' | 'FLOAT64' | '*' | 'BINARY'
+
+storage_format::= 'SPARSE' | 'DENSE' | '*'
+
+/*compound_expression::= ... | vector_expression   
+addendum to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/Compound-Expressions.html */
+
+vector_expression::= 
+       expr '<' '-' '>' expr
+    |  expr '<' '=' '>' expr
+    |  expr '<' '#' '>' expr
+       
+/*function::= ... | vector_function   
+addendum to https://docs.oracle.com/en/database/oracle/oracle-database/23/sqlrf/About-SQL-Functions.html */
+
+vector_function::=
+    ( 'VECTOR' | 'TO_VECTOR' )
+    '(' expr ',' (vector_dimension (',' vector_format)?)? ')'
+    | ( 'FROM_VECTOR' | 'VECTOR_SERIALIZE' ) 
+    '(' expr JSON_returning_clause? ')'
+    | 'VECTOR_EMBEDDING' '(' ( schema '.') ? identifier mining_attribute_clause ')' -- vector_embedding has extra USING keyword
+    
+timebucket_function::=
+    'TIME_BUCKET' 
+    '(' expr ',' expr ',' expr (',' ('START'|'END'))?  (timebucket_optional_clause)? ')'
+        
+timebucket_optional_clause::=
+     'ON' 'OVERFLOW' 'ROUND' 
+    |'ON' 'OVERFLOW' 'ERROR'
+    |'LAST' 'DAY' 'OF' 'MONTH'
+    
+    
+alter_add_cache_clause::= 'ADD' 'CACHE' cache_specification levels_clause
+
+alter_drop_cache_clause::= 'DROP' 'CACHE' cache_specification levels_clause
+
+embedding_distance::=
+( 'VECTOR_DISTANCE' | 'L1_DISTANCE' | 'L2_DISTANCE' |'COSINE_DISTANCE' 
+| 'INNER_PRODUCT' | 'HAMMING_DISTANCE' | 'JACCARD_DISTANCE' 
+) paren_expr_list
+
+
+    

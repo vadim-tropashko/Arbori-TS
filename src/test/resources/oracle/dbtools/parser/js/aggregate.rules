@@ -1,0 +1,383 @@
+"ExponentPart[2,7)": 'E'
+"ExponentPart[2,7)": 'e'
+"ExponentPart[7,13)": "ExponentPart[7,13)"
+"FLOAT_LITERAL[11,13)": ExponentPart
+"FLOAT_LITERAL[13,23)": "FLOAT_LITERAL[13,23)"
+"FLOAT_LITERAL[2,11)": '.' digits
+"FLOAT_LITERAL[2,11)": digits '.'
+"FLOAT_LITERAL[2,11)": digits '.' "FLOAT_LITERAL[5,7)"
+"FLOAT_LITERAL[25,48)": "FLOAT_LITERAL[38,47)"
+"FLOAT_LITERAL[25,48)": ExponentPart
+"FLOAT_LITERAL[25,48)": ExponentPart "FLOAT_LITERAL[27,37)"
+"FLOAT_LITERAL[27,37)": "FLOAT_LITERAL[27,37)"
+"FLOAT_LITERAL[38,47)": 'D'
+"FLOAT_LITERAL[38,47)": 'F'
+"FLOAT_LITERAL[38,47)": 'd'
+"FLOAT_LITERAL[38,47)": 'f'
+"FLOAT_LITERAL[5,7)": digits
+ArrayExpression: '[' ',' Expression_List2 ']'
+ArrayExpression: '[' ']'
+ArrayExpression: '[' Expression_List2 ',' ']'
+ArrayExpression: '[' Expression_List2 ']'
+ArrayExpression: '[' SpreadElement ',' Expression ']'
+ArrayExpression: '[' SpreadElement_List2 ']'
+ArrayPattern: '[' ',' Pattern_List2 ']'
+ArrayPattern: '[' Expression_List2 ']'
+ArrowFunctionExpression: '(' ')' '=' '>' Expression
+ArrowFunctionExpression: '(' ')' '=' '>' Statement
+ArrowFunctionExpression: '(' Expression ',' Pattern ')' '=' '>' Expression
+ArrowFunctionExpression: '(' Expression ',' RestElement ')' '=' '>' Expression
+ArrowFunctionExpression: '(' Expression_List2 ')' '=' '>' Expression
+ArrowFunctionExpression: '(' Expression_List2 ')' '=' '>' Statement
+ArrowFunctionExpression: '(' Expression_List2 ',' Pattern ')' '=' '>' Statement
+ArrowFunctionExpression: '(' Expression_List2 ',' RestElement ')' '=' '>' Statement
+ArrowFunctionExpression: '(' Pattern ')' '=' '>' Expression
+ArrowFunctionExpression: '(' Pattern ')' '=' '>' Statement
+ArrowFunctionExpression: '(' RestElement ')' '=' '>' Expression
+ArrowFunctionExpression: '(' RestElement ')' '=' '>' Statement
+ArrowFunctionExpression: 'async' '(' ')' '=' '>' Statement
+ArrowFunctionExpression: 'async' Expression '=' '>' Expression
+ArrowFunctionExpression: 'async' Expression '=' '>' Statement
+ArrowFunctionExpression: Expression '=' '>' Expression
+ArrowFunctionExpression: Expression '=' '>' Statement
+AssignmentExpression: Identifier '%' '=' Expression
+AssignmentExpression: Identifier '&' '=' Expression
+AssignmentExpression: Identifier '*' '=' Expression
+AssignmentExpression: Identifier '+' '=' Expression
+AssignmentExpression: Identifier '-' '=' Expression
+AssignmentExpression: Identifier '/' '=' Expression
+AssignmentExpression: Identifier '=' Expression
+AssignmentExpression: Identifier '>' '>' '=' Expression
+AssignmentExpression: Identifier '>' '>' '>' '=' Expression
+AssignmentExpression: Identifier '^' '=' Expression
+AssignmentExpression: Identifier '|' '=' Expression
+AssignmentExpression: MemberExpression '+' '=' Expression
+AssignmentExpression: MemberExpression '-' '=' Expression
+AssignmentExpression: MemberExpression '=' Expression
+AssignmentExpression: MemberExpression '|' '=' Expression
+AssignmentPattern: Expression '=' Expression
+AssignmentPattern: Pattern '=' Expression
+AwaitExpression: 'await' Expression
+BinaryExpression: Expression '!' '=' '=' Expression
+BinaryExpression: Expression '!' '=' Expression
+BinaryExpression: Expression '%' Expression
+BinaryExpression: Expression '&' Expression
+BinaryExpression: Expression '*' Expression
+BinaryExpression: Expression '+' Expression
+BinaryExpression: Expression '-' Expression
+BinaryExpression: Expression '/' Expression
+BinaryExpression: Expression '<' '<' Expression
+BinaryExpression: Expression '<' '=' Expression
+BinaryExpression: Expression '<' Expression
+BinaryExpression: Expression '=' '=' '=' Expression
+BinaryExpression: Expression '=' '=' Expression
+BinaryExpression: Expression '>' '=' Expression
+BinaryExpression: Expression '>' '>' '>' Expression
+BinaryExpression: Expression '>' '>' Expression
+BinaryExpression: Expression '>' Expression
+BinaryExpression: Expression '^' Expression
+BinaryExpression: Expression 'in' Expression
+BinaryExpression: Expression 'instanceof' Expression
+BinaryExpression: Expression '|' Expression
+BindingIdentifier: 'await'
+BindingIdentifier: 'yield'
+BindingIdentifier: Expression
+BlockStatement: '{' '}'
+BlockStatement: '{' Statement_List1 '}'
+BooleanLiteral: 'false'
+BooleanLiteral: 'true'
+BreakStatement: 'break'
+BreakStatement: 'break' Expression
+CallExpression: '(' Expression ')' '(' ')'
+CallExpression: '(' Expression ')' '(' Expression_List2 ')'
+CallExpression: '(' SequenceExpression ')' '(' ')'
+CallExpression: '(' SequenceExpression ')' '(' Expression_List2 ')'
+CallExpression: Expression '(' ')'
+CallExpression: Expression '(' '/\\/' 'g' ',' Expression ')'
+CallExpression: Expression '(' Expression ',' SpreadElement ',' Expression ')'
+CallExpression: Expression '(' Expression_List2 ')'
+CallExpression: Expression '(' Expression_List2 ',' SpreadElement ')'
+CallExpression: Expression '(' Literal ',' Expression_List2 ')'
+CallExpression: Expression '(' SpreadElement ')'
+CallExpression: Expression '(' SpreadElement ',' Expression ')'
+CallExpression: Super '(' ')'
+CallExpression: Super '(' Expression_List2 ')'
+CallExpression: Super '(' SpreadElement ')'
+CatchClause: 'catch' Expression
+CatchClause: 'catch' Statement
+ClassBody: '{' MethodDefinition_List1 ';' MethodDefinition MethodDefinition '}'
+ClassBody: '{' MethodDefinition_List1 '}'
+ClassDeclaration: 'class' Expression 'extends' Expression ClassBody
+ClassDeclaration: 'class' Expression ClassBody
+ClassExpression: 'class' 'extends' Expression ClassBody
+ClassExpression: 'class' Expression 'extends' Expression ClassBody
+ConditionalExpression: '(' Expression ')' '?' Expression ':' Expression
+ConditionalExpression: '(' SequenceExpression ')' '?' Expression ':' Expression
+ConditionalExpression: Expression '?' '(' Expression ')' ':' Expression
+ConditionalExpression: Expression '?' '(' SequenceExpression ')' ':' '(' SequenceExpression ')'
+ConditionalExpression: Expression '?' '(' SequenceExpression ')' ':' Expression
+ConditionalExpression: Expression '?' Expression ':' '(' SequenceExpression ')'
+ConditionalExpression: Expression '?' Expression ':' Expression
+ContinueStatement: 'continue'
+Declaration: ClassDeclaration
+Declaration: FunctionDeclaration
+Declaration: VariableDeclaration
+DoWhileStatement: 'do' Statement 'while' '(' Expression ')'
+EmptyStatement: ';'
+ExponentPart: "ExponentPart[2,7)" "ExponentPart[7,13)" digits
+ExponentPart: "ExponentPart[2,7)" digits
+Expression: '(' Expression ')'
+Expression: ArrayExpression
+Expression: ArrowFunctionExpression
+Expression: AssignmentExpression
+Expression: AwaitExpression
+Expression: BinaryExpression
+Expression: CallExpression
+Expression: ClassExpression
+Expression: ConditionalExpression
+Expression: FunctionExpression
+Expression: Identifier
+Expression: Literal
+Expression: LogicalExpression
+Expression: MemberExpression
+Expression: NewExpression
+Expression: ObjectExpression
+Expression: ThisExpression
+Expression: UnaryExpression
+Expression: UpdateExpression
+Expression: YieldExpression
+ExpressionStatement: '(' Expression ')' ';'
+ExpressionStatement: Expression
+ExpressionStatement: SequenceExpression
+ExpressionStatement: Statement ';'
+Expression_List1: Expression
+Expression_List1: Expression_List1 Expression
+Expression_List2: Expression
+Expression_List2: Expression_List2 ',' Expression
+FLOAT_LITERAL: "FLOAT_LITERAL[2,11)"
+FLOAT_LITERAL: "FLOAT_LITERAL[2,11)" "FLOAT_LITERAL[11,13)"
+FLOAT_LITERAL: "FLOAT_LITERAL[2,11)" "FLOAT_LITERAL[11,13)" "FLOAT_LITERAL[13,23)"
+FLOAT_LITERAL: "FLOAT_LITERAL[2,11)" "FLOAT_LITERAL[13,23)"
+FLOAT_LITERAL: digits "FLOAT_LITERAL[25,48)"
+ForInStatement: 'for' '(' Declaration 'in' Expression ')' Statement
+ForOfStatement: 'for' '(' Declaration 'of' Expression ')' Statement
+ForOfStatement: 'for' '(' Expression 'of' Expression ')' Statement
+ForOfStatement: 'for' 'await' '(' Declaration 'of' Expression ')' Statement
+ForStatement: 'for' '(' ';' ';' ')' Statement
+ForStatement: 'for' '(' ';' ';' Expression ')' Statement
+ForStatement: 'for' '(' ';' Expression ';' ')' Statement
+ForStatement: 'for' '(' ';' Expression ';' Expression ')' Statement
+ForStatement: 'for' '(' ';' Expression ';' SequenceExpression ')' Statement
+ForStatement: 'for' '(' Declaration ';' ';' ')' Statement
+ForStatement: 'for' '(' Declaration ';' ';' Expression ')' Statement
+ForStatement: 'for' '(' Declaration ';' Expression ';' ')' Statement
+ForStatement: 'for' '(' Declaration ';' Expression ';' Expression ')' Statement
+ForStatement: 'for' '(' Declaration ';' Expression ';' SequenceExpression ')' Statement
+ForStatement: 'for' '(' Expression ';' Expression ';' ')' Statement
+ForStatement: 'for' '(' Expression ';' Expression ';' Expression ')' Statement
+ForStatement: 'for' '(' Expression ';' SequenceExpression ';' ')' Statement
+ForStatement: 'for' '(' SequenceExpression ';' Expression ';' SequenceExpression ')' Statement
+FromClause: 'from' ModuleSpecifier
+FunctionDeclaration: 'async' 'function' Expression '(' Expression ',' Pattern ')' Statement
+FunctionDeclaration: 'function' Identifier '(' ')' Statement
+FunctionDeclaration: 'function' Identifier '(' Expression ',' Pattern ')' Statement
+FunctionDeclaration: 'function' Identifier '(' Expression_List2 ')' Statement
+FunctionDeclaration: 'function' Identifier '(' Pattern ')' Statement
+FunctionDeclaration: 'function' Identifier '(' Pattern ',' Expression_List2 ')' Statement
+FunctionDeclaration: 'function' Identifier '(' RestElement ')' Statement
+FunctionExpression: '(' ')' Statement
+FunctionExpression: '(' Expression ',' Pattern ',' Expression ')' Statement
+FunctionExpression: '(' Expression_List2 ')' Statement
+FunctionExpression: '(' Expression_List2 ',' Pattern ',' Expression_List2 ')' Statement
+FunctionExpression: '(' Expression_List2 ',' Pattern_List2 ')' Statement
+FunctionExpression: '(' Expression_List2 ',' RestElement ')' Statement
+FunctionExpression: '(' Pattern ',' Expression ')' Statement
+FunctionExpression: '(' Pattern_List2 ')' Statement
+FunctionExpression: '(' RestElement ')' Statement
+FunctionExpression: 'async' 'function' Expression '(' Pattern_List2 ')' Statement
+FunctionExpression: 'function' '(' ')' Statement
+FunctionExpression: 'function' '(' Expression_List2 ')' Statement
+FunctionExpression: 'function' '(' Pattern ')' Statement
+FunctionExpression: 'function' '(' RestElement ')' Statement
+FunctionExpression: 'function' '*' '(' ')' Statement
+FunctionExpression: 'function' Expression '(' ')' Statement
+FunctionExpression: 'function' Expression '(' Expression_List2 ')' Statement
+FunctionExpression: 'function' Expression '(' Pattern ')' Statement
+Identifier: identifier
+IfStatement: 'if' '(' Expression ')' Statement
+IfStatement: 'if' '(' Expression ')' Statement 'else' Statement
+IfStatement: 'if' '(' SequenceExpression ')' Statement
+ImportClause: ImportedDefaultBinding
+ImportClause: ImportedDefaultBinding ',' NameSpaceImport
+ImportClause: ImportedDefaultBinding ',' NamedImports
+ImportClause: NameSpaceImport
+ImportClause: NamedImports
+ImportDeclaration: 'import' ImportClause FromClause
+ImportDeclaration: 'import' ModuleSpecifier
+ImportSpecifier: ImportedBinding
+ImportSpecifier: ModuleExportName 'as' ImportedBinding
+ImportedBinding: BindingIdentifier
+ImportedDefaultBinding: ImportedBinding
+ImportsList: ImportSpecifier
+ImportsList: ImportsList ',' ImportSpecifier
+IntegerLiteral: digits
+LabeledStatement: Expression ':' Statement
+Literal: 'null'
+Literal: BooleanLiteral
+Literal: RegExpLiteral
+Literal: RegExpLiteral 'd'
+Literal: RegExpLiteral 'g'
+Literal: RegExpLiteral 'gm'
+Literal: RegExpLiteral 'gu'
+Literal: RegExpLiteral 'i'
+Literal: RegExpLiteral 'iu'
+Literal: RegExpLiteral 'm'
+Literal: RegExpLiteral 'mg'
+Literal: RegExpLiteral 's'
+Literal: RegExpLiteral 'u'
+Literal: RegExpLiteral 'ug'
+Literal: RegExpLiteral 'ui'
+Literal: RegExpLiteral 'y'
+Literal: StringLiteral
+Literal: TemplateLiteral
+Literal: numericLiteral
+LogicalExpression: Expression '&' '&' Expression
+LogicalExpression: Expression '|' '|' Expression
+MemberExpression: Expression '.'
+MemberExpression: Expression '.' Expression
+MemberExpression: Expression '[' Expression ']'
+MemberExpression: Super '.' Expression
+MethodDefinition: '*' Expression_List1
+MethodDefinition: '[' Expression ']' Expression
+MethodDefinition: 'async' Expression_List1
+MethodDefinition: 'get' Expression_List1
+MethodDefinition: 'set' Expression_List1
+MethodDefinition: 'static' Expression_List1
+MethodDefinition: Identifier Expression
+MethodDefinition_List1: MethodDefinition
+MethodDefinition_List1: MethodDefinition_List1 MethodDefinition
+ModuleExportName: StringLiteral
+ModuleExportName: identifier
+ModuleSpecifier: StringLiteral
+NameSpaceImport: '*' 'as' ImportedBinding
+NamedImports: '{' '}'
+NamedImports: '{' ImportsList '}'
+NamedImports: ImportsList ',' '}'
+NewExpression: 'new' '(' Expression ')' '(' ')'
+NewExpression: 'new' '(' Expression ')' '(' Expression ')'
+NewExpression: 'new' Expression
+NewExpression: 'new' Expression '(' ')'
+NewExpression: 'new' Expression '(' Expression ',' Literal ')'
+NewExpression: 'new' Expression '(' Expression_List2 ')'
+NewExpression: 'new' Expression '(' Literal ',' Expression_List2 ')'
+NewExpression: 'new' Expression '(' SpreadElement_List2 ')'
+ObjectExpression: '{' '}'
+ObjectExpression: '{' Property_List2 ',' '}'
+ObjectExpression: '{' Property_List2 ',' SpreadElement '}'
+ObjectExpression: '{' Property_List2 '}'
+ObjectExpression: '{' SpreadElement ',' Property ',' SpreadElement '}'
+ObjectExpression: '{' SpreadElement_List2 ',' Property_List2 '}'
+ObjectExpression: '{' SpreadElement_List2 '}'
+ObjectPattern: '{' Property_List2 ',' RestElement '}'
+ObjectPattern: '{' Property_List2 '}'
+Pattern: AssignmentPattern
+Pattern: ObjectPattern
+Pattern_List2: Pattern
+Pattern_List2: Pattern_List2 ',' Pattern
+Property: '[' Expression ']' ':' Expression
+Property: '[' Expression ']' Expression
+Property: 'async' Expression_List1
+Property: Expression
+Property: Expression ':' Expression
+Property: Expression ':' Pattern
+Property: Expression '=' 'MochaPlugins'
+Property: Expression '=' '[' ']'
+Property: Expression '=' 'false'
+Property: Expression '=' 'new' 'Map' '(' ')'
+Property: Expression '=' 'null'
+Property: Expression '=' 'process' '.' 'cwd' '(' ')'
+Property: Expression Expression
+Property: Pattern
+Property_List2: Property
+Property_List2: Property_List2 ',' Property
+RestElement: '.' '.' '.' Expression
+ReturnStatement: 'return'
+ReturnStatement: 'return' '(' Expression ')' ';'
+ReturnStatement: 'return' Expression
+ReturnStatement: 'return' SequenceExpression
+SequenceExpression: Expression ',' Expression
+SequenceExpression: Expression_List2
+SpreadElement: '.' '.' '.' '(' Expression ')'
+SpreadElement: '.' '.' '.' Expression
+SpreadElement_List2: SpreadElement
+SpreadElement_List2: SpreadElement_List2 ',' SpreadElement
+Statement: 'export' 'default' identifier
+Statement: 'export' Declaration
+Statement: 'export' Expression
+Statement: BlockStatement
+Statement: BreakStatement
+Statement: ContinueStatement
+Statement: DoWhileStatement
+Statement: EmptyStatement
+Statement: ExpressionStatement
+Statement: ForInStatement
+Statement: ForOfStatement
+Statement: ForStatement
+Statement: IfStatement
+Statement: ImportDeclaration
+Statement: LabeledStatement
+Statement: ReturnStatement
+Statement: StringLiteral
+Statement: SwitchStatement
+Statement: ThrowStatement
+Statement: TryStatement
+Statement: WhileStatement
+Statement_List1: Declaration
+Statement_List1: Statement
+Statement_List1: Statement_List1 Declaration
+Statement_List1: Statement_List1 Statement
+StringLiteral: string_literal
+Super: 'super'
+SwitchCase: 'case' Expression ':'
+SwitchCase: 'case' Expression ':' Statement_List1
+SwitchCase: 'default' ':' Statement_List1
+SwitchCase_List1: SwitchCase
+SwitchCase_List1: SwitchCase_List1 SwitchCase
+SwitchStatement: 'switch' '(' Expression ')' '{' SwitchCase_List1 '}'
+TemplateElement: '*'
+ThisExpression: 'this'
+ThrowStatement: 'throw' Expression
+TryStatement: 'try' Statement 'finally' Statement
+TryStatement: 'try' Statement CatchClause
+TryStatement: 'try' Statement CatchClause 'finally' Statement
+UnaryExpression: '!' Expression
+UnaryExpression: '+' Expression
+UnaryExpression: '-' Expression
+UnaryExpression: 'delete' Expression
+UnaryExpression: 'typeof' Expression
+UnaryExpression: 'void' Expression
+UnaryExpression: '~' Expression
+UpdateExpression: '+' '+' Expression
+UpdateExpression: '-' '-' Expression
+UpdateExpression: Expression '+' '+'
+UpdateExpression: Expression '-' '-'
+VariableDeclaration: 'const' VariableDeclarator_List2
+VariableDeclaration: 'let' VariableDeclarator ';'
+VariableDeclaration: 'let' VariableDeclarator_List2
+VariableDeclaration: 'var' VariableDeclarator_List2
+VariableDeclarator: ArrayPattern
+VariableDeclarator: ArrayPattern '=' Expression
+VariableDeclarator: Identifier
+VariableDeclarator: Identifier '=' '(' Expression ')'
+VariableDeclarator: Identifier '=' Expression
+VariableDeclarator: ObjectPattern
+VariableDeclarator: ObjectPattern '=' Expression
+VariableDeclarator_List2: VariableDeclarator
+VariableDeclarator_List2: VariableDeclarator_List2 ',' VariableDeclarator
+WhileStatement: 'while' '(' Expression ')' Statement
+YieldExpression: 'yield' '*' Expression
+YieldExpression: 'yield' Expression
+numericLiteral: FLOAT_LITERAL
+numericLiteral: HEX_LITERAL
+numericLiteral: IntegerLiteral
+numericLiteral: OctalIntegerLiteral

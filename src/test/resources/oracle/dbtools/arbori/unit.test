@@ -1,0 +1,1004 @@
+++0;  
+-- Dummy test as JS init script
+`{
+    var RegressionTest = Java.type('oracle.dbtools.arbori.RegressionTest');
+    //RegressionTest.singleTest = 20;    // null is default; runs everything
+}
+dummyRule: [node) identifier;
+`
+:
+SELECT 1 FROM dual
+->
+dummyRule=[node]
+           [3,4) dual 
+;
+
+++1;                
+"semantic_analysis.prg" :
+select 1 from (
+ SELECT *
+   FROM 
+       ORAPERF.S_PARTY T1,
+       ORAPERF.S_ORG_EXT T2,
+       ORAPERF.S_USER T3,
+       ORAPERF.S_PARTY T4,
+       ORAPERF.S_OPTY_POSTN T5,
+       ORAPERF.S_OPTY_SS T6,
+       ORAPERF.S_USER T7,
+       ORAPERF.S_DMND_CRTN_PRG T8,
+       ORAPERF.S_SALES_METHOD T9,
+       ORAPERF.S_REVN T10,
+       ORAPERF.S_ADDR_PER T11,
+       ORAPERF.S_REVN T12,
+       ORAPERF.S_CONTACT T13,
+       ORAPERF.S_POSTN T14,
+       ORAPERF.S_STG T15,
+       ORAPERF.S_POSTN T16,
+       ORAPERF.S_OPTY_POSTN T17,
+       S_EVT_ACT T18,
+       ORAPERF.S_SRC T21,
+       T20
+   WHERE
+      T20.PR_DMND_CRT_PRG_ID = T8.ROW_ID (+) AND
+      T21.PR_OU_ADDR_ID = T11.ROW_ID (+) AND
+      T21.LAST_ACT_ID = T18.ROW_ID (+) AND
+      T21.PR_DEPT_OU_ID = T2.PAR_ROW_ID (+) AND
+      T21.PR_POSTN_ID = T16.PAR_ROW_ID (+) AND
+      T16.PR_EMP_ID = T7.PAR_ROW_ID (+) AND
+      T21.SALES_METHOD_ID = T9.ROW_ID (+) AND
+      T21.CURR_STG_ID = T15.ROW_ID (+) AND
+      T21.ROW_ID = T5.OPTY_ID (+) AND T5.POSITION_ID (+) = '1+120+22' AND
+      T21.ROW_ID = T6.PAR_ROW_ID (+) AND
+      T21.PR_OPTYPRD_ID = T10.ROW_ID (+) AND
+      T21.PR_CON_ID = T4.ROW_ID (+) AND
+      T21.PR_CON_ID = T13.PAR_ROW_ID (+) AND
+      T21.PR_POSTN_ID = T17.POSITION_ID AND T21.ROW_ID = T17.OPTY_ID AND
+      T17.POSITION_ID = T1.ROW_ID AND
+      T17.POSITION_ID = T14.PAR_ROW_ID (+) AND
+      T14.PR_EMP_ID = T3.PAR_ROW_ID (+) AND
+      T21.SUM_REVN_ITEM_ID = T12.ROW_ID (+) AND
+      T21.PR_SRC_ID = T19.ROW_ID (+) AND
+      >!<
+      (T21.SECURE_FLG = 'N' OR T5.OPTY_ID IS NOT NULL)
+) x, (
+      select 1 from a,b where a.x=b.y 
+) y where x.a=y.b; 
+
+->
+"narrowest qb"=[query_block]
+                [4,336) "S*FO.ST,"
+                
+"query_blocks_at_offset"=[query_block]
+                          [0,364) "s*f(S*FO"
+                          [4,336) "S*FO.ST,"
+
+"table_alias in narrowest qb"=[query_block         alias]
+ [4,336) "S*FO.ST,"  [10,11) T1      
+ [4,336) "S*FO.ST,"  [15,16) T2      
+ [4,336) "S*FO.ST,"  [20,21) T3      
+ [4,336) "S*FO.ST,"  [25,26) T4      
+ [4,336) "S*FO.ST,"  [30,31) T5      
+ [4,336) "S*FO.ST,"  [35,36) T6      
+ [4,336) "S*FO.ST,"  [40,41) T7      
+ [4,336) "S*FO.ST,"  [45,46) T8      
+ [4,336) "S*FO.ST,"  [50,51) T9      
+ [4,336) "S*FO.ST,"  [55,56) T10     
+ [4,336) "S*FO.ST,"  [60,61) T11     
+ [4,336) "S*FO.ST,"  [65,66) T12     
+ [4,336) "S*FO.ST,"  [70,71) T13     
+ [4,336) "S*FO.ST,"  [75,76) T14     
+ [4,336) "S*FO.ST,"  [80,81) T15     
+ [4,336) "S*FO.ST,"  [85,86) T16     
+ [4,336) "S*FO.ST,"  [90,91) T17     
+ [4,336) "S*FO.ST,"  [93,94) T18     
+ [4,336) "S*FO.ST,"  [98,99) T21     
+ [4,336) "S*FO.ST,"  [100,101) T20  
+;
+
+
+++2;                
+"semantic_analysis.prg" : 
+select 2 from (
+ SELECT *
+   FROM 
+       ORAPERF.S_PARTY T1,
+       ORAPERF.S_ORG_EXT T2,
+       S_EVT_ACT T18,
+       ORAPERF.S_SRC T21,
+       T20
+   WHERE
+      T20.PR_DMND_CRT_PRG_ID = T8.ROW_ID (+) AND
+      T21.PR_OU_ADDR_ID = T11.ROW_ID (+) AND
+      T21.PR_SRC_ID = T19.ROW_ID (+) AND
+      (T21.SECURE_FLG = 'N' OR T5.OPTY_ID IS NOT NULL)
+) x, (
+      select 1 from a,b where a.x=b.y 
+) y where 
+      >!<
+x.a=y.b; 
+
+->
+
+"table_alias in narrowest qb"=[query_block         alias]
+ [0,102) "s2f(S*FO"  [75,76) x       
+ [0,102) "s2f(S*FO"  [93,94) y       
+
+
+"query_blocks_at_offset"=[query_block]
+                          [0,102) "s2f(S*FO"
+ 
+;
+
+
+++3; 
+"/src/main/resources/oracle/dbtools/arbori/find_declaration.prg" : 
+create
+PROCEDURE Generate_OS_File(v_blob IN BLOB ) IS
+
+l_buffer        RAW(32767);
+
+BEGIN 
+  declare
+     total_cnt   integer;
+     max_cnt   integer;
+  cursor column_cur(tname  varchar2)  is
+    select distinct column_name  col,
+           b.table_name tab,
+           b.table_owner own
+           from dba_ind_columns;
+  begin
+     total_cnt := 1;
+     FOR i in 0..MAX LOOP
+         exit when Table_List(i) is null;
+         for c_rec in column_cur(Table_List(>!<i)) loop
+             sql_string := 'select ';
+         end loop;
+     END LOOP;
+  end;
+ 
+
+    l_pos := 1;
+ 
+END Generate_OS_File;
+
+->
+"findLocalDecl"=[scope         entry         id]
+ [53,92) "fii0..ml"  [77,78) i           [54,55) i         
+;
+
+++4; -- bug 13374956?
+"/src/main/resources/oracle/dbtools/arbori/find_declaration.prg" : 
+CREATE OR REPLACE PROCEDURE PROCEDURE2
+(
+  PARAM1 IN VARCHAR2
+, PARAM2 IN VARCHAR2
+, PARAM3 IN VARCHAR2
+) AS
+ VAR1 integer(100) := 'FRED';
+BEGIN
+  VAR1 := 'BILL';
+  declare
+    VAR1 varchar2(100) := 'FRED';   -- 35...45
+  begin                             -- 44
+    >!<VAR1 := 'BILL';
+  end;
+END PROCEDURE2; 
+
+->
+"findLocalDecl"=[scope         entry         id]
+ [34,52) "dvV(1):="  [45,46) VAR1        [35,36) VAR1 
+;
+
+
+++5;
+"semantic_analysis.prg" : 
+select avg(num_cols), b
+from (
+  select table_name ,count(1) num_cols
+  from all_tab_cols
+  group by table_name
+)
+->
+"all aggregates"=[aggr]
+ [1,5)     "a(n)"    
+ [12,16)    "c(1)"    
+                  
+"gby clause"=[group_by_list^         group_by_list]
+ [19,22) "gbt"       [21,22) table_name
+
+"subquery in select term"=[scalar_subquery_expression         column  ]
+
+
+"columns&select_list&top_select_list"=[select_list         column^         column         top_select_list^         top_select_list]
+ [1,7) "a(n),b"    [1,7) "a(n),b"    [1,5) "a(n)"      [0,7) "Sa(n),b"   [1,7) "a(n),b"  
+ [1,7) "a(n),b"    [1,7) "a(n),b"    [6,7) b           [0,7) "Sa(n),b"   [1,7) "a(n),b"  
+ [10,17) "t,c(1)n"   [10,17) "t,c(1)n"   [10,11) table_name  [9,17) "St,c(1)n"  [10,17) "t,c(1)n" 
+ [10,17) "t,c(1)n"   [10,17) "t,c(1)n"   [12,17) "c(1)n"     [9,17) "St,c(1)n"  [10,17) "t,c(1)n" 
+
+"select columns"=[column         top_select_list]
+ [1,5) "a(n)"      [1,7) "a(n),b"  
+ [6,7) b           [1,7) "a(n),b"  
+ [10,11) table_name  [10,17) "t,c(1)n" 
+ [12,17) "c(1)n"     [10,17) "t,c(1)n" 
+                  
+"aggregates"=[aggr]
+ [1,5) "a(n)"    
+ [12,16) "c(1)"    
+                  
+"aggr subquery in select term"=[column         aggr]
+
+"aggr&top_select_list"=[aggr         top_select_list]
+ [1,5) "a(n)"      [1,7) "a(n),b"  
+ [12,16) "c(1)"      [10,17) "t,c(1)n" 
+
+
+"aggregate expr"=[aggr         top_select_list]
+ [1,5) "a(n)"      [1,7) "a(n),b"  
+ [12,16) "c(1)"      [10,17) "t,c(1)n" 
+
+"matching where"=[insertion_point         insertion_point^         top_select_list^^         top_select_list         top_select_list^]
+
+"insertion point"=[top_select_list^^         top_select_list         insertion_point         insertion_point^         top_select_list^]
+ --[0,23) "Sa(n),bF"  [1,7) "a(n),b"    [7,23) "F(St,c(1"  [0,23) "Sa(n),bF"  [0,7) "Sa(n),b" 
+ --[9,22) "St,c(1)n"  [10,17) "t,c(1)n"   [17,19) "Fa"        [9,22) "St,c(1)n"  [9,17) "St,c(1)n"
+ [0,23) "Sa(n),bF"  [1,7) "a(n),b"    [7,23) "F(St,c(1"  [0,23) "Sa(n),bF"  [0,7) "Sa(n),b" 
+ [9,19) "St,c(1)n"  [10,17) "t,c(1)n"   [17,19) "Fa"        [9,19) "St,c(1)n"  [9,17) "St,c(1)n"
+
+;
+
+++6;
+"start_block_proc_args.prg" : 
+DECLARE
+  P_ARG1 VARCHAR2(200);
+  P_ARG2 NUMBER;
+BEGIN
+  P_ARG1 := 'AbcD';
+  P_ARG2 := 5;
+  TEST_PACK.TEST(
+    P_ARG1 => P_ARG1,
+    P_ARG2 => P_ARG2
+  );
+END;
+->
+params=[expr         name         type         decl_id]
+        [14,15) 'AbcD'    [11,12) P_ARG1    [2,6) "V(2)"  [1,2) P_ARG1  
+        [19,20) 5         [16,17) P_ARG2    [8,9) NUMBER    [7,8) P_ARG2  
+;
+
+++7;                
+"semantic_analysis.prg" : 
+ SELECT *
+   FROM 
+       ORAPERF.S_PARTY T1,
+       ORAPERF.S_ORG_EXT T2
+   WHERE
+      T1.ROW_ID >!< = T2.ROW_ID (+); 
+->
+"join_condition"=[ce2.binary_condition         ce2.cexpr         ce1.cexpr         ce1.binary_condition]
+ [13,23) "T.R=T.R("  [17,23) "T.R(+)"  [13,16) "T.R"  [13,23) "T.R=T.R("
+;
+
+++8; -- bug 17792211? 
+"semantic_analysis.prg" : 
+SELECT * FROM EMPLOYEES
+where FIRST_NAME not like 'Jeff%';
+->
+"*"=[select_list         select_list^         query_block  ]
+     [1,2) star         [0,2) "S*"  [0,9) "S*FEwFnl"   
+
+"* in qb"=[select_list         select_list^         query_block ]
+           [1,2) star         [0,2) "S*"  [0,9) "S*FEwFnl"  
+;
+
+++9; -- test "node+2" syntax 
+`x: [node-2) expr ;` : 
+ SELECT rec_id  FROM d WHERE type IN (10,11);
+->
+x=[node         node-2]
+   [7,12) "(1,1)"     [5,6) type      
+   [10,11) 11          [8,9) 10 
+;
+
+++10; -- closest ancestor
+`ancestor_descendants: ([ancestor) subquery  & [descendant) subquery
+                    | [ancestor) select_clause  & [descendant) select_term)
+  & ancestor < descendant
+;` : 
+ SELECT (select (select x from a3) from a2)  FROM a1;
+->
+ancestor_descendants=[ancestor         descendant]
+/*                      [0,12) "S(S(SxFa"  [1,12) "(S(SxFa)"
+                      [0,14) "S(S(SxFa"  [2,11) "S(SxFa)F"
+                      [2,9) "S(SxFa)"   [3,9) "(SxFa)"  
+                      [2,11) "S(SxFa)F"  [4,8) "SxFa"    
+                      [4,6) "Sx"        [5,6) x*/
+ [0,12) "S(S(SxFa"  [1,12) "(S(SxFa)"
+ [2,9) "S(SxFa)"   [3,9) "(SxFa)"  
+ [4,6) "Sx"        [5,6) x                               
+"ancestor_descendants.EvalSpace" = "3"                         
+;
+
+++11; 
+`ancestor_descendants: ([ancestor) subquery  & [descendant) subquery
+                    | [ancestor) select_clause  & [descendant) select_term)
+  & ancestor << descendant
+;` : 
+ SELECT (select (select x from a3) from a2)  FROM a1;
+->
+ancestor_descendants=[ancestor         descendant]
+                      [0,12) "S(S(SxFa"  [1,12) "(S(SxFa)"
+                      [0,12) "S(S(SxFa"  [3,9) "(SxFa)"  
+                      [0,12) "S(S(SxFa"  [5,6) x  
+        -- reflexive!  
+        [0,14) "S(S(SxFa"  [0,14) "S(S(SxFa"                           
+                      [0,14) "S(S(SxFa"  [2,11) "S(SxFa)F"
+                      [0,14) "S(S(SxFa"  [4,8) "SxFa"    
+                      [2,9) "S(SxFa)"   [3,9) "(SxFa)"  
+                      [2,9) "S(SxFa)"   [5,6) x
+        [2,11) "S(SxFa)F"  [2,11) "S(SxFa)F"         
+                      [2,11) "S(SxFa)F"  [4,8) "SxFa"    
+                      [4,6) "Sx"        [5,6) x   
+        [4,8) "SxFa"      [4,8) "SxFa" 
+"ancestor_descendants.EvalSpace" = "12"                                 
+;
+
+++12;   --NPE at oracle.dbtools.arbori.IdentedPredicate.getNode(Predicate.java:164)
+`I: ?id = 'y';
+ J: [op) '+' 
+   & I.id+1=op;
+ K: [op) '+' 
+   &  ?id = 'y'
+   & id+1=op;  
+L:K-J;` : 
+select y+1 from y;
+->
+J=[op         id         id+1]
+   [2,3) "+"           [1,2) y           [2,3) "+"         
+L=[id+1         op         id]
+
+"I.EvalSpace"="2"
+"J.EvalSpace"="1"
+"K.EvalSpace"="1"
+;
+
+
+++13;   --Re: Eugene Perkov Bug#29337896
+` tableReferences: [tableRef) table_reference
+     & [ident) identifier
+     & [ident1) identifier
+     & (tableRef = ident & tableRef = ident1 )
+    ;
+` 
+ : 
+SELECT *
+    FROM
+        MYTAB1,
+        MYTAB2;
+->
+tableReferences=[tableRef         ident         ident1]
+                 [3,4) MYTAB1      [3,4) MYTAB1      [3,4) MYTAB1    
+                 [5,6) MYTAB2      [5,6) MYTAB2      [5,6) MYTAB2   
+;
+
+++14;   --Re: Eugene Perkov 
+` joinsandfilters: [simCond) simple_comparison_condition
+;
+
+filters: [simCond) simple_comparison_condition
+ & [literal) literal
+ & simCond < literal
+;
+
+joinsonly: ([simCond]|joinsandfilters) - ([simCond]|filters);
+
+innerjoinSources: [voIden) identifier
+ & [simEx) column
+ & simEx^ = joinsonly.simCond
+ & voIden^^ = simEx
+;
+
+innerjoinedVOs: [unPrunedVO) query_table_expression
+    & [qBlock) query_block
+    & [voAlias) identifier
+    & unPrunedVO = qBlock^
+    & voAlias^ = unPrunedVO^
+    & ? voAlias = ? innerjoinSources.voIden    
+;
+
+"unprunedVO": ([unPrunedVO]|innerjoinedVOs);
+`
+
+:
+ 
+SELECT
+    1
+FROM
+    (
+        SELECT
+            1
+        FROM
+            a
+    ) V1,
+    (
+        SELECT
+            2
+        FROM
+            c
+    ) V2,
+    (
+        SELECT
+            3
+        FROM
+            d
+    ) V3
+WHERE
+    V1.C11    = V2.C21 (+)
+AND
+    V2.C21    = V3.C31 (+)
+
+->
+"unprunedVO"=[unPrunedVO]
+ [3,9) "(S1Fa)"  
+ [11,17) "(S2Fc)"  
+ 
+--"innerjoinedVOs.EvalSpace" = "3x2" (Eval space = 14x4x3)
+     
+;
+
+
+++15;   --Re: Surya via Eugene Perkov 
+`
+ancestors2: 
+    [qte) query_table_expression
+  & [select) select_term
+  & [subquery) scalar_subquery_expression
+  & qte < select 
+  & select < subquery
+;`: 
+WITH sawith0 AS(
+    SELECT
+        t2758211.c1 c1,
+        t2758211.c2 c2
+    FROM
+        (
+        SELECT
+                v203112478.s_k_5000     c1,
+                v203112478_2.s_k_5000   c2
+            FROM
+                (
+                    SELECT
+                        biflexfieldeo.assignment_id             AS s_k_5000,
+                        (
+                            SELECT
+                                SUBSTR(name,1,10)
+                            FROM
+                                per_grades
+                            WHERE
+                                (SUBSTR(name,1,10)= biflexfieldeo.ass_attribute15)
+                        ) as desc_worker__grade_,
+                        biflexfieldeo.ass_attribute10
+                    FROM
+                        per_all_assignments_m biflexfieldeo
+                ) v203112478,
+                (
+                    SELECT
+                        biflexfieldeo.assignment_id             AS s_k_5000,
+                        name                                    s_name,
+                        biflexfieldeo.ass_attribute10
+                    FROM
+                        per_all_assignments_m biflexfieldeo
+                ) v203112478_2
+                WHERE
+                    v203112478.desc_worker__grade_= v203112478_2.s_name
+            ) t2758211
+)
+select c1,c2 from sawith0
+WHERE
+    ROWNUM <= 75001
+->
+ancestors2=[subquery         qte         select]
+            [35,63) "(Ss(n,1,"  [27,73) "(Sb.aas,"  [35,65) "(Ss(n,1,"
+            
+"ancestors2.EvalSpace"="1"            
+;
+
+++16; -- bug#30015715
+`
+{
+    var Program = Java.type('oracle.dbtools.arbori.Program');
+    Program.debug = true; 
+}
+
+orCond: [compCond) compound_condition
+ & [andOrCondn) 'OR'
+ & compCond < andOrCondn
+ & [cond) null_condition
+ & cond^ = compCond
+ ;` :
+SELECT
+1
+FROM
+(
+SELECT
+1
+FROM
+x
+WHERE
+(absencetimeentrypeo.time_entry_tm_rec_id = anctimerecordgroupusagepeo.tm_rec_id
+AND absencetimeentrypeo.time_entry_tm_rec_version = anctimerecordgroupusagepeo.tm_rec_version)
+AND(absencetimeentrypeo.time_card_delete_flag IS NOT NULL
+OR anctimerecordgroupusagepeo.tm_rec_grp_version IS NOT NULL)
+)v14365318
+WHERE
+(NOT(v14365318.time_card_delete_flag IS NULL));
+->
+orCond=[compCond         andOrCondn         cond^         cond]
+       [28,41) "a.tiNnOa"            [34,35) OR            [28,41) "a.tiNnOa"            [28,34) "a.tiNn"
+       [28,41) "a.tiNnOa"            [34,35) OR            [28,41) "a.tiNnOa"            [35,41) "a.tiNn"          
+;
+
+++17; -- bug# 30964815
+`literalSelColumns: [selTerm) select_term
+& [lit) literal
+& selTerm < lit
+;
+
+vos: [qTabExpr) query_table_expression
+& [qBlock) query_block
+& [voAlias) identifier
+& qTabExpr < qBlock
+& qTabExpr^ = voAlias^
+;
+
+vosWithLiterals: [voAlias) identifier
+& vos.qTabExpr < literalSelColumns.selTerm
+& voAlias = vos.voAlias
+;
+` :
+SELECT
+    t27.c51 AS c33
+FROM
+    (
+        SELECT
+            v21.eff AS tiv1
+        FROM
+            (
+                SELECT 
+                    'TEST1' AS pj
+                FROM
+                    hwm tim
+            ) v14365318
+    ) t2758211;
+->
+vosWithLiterals=[voAlias         selTerm         voAlias         qTabExpr]
+                 [24,25) v14365318   [17,20) "'ap"       [24,25) v14365318   [15,24) "(S'apFht"
+               /* - [26,27) t2758211    [17,20) "'ap"       [26,27) t2758211    [7,26) "(Sv.eatF"*/
+;
+
+++18; -- bug# 31336921
+`collectionExprNotWorking: [collExpr) table_collection_expression
+  & [colmnExpr) column
+  & collExpr < colmnExpr
+  & [fromClause) from_clause
+  & fromClause < collExpr
+  & [tAls) identifier
+  & fromClause < tAls
+  & collExpr^ = tAls^
+;
+` :
+SELECT * FROM (
+        SELECT
+            3
+        FROM
+            x        
+)  
+->
+collectionExprNotWorking=[tAls         fromClause         collExpr         collExpr^         tAls^         colmnExpr]
+;
+
+++19; -- bug# 31336921
+`collectionExprNotWorking: [collExpr) table_collection_expression
+  & [colmnExpr) column
+  & collExpr < colmnExpr
+  & [fromClause) from_clause
+  & fromClause < collExpr
+  & [tAls) identifier
+  & fromClause < tAls
+  & collExpr^ = tAls^
+;
+` :
+SELECT  /* QUERY_SRC('datamodel: _OAL_Custom_Human_Capital_Management_Workflow_Notifications_Data_Model_EmploymentUpdateProcesses_xdm,dataset:DeletedRecords') */
+      extractvalue(value(managertype), '//BIPData/BIPOperation')                                   AS "Value",
+      extractvalue(value(managertype), '//BIPData/BIPElementEntryId')                              AS "ElementEntryId",
+      extractvalue(value(managertype), '//BIPData/BIPElementTypeId')                               AS "ElementTypeId",
+      extractvalue(value(managertype), 'ElementEntryDEORow/BIPData/BIPEffectiveStartDate')         AS "StartDate",
+      extractvalue(value(managertype), 'ElementEntryDEORow/DEEOData/LastAppliedDEMode')            AS "DeleteMode",
+      extractvalue(value(managertype), 'ElementEntryDEORow/DEEOData/VED')                          AS "EndDate"
+  FROM
+      hrc_txn_data                                                                                 txndata,     
+      TABLE ( xmlsequence(extract(xmltype(''                                                                                             
+                                          || txndata.data_cache                                                                                
+                                          || ''), '//ElementEntryDEORow')) )                       managertype                          
+  WHERE
+          txndata.transaction_id = :transid
+      AND extractvalue(value(managertype), '//BIPData/BIPOperation') = 'DELETE'
+      AND extractvalue(value(managertype), 'ElementEntryDEORow/DEEOData/LastAppliedDEMode') = 10
+      AND EXISTS (
+          SELECT                                                                                                                               
+              1                                                                                                                                
+          FROM                                                                                                                                 
+              per_all_assignments_m                                                                                                            
+          WHERE                                                                                                                                
+                  assignment_id = extractvalue(xmltype(''                                                                                
+                                                   || txndata.data_cache                                                                       
+                                                   || ''), 'root/TRANSACTION1/TransCtx1/AssignmentId1')                                 
+              AND ( per_notification_security.securedata('CMP_MANAGE_VARIABLE_COMPENSATION_ALLOCATION_BY_WORKER_DATA', 'PER_ALL_ASSIGNMENTS_M',
+              assignment_id, effective_start_date, effective_end_date,                                                                         
+                                                         effective_latest_change, effective_sequence) = 'T'                                    
+                    OR per_notification_security.securedata('CMP_ENTER_VARIABLE_COMPENSATION_ALLOCATION_DATA', 'PER_ALL_ASSIGNMENTS_M',        
+                    assignment_id, effective_start_date, effective_end_date,                                                                   
+                                                            effective_latest_change, effective_sequence) = 'T' )                               
+      );->
+collectionExprNotWorking=[tAls         fromClause         collExpr         collExpr^         tAls^         colmnExpr]
+[99,100) managertyp  [72,100) "Fht,T(x("  [76,99) "T(x(e(x("  [76,100) "T(x(e(x("  [76,100) "T(x(e(x("  [87,90) "t.d"
+;
+
+/*++20;
+`include "std.arbori"
+
+Matches: .stringMatch('node','FROM')
+      & [node < node) 
+;
+` :
+SELECT * FROM (
+        SELECT
+            3
+        From
+            x        
+)  
+->
+Matches=[node]
+         [2,3) FROM      
+         --case sensitive [6,7) FROM 
+;*/
+
+/*++21;
+`include "std.arbori"
+
+"Commas in IN lists": [node) ','
+               & [ancestor) in_condition
+               & ancestor < node
+-> {
+           aggrCount('ancestor','node');
+}
+
+ShortLists: [node) in_condition
+              & .havingLE('node','5')
+;` :
+select * from employees
+where employee_id in (1,2,3,4,5,6,7,8,9)
+and manager_id in (11,12,13);
+->
+ShortLists=[node]
+         [27,36)   "(11,12,13)"     
+         --[5,26)  "(1,2,3,4,5,6,7,8,9)"
+;*/
+
+++22;
+`triggers:  [object_name) identifier & object_type = object_name-1
+           &  (  [object_name^) trigger  
+              |  [object_name^^) trigger & [object_name-1) '.' 
+              )
+; 
+`
+:
+CREATE OR REPLACE EDITIONABLE TRIGGER "HR"."SECURE_EMPLOYEES"
+  BEFORE INSERT OR DELETE OR UPDATE ON "HR"."EMPLOYEES"
+  BEGIN
+  secure_dml;
+END secure_employees;
+ALTER TRIGGER "HR"."SECURE_EMPLOYEES" DISABLE
+->
+triggers=[object_name-1     object_type   object_name  object_name^]
+          [6,7) dummy       [6,7) dummy   [7,8) dummy  [5,8) dummy  
+
+;
+
+++23;
+`standalone_procs: [object_name) identifier   
+           &    [object_type) 'PROCEDURE'   
+           &   ( object_type = object_name-1
+                | [object_name-1) '.' & object_type = object_name^-1
+                )
+;`
+:
+CREATE PROCEDURE "CFP_NAME" 
+is
+begin
+  null;
+end;
+->
+standalone_procs=[object_name-1  object_type  object_name   ]
+                 [1,2) y         [1,2) x      [2,3) y       
+;
+
+++24;
+/*32577169*/
+`topLevelSubQueries:
+  [sql) sql_statement
+& [sQuery) subquery
+& sql < sQuery
+;`
+:
+SELECT
+   *
+FROM
+   (
+      SELECT
+         c1
+      FROM
+         t1
+   ),
+   t2;
+->
+topLevelSubQueries=[sQuery         sql]
+ [0,11) "S*F(ScFt"  [0,12) "S*F(ScFt"      
+;
+
+++25;
+/*32762523*/
+`searchedCaseExprs: [longCaseExpr) case_expression
+  & ([elseOrCase) else_clause | [elseOrCase) case_expression)
+  & [selClause) select_clause
+  & selClause < longCaseExpr
+  & longCaseExpr < elseOrCase
+;
+searchedCaseExprs1: [longCaseExpr) case_expression
+  & ([elseOrCase) else_clause | [elseOrCase) case_expression)
+  & [selClause1) select_clause
+  & selClause1 < longCaseExpr
+  & longCaseExpr < elseOrCase
+;`
+
+:
+
+SELECT
+d1.c2    AS c2,
+CASE
+  WHEN substr(substr(d1.c4, 1, 4), -(2)) = 'EX' THEN
+  'Profit Centre Management EX'
+  ELSE
+  CASE
+  WHEN substr(substr(d1.c4, 1, 4), -(2)) = 'GM' THEN
+  'General Management GM'
+  ELSE
+  ''
+        END
+END c6
+FROM
+tabled1 d1
+;
+
+->
+
+searchedCaseExprs=[selClause         elseOrCase         longCaseExpr]
+ [0,61) "Sd.cac,c"  [31,59) "ecWs(s(d"  [7,60) "cWs(s(d."
+  [0,61) "Sd.cac,c"  [56,58) "e'"        [32,59) "cWs(s(d."
+ 
+ 
+searchedCaseExprs1=[selClause1         elseOrCase         longCaseExpr]
+ [0,61) "Sd.cac,c"  [31,59) "ecWs(s(d"  [7,60) "cWs(s(d."
+  [0,61) "Sd.cac,c"  [56,58) "e'"        [32,59) "cWs(s(d."
+;
+
+++26;
+`tst:  [anc) case_expression
+    & (
+          [desc) simple_case_expression___0#
+        | [desc) else_clause
+    )
+    & anc < desc
+;    
+
+x:
+          [node) simple_case_expression___0#
+        | [node) else_clause
+;
+
+tst1:
+      [anc) case_expression
+    & anc < x.node
+;`
+
+:
+
+begin
+   l_filter := case l_value
+                  when 1 then
+                     'abc'
+                  when 2 then
+                     'def'
+                  else
+                     'xyz'
+               end
+               || ' another value'
+               || ' another value';
+end;
+/
+->
+tst=[anc         desc]
+ [4,17) "clW1t'W2"  [6,10) "W1t'"    
+ [4,17) "clW1t'W2"  [10,14) "W2t'"    
+ [4,17) "clW1t'W2"  [14,16) "e'"      
+
+tst1=[anc         node]
+ [4,17) "clW1t'W2"  [6,10) "W1t'"    
+ [4,17) "clW1t'W2"  [10,14) "W2t'"    
+ [4,17) "clW1t'W2"  [14,16) "e'" 
+
+; 
+
+
+++27;
+`x: [columnExpr) column
+ & [colIden) identifier
+ & columnExpr = colIden^
+ & [tabIden) identifier
+ & columnExpr = tabIden^^
+;`
+
+:
+
+SELECT
+    a(x,x,x,x,x,x) AS c33
+FROM
+    (
+        SELECT
+            v21.eff AS tiv1
+        FROM
+            (
+                SELECT 
+                    'TEST1' AS pj
+                FROM
+                    hwm tim
+            ) v14365318
+    ) t2758211;
+
+->
+x=[columnExpr         colIden         tabIden]
+   [20,23) "v.e"       [22,23) eff         [20,21) v21 
+"x.EvalSpace" = "1" 
+/* child->parent "x.Eval space"=1x16  */     
+; 
+
+++28; -- bug# 33298271
+`r2_subquery:
+   [node) subquery
+  & [from) from_clause
+  & node < from
+  & ![from^-1) SET_OPER
+;
+
+out: r2_subquery | [node from]
+;
+` :
+SELECT CASE "A1"."JOB_ID" WHEN 'ANALYST' THEN 3000 END  "CASEJOB_IDWHEN'ANALYST'THEN3000END" 
+FROM "HR"."EMPLOYEES" "A1"; 
+->
+out=[node            from        ]
+ [0,16) "Sc.Wt"    [11,16) "F."      
+;
+
+
+++29; -- bug# 34049251
+`nonReferencedTableRefs: [fC) from_clause
+ & qBlock < fC;
+`: select 1 from two;
+->
+nonReferencedTableRefs=[qBlock         fC]
+                        [0,4) "S1Ft"      [2,4) "Ft" 
+                     -- [0,5) "S1Ft;"     [2,4) "Ft"   (not included; strict table comparison)
+;
+
+++30;
+`commasInProc: [node) ',' 
+       & procedureCall < node 
+       & (   [procedureCall) function_call 
+           | [procedureCall) function 
+           | [procedureCall) procedure_call 
+           | [procedureCall) in_condition  
+           )
+;`:
+SELECT
+           decode(
+                  'T', nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                  'E'
+           )       
+FROM
+    dual
+->
+commasInProc=[node         procedureCall]
+ [4,5) "..."           [1,21) "d(',n(b,"
+ [8,9) "..."           [5,11) "n(b,0)"  
+ [15,16) "..."           [12,18) "n(b,0)"  
+ [18,19) "..."           [1,21) "d(',n(b,"
+;
+
+++31;
+/*34100096*/
+`aliased_columns_in_delete_statement:
+     [stmt) delete
+     & [table) dml_table_expression_clause
+     & [table^) aliased_dml_table_expression_clause
+     --& table^^ = stmt 
+     & stmt < table
+     & [alias) identifier
+     & alias = table+1
+     & [aliasref) identifier
+     & ?aliasref = ?alias
+     & stmt < aliasref
+     & [col) identifier
+     & aliasref^+1 = col
+     & [aliasref+2 = [col
+     & ![aliasref-1) '.'
+;
+test: aliased_columns_in_delete_statement | [table col alias];`:
+delete
+  from t t
+ where t.c1 = 1
+   and t.c2 = 2
+   and t.t.c3 = 3;
+
+select * from dual;
+->
+test=[col         alias         table]
+      [7,8) c1          [3,4) t           [2,3) t         
+      [13,14) c2          [3,4) t           [2,3) t
+;
+
+++32;  /* 38820949 */
+`qBlock1: [qBlock) query_block
+ ;
+ qBlock2: qBlock1;
+ -- 2 tuples here:
+ parentChildNonEmpty: childScope = qBlock1.qBlock
+ & parentScope = qBlock2.qBlock
+ & parentScope < childScope
+ ; `:
+select * from (select * from (select * from x));
+->
+parentChildNonEmpty=[parentScope         childScope         qBlock1.qBlock         qBlock2.qBlock]
+                     [0,14) "S*F(S*F("  [4,13) "S*F(S*Fx"  [4,13) "S*F(S*Fx"  [0,14) "S*F(S*F("
+                     [4,13) "S*F(S*Fx"  [8,12) "S*Fx"      [8,12) "S*Fx"      [4,13) "S*F(S*Fx"
+;
+
+++33;  /* 38820949 */
+`subQ1: [subQ) query_block
+ ;
+ subQ2: subQ1;
+ -- Empty result set below:
+parentChild: childScope = subQ1.subQ
+ & parentScope = subQ2.subQ
+ & parentScope < childScope
+ ;`:
+select * from (select * from (select * from x));
+->
+parentChild=[subQ1.subQ         parentScope         childScope         subQ2.subQ]
+             [4,13) "S*F(S*Fx"  [0,14) "S*F(S*F("  [4,13) "S*F(S*Fx"  [0,14) "S*F(S*F("
+             [8,12) "S*Fx"      [4,13) "S*F(S*Fx"  [8,12) "S*Fx"      [4,13) "S*F(S*Fx"
+;
+
+++34;  /* 38820949 */
+`subQ1: [subQ) query_block
+ ;
+
+ parentChild: parentScope < childScope
+ & [childScope) query_block
+ & parentScope = subQ1.subQ
+ ;`:
+select * from (select * from (select * from x));
+->
+parentChild=[subQ         parentScope         childScope]
+             [0,14) "S*F(S*F("  [0,14) "S*F(S*F("  [4,13) "S*F(S*Fx"
+             [4,13) "S*F(S*Fx"  [4,13) "S*F(S*Fx"  [8,12) "S*Fx"
+;

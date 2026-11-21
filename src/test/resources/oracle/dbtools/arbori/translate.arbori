@@ -1,0 +1,195 @@
+include "std.arbori"
+
+definitions: runOnce
+->{ 
+	function removeNestedBlock(src, br1, br2) {
+	    var len1 = br1.length;
+	    var len2 = br2.length;
+	    var beg = 0;
+	    var end = 0;
+	    var out = "";
+	    while (beg < src.length) {
+	      beg = src.indexOf(br1, end);
+	      var beg1 = src.indexOf( br1, beg + len1 | 0);
+	      var end1 = src.indexOf( br2, beg + len1 | 0) + len2 | 0;
+	      if (beg > 0 && beg < beg1 && beg1 < end1) {
+	        var startIndex = end;
+	        var endIndex = beg + len1 | 0;
+	        var endBeg = src.substring(startIndex, endIndex);
+	        out = out + endBeg;
+	        end = beg + len1 | 0;
+	        continue;
+	      }
+	      if (beg < 0)
+	        beg = src.length;
+	      var startIndex_0 = end;
+	      var endIndex_0 = beg;
+	      var endBeg_0 = src.substring(startIndex_0, endIndex_0);
+	      out = out + endBeg_0;
+	      end = src.indexOf( br2, beg + len1 | 0) + len2 | 0;
+	      if (end < len2) {
+	        var startIndex_1 = beg;
+	        var begTerm = src.substring(startIndex_1);
+	        out = out + begTerm;
+	      }
+	    }
+	    return out.toString();
+	}
+	  
+	function PGRules() {
+	    var sc = new java.util.Scanner(new java.io.File("/Users/dim/git/dbtools-kotlin/"
+					+ "src/jvmMain/kotlin/oracle/dbtools/translation/postgress/gram.y")); 
+		sc.useDelimiter("\\Z"); 	  
+		var input1 = sc.next();
+		sc.close();  
+	    
+	    var pos = input1.indexOf("%%")
+	    input1 = input1.substring(pos+"%%".length)
+	    pos = input1.indexOf("%%")
+	    input1 = input1.substring(0,pos)
+	
+	    var LexerToken = Java.type("oracle.dbtools.parser.LexerToken")
+	    LexerToken.Companion.switchLineCommentSymbol("/")
+	    input1 = removeNestedBlock(input1, "{", "}")
+	    input1 = removeNestedBlock(input1, "{", "}")
+	    input1 = removeNestedBlock(input1, "{", "}")
+	    input1 = removeNestedBlock(input1, "{", "}")
+		
+	    input1 = input1.replace(/%prec UMINUS/g,"")
+	    input1 = input1.replace(/%prec AT/g,"")
+	    input1 = input1.replace(/%prec Op/g,"")
+	    input1 = input1.replace(/%prec NOT/g,"")
+	    input1 = input1.replace(/%prec POSTFIXOP/g,"")
+	    input1 = input1.replace(/%prec LIKE/g,"")
+	    input1 = input1.replace(/%prec NOT_LA/g,"")
+	    input1 = input1.replace(/%prec ILIKE/g,"")
+	    input1 = input1.replace(/%prec SIMILAR/g,"")
+	    input1 = input1.replace(/%prec IS/g,"")
+	    input1 = input1.replace(/%prec BETWEEN/g,"")
+	
+	    input1 = input1.replace(/TYPECAST/g,"':' ':'")
+	
+	
+	    input1 = input1.replace(/IDENT/g,"identifier")
+	    input1 = input1.replace(/ICONST/g,"digits")
+	    input1 = input1.replace(/NUMERIC_LITERAL/g,"digits")
+	    input1 = input1.replace(/SCONST/g,"string_literal")
+	    
+	    input1 = input1 +"\n Op: '|' '|'; \n" ; 
+	    input1 = input1 +"\n top: stmtblock | dummy; ;// otherwise sql_script is reduced\n"
+	    
+	    //print(input1)
+	    
+	    var src1 = LexerToken.parse(input1,""); 
+	    //LexerToken.Companion.print(src1);
+	    
+	    var input = "";
+	    var prior = null;
+	    var Token = Java.type("oracle.dbtools.parser.Token");
+	    for( i in src1 ) {
+	        var t = src1[i];
+	        if(    "=" == t.content ) {
+	            prior = null;
+	            continue;
+	        }
+	        if( "!" == t.content ) {
+	            continue;
+	        }
+	        if( prior != null ) {
+	            var prior1 = " "+prior;
+	            if( i%5==0 )
+	               prior1 = "\n"+prior;
+	            input += prior1;
+	        }
+	
+	        if( t.content == "EXPONENTIATE" )
+	            prior = "'*' '*'"
+	        else if( t.content == "GREATER_EQUALS" )
+	            prior = "'>' '='"
+	        else if( t.content == "LESS_EQUALS" )
+	            prior = "'<' '='"
+	        else if( t.content == "NOT_EQUALS" )
+	            prior = "'<' '>'"
+	        else if( t.content == "COLON_EQUALS" )
+	            prior = "':' '='"
+	        else if( t.content == "COLON_EQUALS" )
+	            prior = "':' '='"
+	        else if( t.content == "EQUALS_GREATER" )
+	            prior = "'=' '>'"
+	
+	        else if( t.type == Token.IDENTIFIER && t.content[0]==t.content[0].toUpperCase()
+	            && (t.content.length < 2 || t.content[1]==t.content[1].toUpperCase() )
+	        ) {
+	            var tc = t.content
+	            if( tc.endsWith("_P") )
+	                tc = tc.substring(0,tc.length-"_P".length)
+	            prior = "'" + tc + "' "
+	        } else
+	            prior = t.content
+	    }
+	    //print(input);	            
+	    LexerToken.Companion.switchLineCommentSymbol("/");
+	    var src = LexerToken.parse(input,"");
+	    //LexerToken.Companion.print(src);
+	    var Grammar = Java.type("oracle.dbtools.parser.Grammar").INSTANCE;
+	    var bnfParser = Grammar.bnfParser();
+	    var root = Grammar.parseGrammarFile(src, input, bnfParser);
+	    var rules = new java.util.TreeSet();
+	    Grammar.grammar(root, src, rules);
+	
+	    var RuleTuple = Java.type("oracle.dbtools.parser.RuleTuple");
+	    //rules.add(RuleTuple("Op", Java.to(["'|'", "'|'"],"java.lang.String[]") ));
+	  
+	    var RuleTransforms = Java.type("oracle.dbtools.parser.RuleTransforms").INSTANCE;
+	    RuleTransforms.eliminateEmptyProductions(rules);
+	
+	    return rules;
+	}
+	
+	var rules = PGRules();
+	print("#rules="+rules.size());
+	var RuleTuple = Java.type("oracle.dbtools.parser.RuleTuple");
+	//RuleTuple.Companion.printRules(rules);
+	
+	var Earley = Java.type("oracle.dbtools.parser.Earley");
+	var earley = new Earley(rules,true);
+	
+	var sc = new java.util.Scanner(new java.io.File("/Users/dim/git/dbtools-kotlin/"
+			+ "src/jvmMain/kotlin/oracle/dbtools/translation/postgress/example.sql")); 
+	sc.useDelimiter("\\Z"); 	  
+    var input = sc.next();
+    sc.close(); 
+     
+	var LexerToken = Java.type("oracle.dbtools.parser.LexerToken");
+	var src = LexerToken.parse(input,"");
+    if (src.size < 100)
+        LexerToken.print(src);
+        
+	var Matrix = Java.type("oracle.dbtools.parser.Matrix");
+    var matrix = new Matrix(earley);
+
+    var t21 = java.lang.System.currentTimeMillis();
+    //earley.skipRanges = false; //<-- disable optimization
+    // the most important and resource intensive step -- recognition
+    earley.parse(src, matrix);
+    var t22 = java.lang.System.currentTimeMillis();
+
+    print("parse time = " + (t22 - t21));  
+
+    // get the bottom-right corner of the matrix
+    // this is "top" in the "bottom-to-the-top" parser terminology
+    var top = matrix.get(0, src.size);
+    if (top != null) // if input is syntactically recognized
+        print(src.size() + " tokens, top = " + top.toString()); 
+    else
+        print("***** Syntactically Invalid fargment *****");
+        
+    var t31 = java.lang.System.currentTimeMillis();
+    var root = earley.forest(src, matrix, true);
+    var t32 = java.lang.System.currentTimeMillis();
+    print("Reduction time = " + (t32 - t31)); 
+    root.printTree();
+	
+}
+
+

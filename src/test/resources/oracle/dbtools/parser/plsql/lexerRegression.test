@@ -1,0 +1,575 @@
+++1;
+`select N'nchar literal'  LITERAL1   from dual`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,23) N'nchar literal'   <QUOTED_STRING>
+3    [23,24)     <WS>
+4    [24,25)     <WS>
+5    [25,33) LITERAL1   <IDENTIFIER>
+6    [33,34)     <WS>
+7    [34,35)     <WS>
+8    [35,36)     <WS>
+9    [36,40) from   <IDENTIFIER>
+10    [40,41)     <WS>
+11    [41,45) dual   <IDENTIFIER>
+;
+
+++2;
+`select q'!name LIKE '%DBMS_%%'!' LITERAL2   from dual`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,32) q'!name LIKE '%DBMS_%%'!'   <QUOTED_STRING>
+3    [32,33)     <WS>
+4    [33,41) LITERAL2   <IDENTIFIER>
+5    [41,42)     <WS>
+6    [42,43)     <WS>
+7    [43,44)     <WS>
+8    [44,48) from   <IDENTIFIER>
+9    [48,49)     <WS>
+10    [49,53) dual   <IDENTIFIER>
+;
+
+++3;
+`select q'<'So,' she said, 'It's finished.'>' LITERAL3`->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,44) q'<'So,' she said, 'It's finished.'>'   <QUOTED_STRING>
+3    [44,45)     <WS>
+4    [45,53) LITERAL3   <IDENTIFIER>
+;
+
+++4;
+`select q'{SELECT * FROM employees WHERE last_name = 'Smith';}' LITERAL4`->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,62) q'{SELECT * FROM employees WHERE last_name = 'Smith';}'   <QUOTED_STRING>
+3    [62,63)     <WS>
+4    [63,71) LITERAL4   <IDENTIFIER>
+;
+
+++5;
+`select q'"name like '['"' LITERAL5`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,25) q'"name like '['"'   <QUOTED_STRING>
+3    [25,26)     <WS>
+4    [26,34) LITERAL5   <IDENTIFIER>
+;
+
+++6;
+`$IF select 'aaaaabbbbb' LITERAL6`
+->
+0    [0,32) `$IF select 'aaaaabbbbb' LITERAL6`    <MACRO_SKIP>
+;
+
+++7;
+`select nq'!ncha'r lit!' LITERAL7` ->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,23) nq'!ncha'r lit!'   <QUOTED_STRING>
+3    [23,24)     <WS>
+4    [24,32) LITERAL7   <IDENTIFIER>
+;
+
+++8;
+`select nQ'{nchar lit}' LITERAL8`->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,22) nQ'{nchar lit}'   <QUOTED_STRING>
+3    [22,23)     <WS>
+4    [23,31) LITERAL8   <IDENTIFIER>
+;
+
+++9;
+`SELECT 'This string has a single quote ('')' LITERAL9`->
+0    [0,6) SELECT   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,44) 'This string has a single quote ('')'   <QUOTED_STRING>
+3    [44,45)     <WS>
+4    [45,53) LITERAL9   <IDENTIFIER>
+;
+
+/*++10;
+`select Nq'ï¿½ ï¿½1234 ï¿½' LITERAL10`  -- ORA-01756: quoted string not properly terminated:
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,45) `Nq'ï¿½ ï¿½1234 ï¿½' LITERAL10`   <QUOTED_STRING>
+;*/
+
+++11;
+`select /*aaa; `->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,14) `/*aaa; `   <COMMENT>   ---- ??? should be amended with NekotRexel
+;
+
+++12;
+`select 'aaa; ` ->
+/*0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,13) `'aaa; `    <QUOTED_STRING>*/
+---------NekotRexel:--------
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,8) `'`   <INCOMPLETE>
+3    [8,11) aaa   <IDENTIFIER>
+4    [11,12) `;`   <OPERATION>
+5    [12,13)     <WS>
+;
+
+++13;
+`select "EMP` ->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,11) `"EMP`   <INCOMPLETE>
+---------NekotRexel:---------
+/*0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,8) `"`   <INCOMPLETE>
+3    [8,11) EMP   <IDENTIFIER>*/
+;
+
+++14;
+`PATTERN ( five anything{\\*?\\} twelve )` ->
+0    [0,7) PATTERN   <IDENTIFIER>
+1    [7,8)     <WS>
+2    [8,9) `(`   <OPERATION>
+3    [9,10)     <WS>
+4    [10,14) five   <IDENTIFIER>
+5    [14,15)     <WS>
+6    [15,23) anything   <IDENTIFIER>
+7    [23,24) `{`   <OPERATION>
+8    [24,25) \   <OPERATION>
+9    [25,26) \   <OPERATION>
+10    [26,27) `*`   <OPERATION>
+11    [27,28) `?`   <OPERATION>
+12    [28,29) \   <OPERATION>
+13    [29,30) \   <OPERATION>
+14    [30,31) `}`   <OPERATION>
+15    [31,32)     <WS>
+16    [32,38) twelve   <IDENTIFIER>
+17    [38,39)     <WS>
+18    [39,40) `)`   <OPERATION>
+;
+
+++15;
+`'---'`
+-> 
+0    [0,5) '---'   <QUOTED_STRING>
+;
+
+++16; -- 31709607
+`select 'insert into mytable
+values ('||'C'||listagg(',:old.'||column_name) within group (order by
+column_id) from all_tab_columns;
+
+select 'insert into mytable ('||listagg(column_name,',') within group (order
+by column_id)||')
+values ("'||'U'||"',"B",'||listagg(':old.'||column_name,',') within group
+(order by column_id) ||')'
+;
+
+select to_char(current_timestamp,'yyyymmdd hh24miss) from dual;`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,37) 'insert into mytable
+values ('   <QUOTED_STRING>
+3    [37,38) |   <OPERATION>
+4    [38,39) |   <OPERATION>
+5    [39,42) 'C'   <QUOTED_STRING>
+6    [42,43) |   <OPERATION>
+7    [43,44) |   <OPERATION>
+8    [44,51) listagg   <IDENTIFIER>
+9    [51,52) (   <OPERATION>
+
+10    [52,60) ',:old.'   <QUOTED_STRING>
+11    [60,61) |   <OPERATION>
+12    [61,62) |   <OPERATION>
+13    [62,73) column_name   <IDENTIFIER>
+14    [73,74) )   <OPERATION>
+15    [74,75)     <WS>
+16    [75,81) within   <IDENTIFIER>
+17    [81,82)     <WS>
+18    [82,87) group   <IDENTIFIER>
+19    [87,88)     <WS>
+
+20    [88,89) (   <OPERATION>
+21    [89,94) order   <IDENTIFIER>
+22    [94,95)     <WS>
+23    [95,97) by   <IDENTIFIER>
+24    [97,98) 
+   <WS>
+25    [98,107) column_id   <IDENTIFIER>
+26    [107,108) )   <OPERATION>
+27    [108,109)     <WS>
+28    [109,113) from   <IDENTIFIER>
+29    [113,114)     <WS>
+
+30    [114,129) all_tab_columns   <IDENTIFIER>
+31    [129,130) `;`   <OPERATION>
+32    [130,131) 
+   <WS>
+33    [131,132) 
+   <WS>
+34    [132,138) select   <IDENTIFIER>
+35    [138,139)     <WS>
+36    [139,162) 'insert into mytable ('   <QUOTED_STRING>
+37    [162,163) |   <OPERATION>
+38    [163,164) |   <OPERATION>
+39    [164,171) listagg   <IDENTIFIER>
+
+40    [171,172) (   <OPERATION>
+41    [172,183) column_name   <IDENTIFIER>
+42    [183,184) ,   <OPERATION>
+43    [184,187) ','   <QUOTED_STRING>
+44    [187,188) )   <OPERATION>
+45    [188,189)     <WS>
+46    [189,195) within   <IDENTIFIER>
+47    [195,196)     <WS>
+48    [196,201) group   <IDENTIFIER>
+49    [201,202)     <WS>
+
+50    [202,203) (   <OPERATION>
+51    [203,208) order   <IDENTIFIER>
+52    [208,209) 
+   <WS>
+53    [209,211) by   <IDENTIFIER>
+54    [211,212)     <WS>
+55    [212,221) column_id   <IDENTIFIER>
+56    [221,222) )   <OPERATION>
+57    [222,223) |   <OPERATION>
+58    [223,224) |   <OPERATION>
+59    [224,237) ')
+values ("'   <QUOTED_STRING>
+
+60    [237,238) |   <OPERATION>
+61    [238,239) |   <OPERATION>
+62    [239,242) 'U'   <QUOTED_STRING>
+63    [242,243) |   <OPERATION>
+64    [243,244) |   <OPERATION>
+65    [244,248) "',"   <DQUOTED_STRING>
+66    [248,249) B   <IDENTIFIER>
+67    [249,394) /*",'||listagg(':old.'||column_name,',') within group
+(order by column_id) ||')'
+;
+
+select to_char(current_timestamp,'yyyymmdd hh24miss) from dual;*/   <INCOMPLETE>
+;  
+-- end of test #16
+
+++17;  /*33769501*/
+`select uq'#xxx\ffff\\xxx#' from dual where UQ'{\abcd}' = uq'(\ABCD)' order by uQ'###'`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,26) uq'#xxx\ffff\\xxx#'   <QUOTED_STRING>
+3    [26,27)     <WS>
+4    [27,31) from   <IDENTIFIER>
+5    [31,32)     <WS>
+6    [32,36) dual   <IDENTIFIER>
+7    [36,37)     <WS>
+8    [37,42) where   <IDENTIFIER>
+9    [42,43)     <WS>
+10    [43,54) UQ'{\abcd}'   <QUOTED_STRING>
+11    [54,55)     <WS>
+12    [55,56) =   <OPERATION>
+13    [56,57)     <WS>
+14    [57,68) uq'(\ABCD)'   <QUOTED_STRING>
+15    [68,69)     <WS>
+16    [69,74) order   <IDENTIFIER>
+17    [74,75)     <WS>
+18    [75,77) by   <IDENTIFIER>
+19    [77,78)     <WS>
+20    [78,85) uQ'###'   <QUOTED_STRING>
+;
+
+++18;
+`select q'~name LIKE ' %DBMS_%%'~'`
+->
+0    [0,6) select   <IDENTIFIER>
+1    [6,7)     <WS>
+2    [7,33) q'~name LIKE ' %DBMS_%%'~'   <QUOTED_STRING>
+;
+
+++19;  -- 36010957 
+`0racleWallet`
+->
+0    [0,12) `0racleWallet`   <UNKNOWN>
+;
+
+++20;
+keepWsAndComments = false,
+`CREATE JSON RELATIONAL DUALITY VIEW product_type_dv
+AS
+PRODUCT_TYPE {
+_id : product_type_id
+productTypeId @generated  (path: "$._id")
+defaultGloss : default_gloss
+FORMULA
+@link (to : [PRODUCT_TYPE_ID]) {
+formulaId : formula_id
+}
+}`
+->
+0    [0,6) CREATE   <IDENTIFIER>
+1    [7,11) JSON   <IDENTIFIER>
+2    [12,22) RELATIONAL   <IDENTIFIER>
+3    [23,30) DUALITY   <IDENTIFIER>
+4    [31,35) VIEW   <IDENTIFIER>
+5    [36,51) product_type_dv   <IDENTIFIER>
+6    [52,54) AS   <IDENTIFIER>
+7    [55,67) PRODUCT_TYPE   <IDENTIFIER>
+8    [68,69) {   <OPERATION>
+9    [70,73) _id   <IDENTIFIER>
+10    [74,75) :   <OPERATION>
+11    [76,91) product_type_id   <IDENTIFIER>
+12    [92,105) productTypeId   <IDENTIFIER>
+13    [106,107) @   <OPERATION>
+14    [107,116) generated   <IDENTIFIER>
+15    [118,119) (   <OPERATION>
+16    [119,123) path   <IDENTIFIER>
+17    [123,124) :   <OPERATION>
+18    [125,132) "$._id"   <DQUOTED_STRING>
+19    [132,133) )   <OPERATION>
+20    [134,146) defaultGloss   <IDENTIFIER>
+21    [147,148) :   <OPERATION>
+22    [149,162) default_gloss   <IDENTIFIER>
+23    [163,170) FORMULA   <IDENTIFIER>
+24    [171,172) @   <OPERATION>
+25    [172,176) link   <IDENTIFIER>
+26    [177,178) (   <OPERATION>
+27    [178,180) to   <IDENTIFIER>
+28    [181,182) :   <OPERATION>
+29    [183,184) [   <OPERATION>
+30    [184,199) PRODUCT_TYPE_ID   <IDENTIFIER>
+31    [199,200) ]   <OPERATION>
+32    [200,201) )   <OPERATION>
+33    [202,203) {   <OPERATION>
+34    [204,213) formulaId   <IDENTIFIER>
+35    [214,215) :   <OPERATION>
+36    [216,226) formula_id   <IDENTIFIER>
+37    [227,228) }   <OPERATION>
+38    [229,230) }   <OPERATION>
+;
+keepWsAndComments = true,
+
+++21;  -- 37330992
+`SELECT
+ "aaaa""
+ FROM x`
+->
+0    [0,6) SELECT   <IDENTIFIER>
+1    [6,7)
+   <WS>
+2    [7,8)     <WS>
+3    [8,14) "aaaa"   <DQUOTED_STRING>
+4    [14,23) `"
+ FROM x`   <INCOMPLETE>
+;
+
+++22;  --   37914536
+keepWsAndComments = false,
+`DECLARE
+  l_OWNER                 DBMS_QUOTED_ID := '"ADMIN"';
+  l_SCHEMA                DBMS_QUOTED_ID := '"ADMIN"';
+  l_FORMAT                CLOB :=
+    '{
+       "compression" : "auto"
+     }';
+  l_FILE_URI_LIST         CLOB :=
+    https://oradbclouducm.objectstorage.us-phoenix-1.oci.customer-oci.com/p/jzt87-MWM4pN667nhn6gW2xOTWIWVAo6kuA6bCWXeQq_AqjVDBldJjZUCSEXlGXb/n/oradbclouducm/b/bluesky-json-data/o/bluesky/bluesky.*.json.gz';
+
+BEGIN
+  null;
+END;
+/`
+->
+0    [0,7) DECLARE   <IDENTIFIER>
+1    [10,17) l_OWNER   <IDENTIFIER>
+2    [34,48) DBMS_QUOTED_ID   <IDENTIFIER>
+3    [49,50) :   <OPERATION>
+4    [50,51) =   <OPERATION>
+5    [52,61) '"ADMIN"'   <QUOTED_STRING>
+6    [61,62)`;`  <OPERATION>
+7    [65,73) l_SCHEMA   <IDENTIFIER>
+8    [89,103) DBMS_QUOTED_ID   <IDENTIFIER>
+9    [104,105) :   <OPERATION>
+10    [105,106) =   <OPERATION>
+11    [107,116) '"ADMIN"'   <QUOTED_STRING>
+12    [116,117)`;`  <OPERATION>
+13    [120,128) l_FORMAT   <IDENTIFIER>
+14    [144,148) CLOB   <IDENTIFIER>
+15    [149,150) :   <OPERATION>
+16    [150,151) =   <OPERATION>
+17    [156,196) '{
+       "compression" : "auto"
+     }'   <QUOTED_STRING>
+18    [196,197)`;`  <OPERATION>
+19    [200,215) l_FILE_URI_LIST   <IDENTIFIER>
+20    [224,228) CLOB   <IDENTIFIER>
+21    [229,230) :   <OPERATION>
+22    [230,231) =   <OPERATION>
+23    [236,241) https   <IDENTIFIER>
+24    [241,242) :   <OPERATION>
+25    [242,243) `/`   <OPERATION>
+26    [243,244)`/`  <OPERATION>
+27    [244,257) oradbclouducm   <IDENTIFIER>
+28    [257,258) `.`  <OPERATION>
+29    [258,271) objectstorage   <IDENTIFIER>
+30    [271,272) `.`  <OPERATION>
+31    [272,274) us   <IDENTIFIER>
+32    [274,275) `-`   <OPERATION>
+33    [275,282) phoenix   <IDENTIFIER>
+34    [282,283) `-`   <OPERATION>
+35    [283,284) 1   <DIGITS>
+36    [284,285) `.`  <OPERATION>
+37    [285,288) oci   <IDENTIFIER>
+38    [288,289) `.`  <OPERATION>
+39    [289,297) customer   <IDENTIFIER>
+40    [297,298) `-`   <OPERATION>
+41    [298,301) oci   <IDENTIFIER>
+42    [301,302) `.`  <OPERATION>
+43    [302,305) com   <IDENTIFIER>
+44    [305,306)`/`  <OPERATION>
+45    [306,307) p   <IDENTIFIER>
+46    [307,308)`/`  <OPERATION>
+47    [308,313) jzt87   <IDENTIFIER>
+48    [313,314) `-`  <OPERATION>
+49    [314,372) MWM4pN667nhn6gW2xOTWIWVAo6kuA6bCWXeQq_AqjVDBldJjZUCSEXlGXb   <IDENTIFIER>
+50    [372,373)`/`  <OPERATION>
+51    [373,374) n   <IDENTIFIER>
+52    [374,375)`/`  <OPERATION>
+53    [375,388) oradbclouducm   <IDENTIFIER>
+54    [388,389)`/`  <OPERATION>
+55    [389,390) b   <IDENTIFIER>
+56    [390,391)`/`  <OPERATION>
+57    [391,398) bluesky   <IDENTIFIER>
+58    [398,399) `-`   <OPERATION>
+59    [399,403) json   <IDENTIFIER>
+60    [403,404) `-`   <OPERATION>
+61    [404,408) data   <IDENTIFIER>
+62    [408,409)`/`  <OPERATION>
+63    [409,410) o   <IDENTIFIER>
+64    [410,411)`/`  <OPERATION>
+65    [411,418) bluesky   <IDENTIFIER>
+66    [418,419)`/`  <OPERATION>
+67    [419,426) bluesky   <IDENTIFIER>
+68    [426,427) `.`  <OPERATION>
+69    [427,428) `*`   <OPERATION>
+70    [428,429) `.`  <OPERATION>
+71    [429,433) json   <IDENTIFIER>
+72    [433,434) `.`  <OPERATION>
+73    [434,436) gz   <IDENTIFIER>
+74    [436,437) `'`  <INCOMPLETE>
+75    [437,438) `;`  <OPERATION>
+76    [440,445) BEGIN   <IDENTIFIER>
+77    [448,452) null   <IDENTIFIER>
+78    [452,453) `;`  <OPERATION>
+79    [454,457) END   <IDENTIFIER>
+80    [457,458) `;`  <OPERATION>
+81    [459,460) `/`  <OPERATION>
+;
+
+++23;  --   SQLCL-5880
+keepWsAndComments = false,
+`INSERT INTO a VALUES ('{ "x": "y" }'), ('[ "z": 1,`
+->
+0    [0,6) INSERT   <IDENTIFIER>
+1    [7,11) INTO   <IDENTIFIER>
+2    [12,13) a   <IDENTIFIER>
+3    [14,20) VALUES   <IDENTIFIER>
+4    [21,22) `(`   <OPERATION>
+5    [22,36) '{ "x": "y" }'   <QUOTED_STRING>
+6    [36,37) `)`   <OPERATION>
+7    [37,38) `,`   <OPERATION>
+8    [39,40) `(`   <OPERATION>
+9    [40,41) `'`   <INCOMPLETE>
+10    [41,42) `[`   <OPERATION>
+11    [43,46) "z"   <DQUOTED_STRING>
+12    [46,47) `:`   <OPERATION>
+13    [48,49) 1   <DIGITS>
+14    [49,50) `,`   <OPERATION>
+/* before SQLCL-5880 fix:
+12    [46,47) :   <OPERATION>
+13    [49,50) ,   <OPERATION>
+14    [48,49) 1   <DIGITS>*/
+;
+
+++23;
+`WHENEVER SQLERROR EXIT;
+
+DOC
+##########
+#####
+     The following statement will cause an "ORA-01722: invalid number"
+     ...
+#########
+##########
+#
+
+SELECT 1;
+`
+->
+0    [0,8) WHENEVER   <IDENTIFIER>
+1    [9,17) SQLERROR   <IDENTIFIER>
+2    [18,22) EXIT   <IDENTIFIER>
+3    [22,23) `;`   <OPERATION>
+4    [150,156) SELECT   <IDENTIFIER>
+5    [157,158) 1   <DIGITS>
+6    [158,159) `;`   <OPERATION>
+;
+
+++24;
+`prompt continue-
+line continue
+rem 2line-
+  1 -
+  2 
+select  
+`->
+0    [0,30) `pro    continue-
+line continue`   <SQLPLUS_COMMAND>
+1    [53,59) select   <IDENTIFIER>
+;
+
+++25;
+`SELECT v1 <-> v2 FROM vt;
+ SELECT v1 <=> v2 FROM vt;
+    SELECT v1 <#> v2 FROM vt;
+ `
+->
+0    [0,6) SELECT   <IDENTIFIER>
+1    [7,9) v1   <IDENTIFIER>
+2    [10,11) `<`   <OPERATION>
+3    [11,12) `-`   <OPERATION>
+4    [12,13) `>`   <OPERATION>
+5    [14,16) v2   <IDENTIFIER>
+6    [17,21) FROM   <IDENTIFIER>
+7    [22,24) vt   <IDENTIFIER>
+8    [24,25) `;`  <OPERATION>
+9    [27,33) SELECT   <IDENTIFIER>
+10    [34,36) v1   <IDENTIFIER>
+11    [37,38) `<`   <OPERATION>
+12    [38,39) `=`   <OPERATION>
+13    [39,40) `>`  <OPERATION>
+14    [41,43) v2   <IDENTIFIER>
+15    [44,48) FROM   <IDENTIFIER>
+16    [49,51) vt   <IDENTIFIER>
+17    [51,52) `;`  <OPERATION>
+18    [57,63) SELECT   <IDENTIFIER>
+19    [64,66) v1   <IDENTIFIER>
+20    [67,68) `<`   <OPERATION>
+21    [68,69) `#`   <IDENTIFIER>
+22    [69,70) `>`   <OPERATION>
+23    [71,73) v2   <IDENTIFIER>
+24    [74,78) FROM   <IDENTIFIER>
+25    [79,81) vt   <IDENTIFIER>
+26    [81,82) `;`   <OPERATION>
+
+;
+

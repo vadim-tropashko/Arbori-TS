@@ -1,0 +1,6585 @@
+-- fixed content from http://st-doc.us.oracle.com/sql_grammar/sqlbnf/bnffiles/
+-- http://st-doc.us.oracle.com/database/121/SQLRF/img_text/
+-- http://st-doc.us.oracle.com/sql_grammar/sqlbnf112/bnffiles
+
+<PRE sql_statements> {
+     sql_statement
+   | sql_statements sql_statement
+}</PRE>
+
+<PRE sql_statement> {
+     library_unit    -- follows: unlabeled_nonblock_stmt -> sql_stmt ';'
+   | library_unit <B>/</B>
+   | call_statement  -- library_unit includes it with trailing semicolon
+   | exec_immediate_statement <b>;</b>
+   | sql_stmt <B>/</B>    -- e.g. ++1671;  /*  wrap.htm#CEGGEEFH  */ SELECT COUNT(*) FROM EMPLOYEES /
+   | sql_stmt <b>;</b>
+   | sql_statement <B>/</B>
+--   | sql_stmt ';' --> library_unit -> unlabeled_nonblock_stmt -> sql_stmt ';' 
+   | create
+   | create ;
+   | create <B>/</B>
+   | drop
+   | drop ;
+   | drop <B>/</B>
+   | alter
+   | alter ;
+   | alter <B>/</B>
+   | grant
+   | grant <B>/</B>
+   
+/*** | select ;   --> sql_query_or_dml_stmt --> sql_stmt
+*    | insert ;   *
+*    | delete ;   *
+*    | update ;   *
+*    | merge ;  ***/
+   | delete
+   
+   | comment --;
+   | truncate_table
+   | set_transaction 
+   | rename
+   | administer_key_management
+   | set_constraints
+   | set_role
+   | set_use_data_grants_only
+   | set_use_data_grants_only ;
+   | revoke
+   | revoke_data_role
+   | revoke_data_role ;
+   | audit
+   | noaudit
+   | unified_audit
+   | unified_noaudit
+   | explain_plan
+   | analyze
+   | associate_statistics
+   | disassociate_statistics
+   | truncate_cluster
+   | truncate_table
+   | lock_table
+   | flashback_database
+   | flashback_table
+   | purge
+   | purge <B>/</B>
+   | rollback   
+   | sqlplus_command
+   | dbtools_command
+}</PRE>
+
+
+<PRE create> {
+    dummy_rule
+    | create_assertion
+    | create_analytic_view
+    | create_attribute_dimension
+    | create_audit_policy
+    | create_cluster
+    | create_context
+    | create_controlfile
+    | create_database
+    | create_database_link
+    | create_data_grant
+    | create_data_role
+    | create_dimension
+    | create_directory
+    | create_diskgroup
+    | create_domain
+    | create_edition
+    | create_flashback_archive
+     --| create_function
+    | create_hierarchy
+    | create_index
+    | create_indextype
+    | create_inmemory_join_group
+    | "create_java"
+    
+    | create_json_relational_duality_view
+    | create_library
+    | create_lockdown_profile
+    | create_logical_partition_tracking
+    | create_materialized_view
+    | create_materialized_vw_log
+    | create_materialized_zonemap
+    | create_mle_env
+    --| create_mle_function
+    | create_mle_module
+    | create_operator
+    | create_outline
+    --| create_package
+    --| create_package_body
+    | create_plsql
+    | create_pfile
+    | create_pluggable_database
+    | create_pmem_filestore
+    --| create_procedure
+    | create_profile
+    | create_property_graph
+    | create_restore_point
+    | create_role
+    | create_rollback_segment
+    | create_schema
+    
+    | create_sequence
+    | create_spfile
+    | create_synonym
+     | create_table
+    | create_tablespace
+    | create_tablespace_set
+     --| create_trigger
+     --| create_type
+	| create_user
+ 	| create_view
+      
+} 
+--{;|/}  included!
+</PRE>               
+
+<PRE drop> {
+    dummy_rule
+    | drop_assertion
+    | drop_analytic_view
+    | drop_attribute_dimension
+    | drop_audit_policy
+    | drop_domain
+    | drop_index
+    | drop_indextype
+    | drop_sequence
+    | drop_materialized_view
+    | drop_materialized_view_log
+    | drop_materialized_zonemap
+    | drop_mle_env
+    | drop_mle_module
+	| drop_user
+    | drop_role
+	| drop_view
+    | drop_synonym
+    | drop_table
+    | drop_tablespace
+    | drop_tablespace_set
+    | drop_dimension
+    | drop_edition
+    
+    --| drop_plsql
+    | drop_cluster
+    | drop_context
+    | drop_controlfile
+    | drop_database
+    | drop_pluggable_database
+    | drop_pmem_filestore
+    | drop_database_link
+    | drop_data_grant
+    | drop_directory
+    | drop_diskgroup
+    | drop_function
+    | drop_flashback_archive
+    | drop_java
+    | drop_hierarchy
+    | drop_inmemory_join_group
+    | drop_language
+    | drop_library
+    | drop_lockdown_profile
+    | drop_operator
+    | drop_outline
+    | drop_package
+    | drop_package_body
+    | drop_pfile
+    | drop_pmem_filestore
+    | drop_procedure
+    | drop_profile
+    | drop_property_graph
+    | drop_restore_point
+    | drop_rollback_segment
+    | drop_schema
+    | drop_spfile
+    | drop_trigger
+    | drop_type
+    | drop_type_body
+} [<b>FORCE</b>]
+--{;|/}  included!
+</PRE>               
+
+
+<PRE alter> {
+    dummy_rule
+    | alter_system
+    
+	| alter_user
+	| alter_view
+	| alter_materialized_view
+	| alter_materialized_view_log
+	| alter_materialized_zonemap
+    | alter_mle_env
+    | alter_mle_module
+    | alter_index
+    | alter_indextype
+    | alter_dimension
+    | alter_edition
+	| alter_sequence
+	| alter_session
+    | alter_synonym
+    | alter_table
+    | alter_tablespace
+    | alter_tablespace_set    
+	| alter_role
+    
+    | alter_analytic_view
+    | alter_audit_policy
+    | alter_cluster
+    | alter_database
+    | alter_domain
+    | alter_pluggable_database
+    | alter_pfile
+    | alter_pmem_filestore
+    | alter_database_link
+    | alter_diskgroup
+    | alter_function ;  -- inconsistent semicolon in the doc
+    | alter_hierarchy
+    | alter_inmemory_join_group
+    | alter_java
+    | alter_library ;
+    | alter_lockdown_profile
+    | alter_operator
+    | alter_outline
+    | alter_package 
+    | alter_procedure
+    | alter_profile
+    | alter_property_graph
+    | alter_resource_cost
+    | alter_rollback_segment
+    | alter_trigger
+    | alter_type
+    
+} 
+--see: SqlRules.straightenSemicolon() 
+--{;|/} 
+</PRE> 
+
+
+<PRE string>  -- there is now a webpage http://st-doc.us.oracle.com/sql_grammar/sqlbnf/bnffiles/string.htm
+              -- however, in many doc examples string is something like: 
+              -- XMLSCHEMA "http://www.example.com/xwarehouses.xsd"
+ {
+     --identifier |
+     string_literal |
+     id_or_qualid
+ }
+</PRE>
+
+
+<pre id_or_qualid>
+{identifier |  id_or_qualid.identifier  }
+</pre>
+
+<PRE create_plsql>
+<B>CREATE</B> [ <B>OR</B> <B>REPLACE</B> ] 
+[ <b>EDITIONABLE</b> | <b>NONEDITIONABLE</b> ]
+{ /*subprg_i  |*/ subprg_i ; | subprg_i subprg_property ; |
+ subprg_body | pkg_spec ; | pkg_body | trigger | 
+ adt_definition | adt_definition ; |
+ table_type_definition | table_type_definition ; |
+ wrap <B>"/"</B> 
+} 
+-- [ / ] part of sql_stmt
+</PRE>
+
+<PRE wrap>
+{ <B>PROCEDURE | FUNCTION | PACKAGE | PACKAGE BODY | TRIGGER 
+| TYPE | TYPE BODY</B> } 
+{ identifier | identifier . identifier }
+<B>WRAPPED</B>
+</PRE>
+
+
+<PRE select>
+subquery [ for_update_clause [order_by_clause] ] 
+</PRE> -- no trailing semicol
+
+<PRE insert>
+<B>INSERT</B>  --[ hint ]
+   { single_table_insert | multi_table_insert } </PRE> -- no trailing semicol
+   
+<PRE insert_into_clause>
+<B>INTO</B> 
+   aliased_dml_table_expression_clause -- was: dml_table_expression_clause [ t_alias ]
+[ (column [, column ]...) ]</PRE>
+   
+<PRE aliased_dml_table_expression_clause>
+   { dml_table_expression_clause
+   | <B>ONLY</B> (dml_table_expression_clause)
+   } [ t_alias ]
+</PRE>
+   
+<PRE update>
+<B>UPDATE</B> 
+   { aliased_dml_table_expression_clause | <b>ONLY</b> ( aliased_dml_table_expression_clause ) }
+   [for_compress]
+   update_set_clause
+   [ from_using_clause ]  
+   [ where_clause ]
+   [ order_by_clause ]
+   [ returning_clause ]
+   [error_logging_clause] 
+</PRE> 
+
+<<from_using_clause>>
+   from_clause
+ | USING cartesian_product 
+<<>>
+
+<PRE for_compress>
+   <b>FOR COMPRESS</b> digits [, digits]...
+</PRE>
+
+   
+<PRE delete>
+<B>DELETE</B> 
+   [ <B>FROM</B> ]
+      { aliased_dml_table_expression_clause | <b>ONLY</b> ( aliased_dml_table_expression_clause ) }
+     [ from_clause ]  
+     [ from_using_clause ]    
+     [ where_clause ]
+     [ returning_clause ]
+     [error_logging_clause]
+</PRE> -- no trailing semicol
+
+<PRE merge>
+<B>MERGE</B> 
+   <B>INTO</B> { [ schema. ] { table | table @ dblink }
+         | ( subquery )
+         }  [ t_alias ]
+   [<B>USING</B> { [ schema. ] { table | table @ dblink }
+         | ( subquery )
+         | values_clause
+         } [modified_external_table] [ t_alias ]]
+   <B>ON</B> ( condition )
+   [permutted_merge_insert_update]
+   [ returning_clause ]
+   [ error_logging_clause ]
+</PRE> -- no trailing semicol
+   
+<pre permutted_merge_insert_update> {
+  merge_insert_clause [merge_update_clause]
+| merge_update_clause [merge_insert_clause]
+}
+</pre>   
+
+<pre merge_insert_clause>
+<b>WHEN NOT MATCHED THEN</b>
+<b>INSERT</b> [ (column [, column ]...) ]
+<b>VALUES</b> {
+     par_expr_list  | expr
+       }
+[ where_clause ][ returning_clause ]
+</pre>
+
+<pre merge_update_clause>
+<b>WHEN MATCHED THEN</b>
+<b>UPDATE SET</b> column [(identifier)] = { expr | <b>DEFAULT</b> }
+           [, column [(identifier)] = { expr | <b>DEFAULT</b> } ]...
+[ where_clause ]
+[ <b>DELETE</b> where_clause ]</pre>
+
+
+
+<pre error_logging_clause>
+<b>LOG ERRORS</b> 
+  [ <b>INTO</b> [schema.] table ]
+  [ (expr) | (subquery) ]     -- was simple_expression, need function calls https://community.oracle.com/thread/3976573
+  [ reject_limit_unlimited ]
+</pre>
+
+
+<PRE with_clause>
+<B>WITH</B>  {
+  plsql_declarations  
+  | subquery_factoring_clause
+  | plsql_declarations subquery_factoring_clause
+}</PRE>
+
+<Pre plsql_declarations>
+   subprg_body
+|  plsql_declarations subprg_body
+</Pre>
+
+
+<pre subquery_factoring_clause>
+  colmapped_query_name <B>AS</B> par_subquery [search_clause] [cycle_clause]
+  [, colmapped_query_name <B>AS</B> par_subquery [search_clause] [cycle_clause]]...
+|  
+  subav_factoring_clause  
+  [,subav_factoring_clause]
+</pre>
+
+<pre subav_clause>
+   sub_av_clause
+</pre>   
+
+<PRE colmapped_query_name> 
+query_name [(c_alias [, c_alias]...)]
+</PRE>
+
+
+
+<pre row_limiting_clause>
+[ <b>OFFSET</b> expr { <b>ROW</b> | <b>ROWS</b> } ]
+[ <b>FETCH [EXACT | APPROX | APPROXIMATE] [FIRST | NEXT]</b> 
+    [ expr_percent [<b>{PARTITIONS| PARTITION} BY</b>] select_term [,] ]... 
+    [<b>EACH WITH</b>] [ expr_percent ]
+    { <b>ROW</b> | <b>ROWS</b> } [ <b>ONLY</b> | <b>WITH TIES</b> ] ] 
+[accuracy_clause]   
+</pre>
+
+<<expr_percent>>
+{ expr | expr <b>PERCENT</b> }
+<<>>
+
+<pre subquery> {
+  select_clause from_clause  
+| select_clause  
+| (subquery)                          
+| subquery SET_OPER subquery
+| [ with_clause ] 
+  subquery 
+  [ "where,gby,hier" ]
+  [ model_clause ]
+  [ window_clause |
+   <b>QUALIFY</b> condition
+  ]...
+  [ order_by_clause ]
+  [ row_limiting_clause ]
+}</pre>
+
+
+<pre "where,gby,hier"> {
+    where_clause
+  | hierarchical_query_clause
+  | "gby+having" 
+  | where_clause hierarchical_query_clause
+  | hierarchical_query_clause where_clause
+  | where_clause "gby+having"
+  | where_clause "gby+having" hierarchical_query_clause
+  | where_clause hierarchical_query_clause "gby+having" 
+  | "gby+having" hierarchical_query_clause
+  | hierarchical_query_clause "gby+having" 
+} </pre>
+
+<pre "gby+having"> {
+     group_by_clause
+   | group_by_clause having_clause
+   | having_clause group_by_clause
+   | having_clause 
+} </pre> 
+
+<PRE select_clause> {                --> less rules generated when eliminating empty productions 
+<B>SELECT</B>
+ 								  --> removed: [ hint ]
+ [ distinct_unique_all ]
+    select_list BULK_COLLECT_opt into_list_opt
+}</pre>
+
+<PRE from_clause> {
+  <B>FROM</B> cartesian_product 
+  [ table_tags_clause 
+  | <B>FACT ROWS</B>]            
+}</pre>
+
+<PRE having_clause> {
+  <B>HAVING</B> condition               
+}</pre>
+
+
+<PRE distinct_unique_all>                 
+  { <B>DISTINCT | UNIQUE | ALL</B> } 
+</pre>
+
+<PRE cartesian_product> {
+   table_reference_or_join_clause 
+|  cartesian_product , table_reference_or_join_clause
+} </pre>
+
+<pre table_reference_or_join_clause>
+  table_reference 
+| join_clause | join_clause row_pattern_clause | join_clause row_pattern_clause t_alias
+| (table_reference_or_join_clause)   
+| (table_reference_or_join_clause)  t_alias 
+| (table_reference_or_join_clause) identifier ( column [, column]... )
+| table_reference_or_join_clause pivot_clause 
+| table_reference_or_join_clause unpivot_clause
+| table_reference_or_join_clause pivot_clause t_alias
+| table_reference_or_join_clause unpivot_clause t_alias
+</pre>
+
+<PRE query_table_expression>
+{ query_name
+| [ schema. ]
+  { table [ partition_extension_clause
+          | modified_external_table
+          | @ dblink
+          ]
+  -- Re Adrian: redundant   | { view /*| materialized view*/ } [ @ dblink ]
+  | /*analytic_view*/identifier [ <b>HIERARCHIES</b>
+    ( [ hier_ref [, hier_ref ]... ] ) ]
+  | inline_external_table
+  } [sample_clause]
+| (subquery [ subquery_restriction_clause ])
+| (query_table_expression)
+| [ <b>LATERAL</b> ] (subquery [ subquery_restriction_clause ])
+| table_collection_expression
+| function_expression
+| xmltable
+| <B>ANALYTIC VIEW</B> (sub_av_clause)
+| graph_table --correlation_or_recognition
+| jsonize
+| sqlplus_bindvar <b>.</b> <b>.</b> identifier
+| <b>^</b> identifier <b>.</b> <b>.</b> identifier
+}
+</PRE>
+
+<PRE sample_percent> 
+    number
+  | number , sample_percent
+  | bind_var
+</PRE>
+<PRE seed_value> 
+    number
+  | bind_var
+</PRE>
+
+
+<PRE table_reference> {
+{{ {<B>ONLY</B> (query_table_expression)| query_table_expression} 
+   [ flashback_query_clause ]
+   [ [ t_alias ] {  row_pattern_clause | nested_clause} ]
+   | json_table [<b>AS</b>]
+} | containers_clause }
+  [ t_alias ]
+| values_clause  
+}</PRE>
+
+
+<pre join_clause> {
+  table_reference_or_join_clause "inner_cross_join_clause"
+| table_reference_or_join_clause cross_outer_apply_clause
+| table_reference_or_join_clause "outer_join_clause"
+| table_reference_or_join_clause join_to_one_clause
+} </pre>
+
+
+<pre "inner_cross_join_clause">
+{ [ <b>INNER</b> ] <b>JOIN</b> 
+    table_reference_or_join_clause
+    on_using_condition
+| { <b>CROSS</b>
+  | <b>NATURAL</b> [ <b>INNER</b> ]
+  }
+  <b>JOIN</b> table_reference_or_join_clause
+}</pre>
+
+<pre cross_outer_apply_clause>
+{ <b>CROSS</b> | <b>OUTER</b> } <b>APPLY</b> { 
+    table_reference_or_join_clause   -- Re Adrian: was table_reference which failed on http://savage.net.au/SQL/sql-2003-2.bnf.html#table reference 
+  | collection_expression }
+</pre>
+
+<pre join_to_one_clause>
+ <b>JOIN TO ONE</b> (join_to_one_items)
+</pre>
+
+<PRE join_to_one_items> {
+   [outer_join_type <b>JOIN</b>]                 table_reference [on_using_condition] 
+|  join_to_one_items ,                           table_reference [on_using_condition]
+|  join_to_one_items outer_join_type <b>JOIN</b> table_reference [on_using_condition]
+} </pre>
+
+
+<pre "outer_join_clause">
+{
+  [ query_partition_clause ]
+  outer_join_type <b>JOIN</b>
+  table_reference_or_join_clause [ query_partition_clause ]
+  on_using_condition
+| [ query_partition_clause ]
+  <b>NATURAL</b> outer_join_type <b>JOIN</b>
+  table_reference_or_join_clause [ query_partition_clause ]
+}
+</pre>
+
+<pre on_using_condition>
+    { <b>ON</b> condition
+    | <b>USING</b> (column [, column ]...)
+    }
+</pre>
+
+<PRE group_by_clause>
+<B>GROUP BY</B>
+   parenthesized_group_by_list
+   --there is dedicated having_clause symbol for [ <B>HAVING</B> condition ]
+</PRE>
+
+<PRE parenthesized_group_by_list>
+   { <B>ALL</B>| group_by_list | (parenthesized_group_by_list) }
+</PRE>
+
+<PRE group_by_list>
+   group_by_col
+     [, group_by_col]...
+</PRE>
+
+<PRE group_by_col>
+   { expr
+   | rollup_cube_clause
+   | grouping_sets_clause
+   | (group_by_list)
+   | ()
+   }
+</PRE>
+
+
+
+<PRE cmp_op> -- refactored
+{ = | == | != | ^= | ~= | not_eq }
+</PRE>
+
+<PRE simple_comparison_condition>
+{ expr 
+  { cmp_op | <b>></b> | <b><</b> | <b>></b>= | <b><</b>= }
+  expr
+| par_expr_list
+  cmp_op
+  {scalar_subquery_expression 
+   | (par_expr_list)}  -- 27700079
+| par_expr_list
+  { cmp_op | <b>></b> | <b><</b> | <b>></b>= | <b><</b>= }
+   par_expr_list 
+}</PRE>
+
+<PRE group_comparison_condition>
+{ expr
+  { cmp_op | <b>></b> | <b><</b> | <b>></b>= | <b><</b>= }
+     { <B>ANY</B> | <B>SOME</B> | <B>ALL</B> }
+     ({ expression_list | subquery })
+| par_expr_list
+  cmp_op
+  { <B>ANY</B> | <B>SOME</B> | <B>ALL</B> }
+  ({ expression_list
+     [, expression_list ]...
+   | subquery
+   }
+  )
+}</PRE>
+
+<pre datetime_expression>
+expr <b>AT</b>
+   { <b>LOCAL</b>
+   | <b>TIME ZONE</b> { string_literal    -->was:  ' [ + | - ] hh:mm'
+               | <b>DBTIMEZONE</b>
+               | <b>SESSIONTIMEZONE</b>
+               | string_literal           -->was:  'time_zone_name'
+               | expr
+               }
+   }
+</pre>
+
+
+<pre table_compression>
+ [<b>ROW STORE| COLUMN STORE</b>] compress_nocompress_basic_advanced [ <B>FOR</B> 
+      { { <b>ALL</b> | <b>DIRECT_LOAD</b> } <b>OPERATIONS</b>  
+      | { <b>QUERY</b> | <b>ARCHIVE</b> } [ <b>LEVEL</b> [= integer] ]
+      | <b>OLTP</b>
+      }  ]
+      [ <b>LOW</b> | <b>HIGH</b> ]
+  [ [<b>NO</b>] <b>ROW LEVEL LOCKING</b> ]
+--| <b>NOCOMPRESS</b>
+</pre>
+
+<pre compress_nocompress_basic_advanced>
+<b>{COMPRESS|NOCOMPRESS}</b> [ <b>BASIC | ADVANCED</b> ]
+</pre>
+
+/*<PRE user_defined_function>
+-- this should be in expr: [function.]      -- a().b()
+{
+   identifier
+ | identifier.identifier  
+ | identifier.identifier.identifier  
+}  
+[ @ dblink ]  
+[ "(x,y,z)" ]
+</PRE>*/
+
+<PRE "(x,y,z)">
+( [ [ <B>DISTINCT</B> | <B>ALL</B> ] "expr_list" ] )
+</PRE>
+
+
+<<virtual_column_definition>>
+column [   datatype [ DOMAIN [ domain_owner.] domain_name ]
+         | DOMAIN [ domain_owner.] domain_name [ COLLATE column_collation_name ] 
+       ]
+  [ VIRTUAL
+  | VISIBLE 
+  | INVISIBLE
+  | GENERATED ALWAYS 
+  ] ...
+  AS (column_expression) 
+  [ VIRTUAL
+  | VISIBLE 
+  | INVISIBLE
+  | MATERIALIZED
+  | GENERATED ALWAYS 
+  | evaluation_edition_clause
+  | unusable_editions_clause
+  | inline_constraint
+  ] ...
+<<>>  
+
+<pre column_collation_name>
+   identifier
+   | identifier <b>DEFAULT</b> expr 
+</pre>
+
+
+
+<<identity_clause>>
+GENERATED [ ALWAYS | BY DEFAULT [ ON NULL [ FOR INSERT { ONLY | AND UPDATE } ]]] 
+AS {
+ IDENTITY [ ( identity_options ) | identity_options ]
+ |
+ expr
+}
+<<>>
+
+<PRE identity_options>
+{ <b>RESTART</b>
+| <b>START</b> <b>WITH</b> { integer | <b>LIMIT VALUE</b> } -- was: (...)
+| <b>INCREMENT</b> <b>BY</b> integer
+| { <b>MAXVALUE</b> integer | <b>NOMAXVALUE</b> }
+| { <b>MINVALUE</b> integer | <b>NOMINVALUE</b> }
+| { <b>CYCLE</b> | <b>NOCYCLE</b> }
+| { <b>CACHE</b> integer | <b>NOCACHE</b> }
+| { <b>ORDER</b> | <b>NOORDER</b> }
+| { <b>CYCLE</b> | <b>NOCYCLE</b> }
+| { <b>KEEP</b> | <b>NOKEEP</b> }
+| { <b>SCALE</b> | <b>NOSCALE</b> }
+| <b>EXTEND</b>
+}...
+</PRE>
+
+
+<pre add_column_clause> 
+   <b>ADD</b> {
+   {(relational_properties)   -- refactored
+                        -- was missing brackets: ({column_definition | virtual_column_definition}   -- missing ( missing }
+                        --  [, {column_definition | virtual_column_definition} ] ...)  -- missing {}
+    | column_definition   -- ALTER TABLE emp ADD Update_id2 NUMBER;
+    | virtual_column_definition
+    }
+    [ column_properties ]
+    [ out_of_line_part_storage [, out_of_line_part_storage]...
+     | (out_of_line_part_storage [, out_of_line_part_storage]...)
+    ]
+   }
+</pre>
+
+<pre add_period_clause> 
+   <b>ADD</b> 
+   { (period_definition)   
+   |  period_definition     --missing
+   }
+</pre>
+
+
+<PRE LOB_storage_clause>
+<B>LOB</B>
+ (column [, column ]...)
+     [<B>STORE AS</b> 
+           { identifier 
+              | { <B>{SECUREFILE | BASICFILE}</b>  [identifier]
+                  | (LOB_storage_parameters [<B>INDEX</B> identifier] ) 
+                  | LOB_storage_parameters
+                }...
+           }
+      ][ <B>QUERY AS VALUE</b> ]     
+</PRE>
+
+<PRE allocate_extent_clause>
+<B>ALLOCATE EXTENT</B>
+  [ ( { <B>SIZE</B> size_clause
+      | <B>DATAFILE</B> string_literal        --> was: 'filename'
+      | <B>INSTANCE</B> integer
+      | <B>FREELIST GROUP</B> integer
+      } ...
+    )
+  ]
+</PRE>
+
+<pre LOB_storage_parameters>       --> simplified
+ { <b>TABLESPACE</b> tablespace
+  | storage_clause 
+  | LOB_parameters [storage_clause]
+  }...
+</pre>
+
+<PRE select_list>
+{ 
+    *
+ |  select_term 
+ | select_list , *
+ | select_list , select_term
+}
+</PRE>
+<PRE select_term>{ 
+   [ schema. ] { table } .*   --> was: | table|view|materialized view  
+  | expr 
+  | condition
+  | "aliased_expr"
+  | "aliased_condition"
+}</PRE>
+
+<PRE as_alias>  -- not inlined in order to keep auxiliary node; reusing it in other places 
+  [ <B>AS</B> ] c_alias 
+</PRE>
+
+<PRE "aliased_expr">
+  expr as_alias 
+</PRE>
+<PRE "aliased_condition">
+  condition as_alias 
+</PRE>
+
+
+<PRE model_condition>{   --> rule entirely missing 
+  is_any_condition | 
+  is_present_condition 
+}</PRE>
+
+<pre is_present_condition>
+cell_assignment <b>IS PRESENT</b>
+</pre>
+
+<PRE multiset_condition>{   --> rule entirely missing 
+  is_a_set_condition | 
+  is_empty_condition |
+  member_condition |
+  submultiset_condition 
+}</PRE>
+
+<PRE pattern_matching_condition>{   --> rule entirely missing 
+  like_condition 
+}</PRE>
+
+<PRE comparison_condition>{   --> rule entirely missing 
+  simple_comparison_condition |
+  group_comparison_condition |
+  between_condition |
+  <B>CURRENT OF</B> identifier |  -- plsql static.htm#CHDGEHBF
+  <B>CURRENT OF</B> identifier . identifier |  
+  column <B>IS [NOT] DANGLING</B> | -- sql 
+  column <B>IS LABELED</B> expr    |  
+  lnnvl
+}</PRE>
+
+--> logical_condition=compound_condition?  
+
+<pre compound_condition>{   
+  ( condition )
+| <b>NOT</b> condition
+| condition AND_OR condition
+}</pre>
+   
+<pre AND_OR>{ 
+   <b>AND</b> | <b>OR</b>
+}</pre>
+
+
+<pre SET_OPER> 
+{ <b>UNION</b> [<b>ALL</b>] | <b>INTERSECT</b> [<b>ALL</b>] | <b>MINUS</b> [<b>ALL</b>] | <b>EXCEPT</b> [<b>ALL</b>] }
+</pre>
+
+
+<pre function_expression> {   --> rule entirely missing 
+    function        -- includes aggregate_function 
+  | function_call   -- pl/sql definition which allows arrow argument assignments
+  | function_expression . function_call   -- a().b()
+  | function_expression . identifier   -- (TREAT(author AS employee_t).salary
+}</pre>
+
+<PRE count>
+<B>COUNT</B>( [ <B>DISTINCT</B> | <B>UNIQUE</B> | <B>ALL</B> ] { * | expr | identifier . * } )   -- doc bug: COUNT(ALL *)
+</PRE>
+
+<PRE approx_count>
+  <B>APPROX_COUNT</B>( count_arg )   
+| <B>APPROX_COUNT_DISTINCT</B>( count_arg )   
+</PRE>
+
+<PRE count_arg>
+  [ <B>DISTINCT</B> | <B>UNIQUE</B> | <B>ALL</B> ] { * | expr | identifier . * }
+</pre>
+
+<PRE count_analytic>
+      count over_clause   
+    | count keep_clause 
+    | count keep_clause over_clause
+</PRE>
+
+
+<PRE over_clause>
+  <B>OVER</B> (analytic_clause)
+</PRE>
+
+
+<pre alter_external_table_clauses>{   --> name mismatch 
+  alter_external_table    
+}</pre>
+
+<pre spreadsheet_column_clauses>{   --> name mismatch 
+  model_column_clauses    
+}</pre>
+
+
+<pre number>  
+numeric_literal --> from pl/sql grammar 
+/*obsolete: --> rewritten in terms of digits
+[ + | - ]
+{ digits [ . ] [ digits ]
+| . digits
+}
+[ <B>E</B> [ + | - ] digits ]
+[ <B>F</B> | <B>D</B> ]*/
+</pre>
+
+<pre scalar_subquery_expression>{   --> rule missing 
+  ( subquery )    
+}</pre>
+
+<pre par_subquery>{   -->  not necessarily one column 
+  ( subquery ) 
+ | 
+  ( <b>VALUES</b> (expr [, expr ]...) [expr [, expr]...] )    
+ | 
+   values_clause 
+}</pre>
+
+
+<pre integer>
+{digits | +digits | -digits}
+</pre>
+
+<PRE analytic_function>  
+   a_f    --> was self-referential 
+      |
+   count_analytic
+      | 
+   --listagg
+      --|
+   nth_value
+      |
+   first_last_value
+      |
+   cluster_details_analytic
+      |
+   cluster_distance_analytic
+      |
+   cluster_id_analytic
+   	  |
+   prediction_analytic
+   	  |
+   prediction_details_analytic	  
+      |
+   prediction_prob_analytic   	  
+      |
+   // moved to JSON_function   
+   //json_query
+   //   |
+   //json_value
+   //   |
+   //json_arrayagg   
+   //   |
+   //json_objectagg
+   //   |   
+   lag
+      |
+   lead
+      |
+   first_last_value
+      |               
+   approx_median         
+      |
+   approx_percentile 
+      | 
+   cume_dist_analytic
+      |
+   dense_rank_analytic
+      |   
+   percent_rank_analytic
+      |   
+   row_number        
+</PRE>
+
+<PRE a_f>  
+identifier paren_expr_list 
+   [keep_clause]
+   <B>OVER</B> (analytic_clause)
+| identifier paren_expr_list
+   [keep_clause]
+   <B>OVER</B> analytic_clause 
+| aggr_call 
+   [keep_clause]
+   <B>OVER</B> (analytic_clause)
+| aggr_call 
+   [keep_clause]
+   <B>OVER</B> analytic_clause
+</PRE>
+
+<pre rank_clause>
+  <b>HIERARCHY</b> hierarchy_ref --[<b>OFFSET</b> digits]
+  <b>ORDER</b> <b>BY</b> calc_meas_order_by_clause [ , calc_meas_order_by_clause ]...  
+  [ <b>WITHIN</b> { <b>LEVEL</b> | <b>PARENT</b> | <b>ANCESTOR</b> <b>AT</b> <b>LEVEL</b> level_ref } ]  
+  [ {<b>INCLUDE</b> | <b>SKIP</b>} <b>WHEN</b> <b>NULL</b> ]
+|   
+  <b>HIERARCHY</b> hierarchy_ref <b>OFFSET</b> digits [<b>ACROSS ANCESTOR AT LEVEL</b> identifier]  
+</pre>
+
+<PRE first_last_value> {
+  {<B>FIRST_VALUE</B> | <B>LAST_VALUE</B> }
+  { (expr) [ respect_ignore_nulls ]
+  | (expr [ respect_ignore_nulls ])
+  }
+  <B>OVER</B>  (analytic_clause) 
+|  
+  {<B>FIRST_VALUE</B> | <B>LAST_VALUE</B> }
+  { (expr) [ respect_ignore_nulls ]
+  | (expr [ respect_ignore_nulls ])
+  }
+  <B>OVER</B>  analytic_clause 
+} </PRE>
+
+<pre sum>
+    <b>SUM</b> ([ <b>DISTINCT | ALL</b> ] expr)
+   [ <b>OVER</b> (analytic_clause) | <b>OVER</b> analytic_clause | <b>OVER</b> () ]   -- select sum(sal) over w as "total"  from emp
+</pre>  
+
+<pre avg>
+    <b>AVG</b> ([ <b>DISTINCT | ALL</b> ] expr)
+   [ <b>OVER</b> (analytic_clause) | <b>OVER</b> analytic_clause | <b>OVER</b> () ]   -- select sum(sal) over w as "total"  from emp
+</pre>  
+
+
+<pre respect_ignore_nulls> 
+{<b>RESPECT</b> | <b>IGNORE</b>} <b>NULLS</b>
+</pre>
+
+
+<PRE "aggr_name">{
+  <B>APPROX_COUNT_DISTINCT</B>
+| <B>APPROX_COUNT_DISTINCT_AGG</B>
+| <B>APPROX_PERCENTILE_DETAIL</B>
+|<B>AVG</B>
+--|<B>COLLECT</B>
+|<B>CORR</B>
+|<B>CORR_S</B>
+|<B>CORR_K</B>
+|<B>COUNT</B>
+|<B>COUNT DISTINCT</B> 
+|<B>COVAR_POP</B>
+|<B>COVAR_SAMP</B>
+--|<B>CUME_DIST</B>
+--special syntax |<B>DENSE_RANK</B> 
+|<B>FIRST</B>
+|<B>GROUP_ID</B>
+|<B>GROUPING</B>
+|<B>GROUPING_ID</B>
+|<B>LAST</B>
+|<B>MAX</B>
+|<B>MEDIAN</B>
+|<B>MIN</B>
+--|<B>PERCENTILE_CONT</B>
+--|<B>PERCENTILE_DISC</B>
+--|<B>PERCENT_RANK</B>
+|<B>RANK</B>--
+|<B>REGR_SLOPE</B>
+|<B>REGR_INTERCEPT</B>
+|<B>REGR_COUNT</B>
+|<B>REGR_R2</B>
+|<B>REGR_AVGX</B>
+|<B>REGR_AVGY</B>
+|<B>REGR_SXX</B>
+|<B>REGR_SYY</B>
+|<B>REGR_SXY</B>
+|<B>STATS_BINOMIAL_TEST</B>
+|<B>STATS_CROSSTAB</B>
+|<B>STATS_F_TEST</B>
+|<B>STATS_KS_TEST</B>
+|<B>STATS_MODE</B>
+|<B>STATS_MW_TEST</B>
+|<B>STATS_ONE_WAY_ANOVA</B>
+|<B>STATS_T_TEST_*</B>
+|<B>STATS_T_TEST_ONE</B>
+|<B>STATS_T_TEST_PAIRED</B>
+|<B>STATS_T_TEST_INDEP</B>
+|<B>STATS_T_TEST_INDEPU</B>
+|<B>STATS_WSR_TEST</B>
+|<B>STDDEV</B>
+|<B>STDDEV_POP</B>
+|<B>STDDEV_SAMP</B>
+|<B>SUM</B>
+|<B>SYS_XMLAGG</B>
+|<B>VAR_POP</B>
+|<B>VAR_SAMP</B>
+|<B>VARIANCE</B>
+}</PRE>
+
+<PRE aggregate_function> 
+     z_aggr_opt_keep 
+   | opt_FINAL_RUNNING {"aggr_name"( "expr_list" ) | xmlagg} [keep_clause] 
+   | function_call keep_clause  -- regression.test ++170;
+   | any_value
+   | approx_median
+   | approx_percentile
+   | approx_rank
+   | approx_sum
+   | count 
+   | approx_count 
+   | avg 
+   | cume_dist_aggregate
+   | dense_rank_aggregate
+   | collect
+   //| json_arrayagg   
+   //| json_objectagg
+   | listagg
+   | percentile_cont
+   | percentile_disc
+   | percent_rank_aggregate
+   | rank_aggregate
+   | skewness_pop
+   | skewness_samp
+   | stddev
+   | sum
+   
+   | aggregate_function <B>FILTER ( WHERE</B> condition )
+</PRE>
+
+<pre z_aggr_opt_keep>
+     {aggr_call | xmlagg} [keep_clause] 
+</PRE>
+
+<pre aggr_call>
+     "aggr_name" paren_expr_list 
+    | "aggr_name" ()
+</PRE>
+
+
+
+<PRE xmlagg>
+<B>XMLAGG</B>(expr [ order_by_clause ])
+</PRE>
+
+<PRE keep_clause>   -- was orphan first.html
+   <B>KEEP</B>
+   (<B>DENSE_RANK</B> {<B>FIRST|LAST</B>} <B>ORDER BY</B>
+    expr_desc_asc_nulls
+    [, expr_desc_asc_nulls]...
+   )
+   [ <B>OVER</B> ( [query_partition_clause] ) ]</PRE>
+   
+<PRE expr_desc_asc_nulls>
+    expr [ <B>DESC</B> | <B>ASC</B> ]
+         [ <B>NULLS</B> { <B>FIRST</B> | <B>LAST</B> } ]
+</PRE>
+
+<pre pivot_clause>
+--table_reference    no such thing on doc train diagram 
+<b>PIVOT</b> [ <b>XML</b> ]
+  ( expr [as_alias ]           -- 33650551
+      [, expr [as_alias ] ]...
+    pivot_for_clause
+    pivot_in_clause
+  )
+</pre>
+
+<pre unpivot_clause>
+--table_reference  ditto
+<b>UNPIVOT</b> [ {<b>INCLUDE</b> | <b>EXCLUDE</b>} <b>NULLS</b> ]
+( { column | ( column [, column]... ) }
+  pivot_for_clause
+  unpivot_in_clause
+)</pre>
+
+
+<PRE column> 
+  [ [schema.] table.] identifier
+| identifier . identifier . identifier . identifier    --  33844985
+| identifier . identifier . table                      --  33853830
+| identifier . <b>XMLDATA</b> { . identifier }...
+</PRE>
+
+<PRE col_oj>
+ column (+) 
+</PRE>
+
+<PRE simple_expression>
+{
+  column
+| col_oj
+| pseudocol 
+  | <b>CONNECT_BY_ISCYCLE</b>
+  | <b>CONNECT_BY_ISLEAF</b>
+  | <b>CONNECT_BY_ROOT</b> expr
+| literal                                         --> substituted to cover strings and numbers
+--inferred from column| identifier                                      --> added
+| identifier. { <B>CURRVAL</B> | <B>NEXTVAL</B> } --> was: sequence.
+}
+</PRE>
+
+<pre pseudocol>
+    <B>ROWNUM</B>
+  | <B>ROWID</B> 
+  | <B>NULL</B>
+</pre> 
+
+<PRE dblink>
+identifier [.identifier ]... 
+[ @ identifier ]
+</PRE>
+
+-- loader 
+<PRE external_table_data_props>
+[<B>DEFAULT DIRECTORY</B> identifier [.identifier]]
+[ <B>ACCESS PARAMETERS</B>
+  { (opaque_format_spec) |
+   <B>USING CLOB</B> subquery |
+   ( [<b>LOGFILE</b>] string_literal)       -- 33849012, 35782114
+  }
+]
+[<B>LOCATION</B>
+   ([ identifier: ] string_literal
+      [, [ identifier: ] string_literal ]...
+   )
+]
+</PRE>
+
+<PRE opaque_format_spec>
+[
+      record_format
+    | record_format2
+    | <b>TERRITORY</b> identifier
+    | fields_def
+    | hive
+    | <B>VERSION</B> string_literal
+    | <B>/</B>
+    | <B>COMPRESSION</B>
+    | <B>ENABLED</B>
+    | <B>MEDIUM</B>
+    | <B>DISCARDFILE</B>
+]...
+</PRE>
+
+<PRE record_format> {
+     <B>RECORDS</B> 
+    |<B>FIXED</B> integer 
+    | <B>VARIABLE</B> integer 
+    | <B>DELIMITED BY</B> { [<B>DETECTED</B>] <B>NEWLINE</B> | ext_tbl_string_literal } 
+    | <B>IGNORE_BLANK_LINES</B>
+    | <B>IGNORE_HEADER</B> = digits
+    | <B>CREDENTIAL</B> string_literal
+	| <b>DNFS_DISABLE</b>
+}
+</PRE>
+
+<PRE ext_tbl_string_literal>
+  [<B>X</B> | number <B>X</B>]
+  {  string_literal
+   | identifier } -- cumbersome case for double quoted strings; 
+                  -- will not complicate lexical analysis just for that little thing 
+</PRE>
+
+<PRE record_format2>  {
+    <B>CHARACTERSET</B> string
+    |<B>DATA IS { LITTLE | BIG } ENDIAN</B>
+    |<B>BYTEORDERMARK { CHECK | NOCHECK } </B>
+    |<B>STRING SIZES ARE IN { BYTES | CHARACTERS }</B>
+    |<B>LOAD WHEN</B> condition_spec 
+    |<B>LOAD WHEN</B> ( (digits:digits) = string_literal ) 
+    |{ <B>PREPROCESSOR_TIMEOUT</B> integer | <B>PREPROCESSOR</B> filename } 
+    |{ <B>NOBADFILE</B> |  <B>BADFILE</B> filename } 
+    |{ <B>NODISCARDFILE</B> | <B>DISCARDFILE</B> filename } 
+    |{ <B>NOLOGFILE</B> | <B>LOGFILE</B> filename } 
+    |{ <B>READSIZE</B> [=] integer | <B>DISABLE_DIRECTORY_LINK_CHECK</B> | <B>DATE_CACHE</B> integer | <B>SKIP</B> integer}
+  }
+</PRE>
+
+/*<pre et_record_spec_options>et_record_spec_options
+ 
+    <span class="bold">CHARACTERSET</span> string
+    |<span class="bold">PREPROCESSOR</span> [directory_spec:] file_spec 
+    |<span class="bold">DATA IS</span> { <span class="bold">LITTLE</span> | <span class="bold">BIG</span> } <span class="bold">ENDIAN</span>
+    |<span class="bold">BYTEORDERMARK</span> { <span class="bold">CHECK</span> | <span class="bold">NOCHECK</span> } 
+    |<span class="bold">STRING SIZES ARE IN</span> { <span class="bold">BYTES</span> | <span class="bold">CHARACTERS</span> }
+    |<span class="bold">LOAD WHEN</span> condition_spec
+    | et_output_files 
+    |{<span class="bold">READSIZE</span> integer | <span class="bold">DISABLE_DIRECTORY_LINK_CHECK</span> | <span class="bold">DATE_CACHE</span> integer | <span class="bold">SKIP</span> integer}
+    |<span class="bold">IO_OPTIONS</span> {<span class="bold">DIRECTIO</span> | <span class="bold">NODIRECTIO</span>} 
+    |{ <span class="bold">DNFS_ENABLE</span> | <span class="bold">DNFS_DISABLE</span> }
+    |<span class="bold">DNFS_READBUFFERS</span> integer
+   [,]...
+  </pre>*/
+
+<PRE fields_def>
+ [ <b>ALL</b> ]
+   <b>FIELDS</b> 
+ [ <b>CSV</b>
+ | <b>[WITH | WITHOUT] EMBEDDED</b>
+ | delim_spec
+ | trim_spec 
+ | <b>OVERRIDE</b>
+ ]...
+ [<B>MISSING FIELD VALUES ARE NULL</B>]
+ [<B>REJECT ROWS WITH ALL NULL FIELDS</B>]
+ [<B>NULLIF = BLANKS LRTRIM</B>   ( col_properties  )]
+ [et_field_list]
+</PRE>
+
+<PRE delim_spec>
+{
+ <B>ENCLOSED BY</B> delim_str [<B>AND</B> delim_str] 
+ | <B>TERMINATED BY</B> { delim_str | <B>WHITESPACE</B> } 
+[[<B>OPTIONALLY</B>] <B>ENCLOSED BY</B> delim_str [<B>AND</B> delim_str]]
+}...
+</PRE>
+
+<PRE delim_str>
+{identifier|string_literal}
+</PRE> 
+
+<PRE trim_spec>
+{ <B>LRTRIM | NOTRIM | LTRIM | RTRIM | LDRTRIM</B> }
+</PRE>
+
+<PRE et_field_list>
+(et_field_spk 
+[,  et_field_spk]...
+)
+</PRE>
+
+<PRE et_field_spk>
+identifier [pos_spec] [datatype_spec] [init_spec]
+</PRE>
+
+
+<PRE pos_spec>
+[<B>POSITION</B>] ({ expr | *   }  [:  expr])
+[<B>ZONED</B>]
+</PRE>
+
+<PRE datatype_spec>
+{
+ [<B>UNSIGNED</B>] <B>INTEGER</B> [<B>EXTERNAL</B>] [(digits)] [delim_spec] 
+|                  <B>NUMBER</B>  [<B>EXTERNAL</B>] [(digits)] [delim_spec]                          
+|{ <B>DECIMAL | ZONED</B> } [<B>EXTERNAL</B>] [(digits)] [delim_spec] (digits [ , digits]) 
+|<B>ORACLE_DATE</B>                                                    
+|<B>ORACLE_NUMBER [COUNTED] </B>                                     
+|<B>FLOAT [EXTERNAL] </B>[(digits)] [delim_spec] 
+|<B>DOUBLE</B> 
+|<B>BINARY_FLOAT [EXTERNAL] </B> [(digits)] [delim_spec]
+|<B>BINARY_DOUBLE </B>                          
+|<B>RAW</B> [(digits)]                                                 
+|<B>CHAR</B> [(digits)] [delim_spec] [trim_spec] [date_format_spec]       
+|<B>{ VARCHAR | VARRAW | VARCHARC | VARRAWC | DATE | TIMESTAMP }</B> [ ([len ,] len) ] [identifier|string_literal]
+| <b>RECNUM</b>
+}
+</PRE>
+
+<<init_spec>>
+{
+    DEFAULTIF condition
+  | NULLIF    condition
+}...
+<<>>
+
+
+<PRE date_format_spec>
+[<B>DATE_FORMAT</B>]
+{
+<B>{ DATE 
+  | TIMESTAMP [WITH [LOCAL] TIME ZONE] } MASK</B> {identifier|string_literal}  
+| <B>INTERVAL { YEAR_TO_MONTH | DAY_TO_SECOND }</B>
+}
+</PRE>
+
+-- TODO: merge this with json.ebnf
+<PRE hive>
+{hkey {=|:} hvalue}...
+</PRE>
+
+<PRE hkey> 
+     identifier [. identifier]...
+</PRE>
+
+<PRE hvalue>{ 
+     identifier [identifier| . identifier ]... | digits | string_literal   -- expr  
+   | <b>ALL</b>
+   | <b>[</b>  "content_list"  <b>]</b>    -- json content
+   | <b>{</b>  "content_list"  <b>}</b>
+   | <b>(</b>  "content_list"  <b>)</b>
+   | <b>[</b>  "content_list" , <b>]</b>    -- json content
+   | <b>{</b>  "content_list" , <b>}</b>
+   | <b>(</b>  "content_list" , <b>)</b>
+}</PRE>
+
+<PRE "content_list">
+{content|hvalue|hive} [, [<b>\</b>] {content|hvalue|hive}]...
+</PRE>  
+
+   
+<PRE dml_table_expression_clause>
+{ [ schema. ]
+  { table
+    [ partition_extension_clause
+    | partition_extension_clause <b>MOVE TO</b> partition_extension_clause   -- lrgdbconapa10d:
+                                                              -- update  "ONLNTEST"."ORDER_ITEMS_CHD2" 
+                                                              -- partition (dataobj_to_partition( "ONLNTEST"."ORDERS_PAR2" , :1)) 
+                                                              -- move to partition (dataobj_to_partition( "ONLNTEST"."ORDERS_PAR2" , :1)) 
+                                                              -- set "ORDER_ID" = "ORDER_ID" where "ORDER_ID" = :1    
+    | @ dblink
+    ]
+  |  view [ @ dblink ] 
+  }
+| ( subquery [ subquery_restriction_clause ] )
+| table_collection_expression
+}</PRE>
+
+<PRE out_of_line_REF_constraint>  
+  out_of_line_ref_constraint
+</PRE>
+<PRE out_of_line_ref_constraint>  --> pretty sure nobody in the world using it; simplified
+{ <B>SCOPE FOR</B> (identifier)
+    <b>IS</b> { [ schema. ] identifier | <b>OID</b> string_literal [identifier(identifier)] }
+| <B>REF</B> (id_or_qualid) <B>WITH ROWID</B>
+| <B>REF</B> (id_or_qualid) <B>ALLOW PRIMARY KEY</B>
+| [ <B>CONSTRAINT</B> identifier ] <B>FOREIGN KEY</B>
+
+    ( identifier ) references_clause
+    [ constraint_state ]
+}</PRE>
+
+<PRE datetime_datatypes>
+{ <B>DATE</B>
+--| <B>TIME</B>  (digits)          --  33849138
+| <B>TIME|TIMESTAMP</B> [ (digits) | () ]
+     [ <B>WITH</B> [ <B>LOCAL</B> ] <B>TIME ZONE</B> ]
+| <B>INTERVAL YEAR</B> [ (digits) ] <B>TO MONTH</B>
+
+| <B>INTERVAL DAY</B> [ (digits) ] <B>TO SECOND</B>
+     [ (digits) ] -- was: fractional_seconds_precision
+}</PRE>
+
+<PRE encryption_spec>
+  [ <B>USING</B> string_literal 
+  | <B>IDENTIFIED</B> <B>BY</B> identifier 
+  |string_literal 
+  | [ <B>NO</b> ] <b>SALT</b> 
+  ]...
+</PRE>
+
+<PRE domain_index_clause>
+   id_or_qualid
+   [ local_domain_index_clause ]
+   [ parallel_clause ]
+   [ <B>PARAMETERS</B> (string_literal) ]
+</PRE>
+
+<pre sqlj_object_type_attr>
+<b>EXTERNAL</b> <b>NAME</b> string_literal
+</pre>
+
+<PRE OID_index_clause>
+<B>OIDINDEX</B> [ identifier ]
+[( PAC_or_TS )]
+</PRE>
+
+<PRE PAC_or_TS>
+{ physical_attributes_clause
+ | <B>TABLESPACE</B> identifier
+ | PAC_or_TS physical_attributes_clause
+ | PAC_or_TS <B>TABLESPACE</B> identifier
+}
+</PRE>
+
+<PRE object_type>
+   /*[ <b>OID</b> string_literal ] [ invoker_rights_clause ]
+{ { <B>IS</B> | <B>AS</B> } <B>OBJECT</B>
+  | <B>UNDER</B> [schema.] identifier                 --> was:  supertype
+  } [ sqlj_object_type ]
+  [ ( { attribute datatype [ sqlj_object_type_attr ] }...
+        [, element_spec [, element_spec ]...]
+    )
+  ] [ [<B>NOT</B>] <B>FINAL</B> ] [ [<B>NOT</B>] <B>INSTANTIABLE</B> ] */
+  identifier
+</PRE>
+
+<PRE element_spec>                   --> missing
+[ inheritance_clauses ]
+{ subprogram_spec
+| constructor_spec
+| map_order_function_spec
+}...      --> simplified: [, pragma_clause ]
+</PRE>
+
+<PRE inheritance_clauses>                   --> missing
+{ [ <B>NOT</B> ] { <B>OVERRIDING</B> | <B>FINAL</B> | <B>INSTANTIABLE</B> } }...
+</PRE>
+
+<PRE subprogram_spec>                   --> missing
+[ [<B>OVERRIDING</B>] <B>MEMBER | STATIC | CONSTRUCTOR</B> ] { procedure_spec | function_spec }
+</PRE>
+
+<PRE procedure_spec>                   --> missing
+<B>PROCEDURE</B> identifier
+  [(proc_fun_arg_spec [, proc_fun_arg_spec ]...)]
+  [ { <B>IS | AS</B> } call_specification ]
+</PRE>
+
+<PRE function_spec>                   --> missing
+<B>FUNCTION</B> name
+   [(proc_fun_arg_spec [, proc_fun_arg_spec ]...)]
+   return_clause
+</PRE>
+
+<PRE proc_fun_arg_spec>
+identifier in_out_nocopy {datatype|<B>NATURAL</B>} [{<B>DEFAULT</B>|:= } expr]
+</PRE>
+
+<PRE in_out_nocopy>
+ [<B>IN</B> | <B>OUT</B> | <B>NOCOPY</B>]...
+</PRE>
+
+<pre return_clause> 
+    <B>RETURN</B> 
+  [datatype  [{ <B>IS | AS</B> } call_specification]] -- once at most
+  [ 
+    <B>DETERMINISTIC</B>
+  | <B>DETERMINISTIC PARALLEL_ENABLE</B>
+  | self_as_result
+  | <B>WITH CONTEXT PARAMETERS</B> ( context_params )
+  ]... 
+  -- undefined:| sqlj_object_type_sig 
+</pre>
+
+<pre context_params>
+     identifier
+   | identifier identifier
+   | identifier identifier identifier
+   | context_params , identifier
+   | context_params , identifier identifier
+   | context_params , identifier identifier identifier
+</pre> 
+
+
+
+<PRE constructor_spec>                   --> missing
+  <B>[ FINAL ] [ INSTANTIABLE ]
+CONSTRUCTOR FUNCTION</B> datatype
+[ ([ <B>SELF IN OUT</B> datatype, ]
+   identifier datatype [, identifier datatype ]...
+  )
+]
+<B>RETURN</B> self_as_result
+[ <B>{ IS | AS }</B> call_specification ]
+</PRE>
+
+<PRE self_as_result>
+<B>SELF AS RESULT</B>
+</PRE> 
+
+<pre index_attributes>
+[ { physical_attributes_clause
+  | logging_clause
+  | <b>ONLINE</b>
+  | <b> [GLOBAL] TABLESPACE [SET]</b> { tablespace | <b>DEFAULT</b> }
+  | index_compression
+  | { <b>SORT</b> | <b>NOSORT</b> }
+  | <b>REVERSE</b>
+  | <b>VISIBLE</b> | <b>INVISIBLE</b>
+  | partial_index_clause
+  | parallel_clause
+  | <B>COMPUTE STATISTICS</B>    -- Discovered in DDL for "SYS"."SQLOBJ$PLAN" 
+  | <B>GLOBAL</B>
+  | <B>FILTER BY</B> column
+  }...
+]
+</pre>
+
+<PRE create_index>  {      
+  <B>CREATE</B> [ <B>UNIQUE</B> ] [ <B>BITMAP</B> | <B>MULTIVALUE</B> ] <B>INDEX [IF NOT EXISTS] </B> [ schema. ] identifier [ index_ilm_clause ]
+  <B>ON</B> { cluster_index_clause
+     | table_index_clause
+     | bitmap_join_index_clause
+     | graph_table
+     }
+   [ <B>USABLE |  UNUSABLE | UNRECOVERABLE | COMPUTE STATISTICS | LOCAL </B> 
+   | { <B>DEFERRED</B> | <B>IMMEDIATE</B> } <B>INVALIDATION</B> 
+   ]...
+| -- oracle text
+ <B>CREATE SEARCH INDEX [IF NOT EXISTS]</B> [schema.]identifier <B>ON</B> [schema.]identifier(identifier)
+  [<B>ONLINE</B>]
+  [<B>FILTER BY</B> identifier[, identifier]...]
+  [<B>ORDER BY</B> identifier[<B>DESC</B>|<B>ASC</B>][, identifier[<B>DESC</B>|<B>ASC</B>]]...]
+  [<B>LOCAL</B> [<B>PARTITION</B> [identifier] ]
+  [, <B>PARTITION</B> [identifier] ])]
+  [<B>PARAMETERS</B>(string_literal)] [<B>PARALLEL</B> digits] [<B>UNUSABLE</B>]
+| -- same as above for JSON on the same page of oracle text reference
+  <B>CREATE SEARCH INDEX [IF NOT EXISTS]</B> [schema.]identifier <B>ON</B> [schema.]identifier(identifier) <B>FOR {JSON | XML}</B> 
+  [<b>LOCAL</b>]
+   [<B>PARAMETERS</B>( string_literal
+              /*[DATAGUIDE ON [CHANGE (ADD_VC | function_name)] | OFF]
+  [STORAGE storage_pref]
+  [SEARCH_ON (NONE | TEXT | TEXT_VALUE[(data_types)] | VALUE[(data_types)] | TEXT_VALUE_STRING)]
+  [MEMORY memsize]
+  [SYNC (MANUAL | EVERY "interval-string" | ON COMMIT)]
+  [MAINTENANCE AUTO | MAINTENANCE MANUAL]
+  [OPTIMIZE (MANUAL | EVERY "interval-string" | AUTO_DAILY)]*/
+  )]
+  [<b>LOCAL</b>              
+  |<b>PARALLEL</b> integer
+  |<b>UNUSABLE</b>]...
+} [annotations_clause]  
+</PRE>
+
+  
+
+<pre reference_partitioning>
+<b>PARTITION BY REFERENCE</b> ( constraint ) 
+  [ (reference_partition_desc [, reference_partition_desc]...) ]
+</pre>
+
+<pre individual_hash_partitions>       
+( 
+  <b>PARTITION</b> [partition] [indexing_clause] [deferred_segment_creation] [partitioning_storage_clause] [subpartitions_in_paren]     
+  [, <b>PARTITION</b> [partition] [indexing_clause] [deferred_segment_creation] [partitioning_storage_clause] [subpartitions_in_paren] ]... )
+</pre>
+
+<pre subpartitions_in_paren>
+( list_subpartition_desc [, list_subpartition_desc]... )
+|
+( range_subpartition_desc [, range_subpartition_desc]... )
+</pre>
+
+<pre update_all_indexes_clause>
+<b>UPDATE INDEXES</b>
+   [ ( {index_part_subpart_refactored
+       [, index_part_subpart_refactored ]...
+       | identifier <b>LOCAL</b>}
+   ) ]    --> missing ]
+</pre>
+
+<pre index_part_subpart_refactored>
+ identifier ( 
+       {update_index_partition | update_index_subpartition}
+ )
+</pre>
+
+<PRE subpartition_extended_name>
+<B>SUBPARTITION</B> subpartition
+| 
+<B>SUBPARTITION FOR</b> ( subpartition_value [, subpartition_value]... )
+</PRE>
+
+
+<PRE split_table_partition>
+<B>SPLIT</b> partition_extended_name
+  { <b>AT</b> (expr [, expr]... )
+    [ <b>INTO</b> ( range_partition_desc [, range_partition_desc ]... ) ]
+  | <b>VALUES</b> (literal [, literal] ... )
+    [ <b>INTO</b> (list_partition_desc [, list_partition_desc ]... ) ]
+  | <b>INTO</b> ( { range_partition_desc [, range_partition_desc ]...
+           | list_partition_desc [, list_partition_desc ]... }
+         [, partition_spec] )   
+  } 
+[ split_nested_table_part 
+| filter_condition 
+| dependent_tables_clause 
+| update_index_clauses 
+| parallel_clause 
+| allow_disallow_clustering 
+| <b>ONLINE</b> 
+]...
+</PRE>
+
+
+<PRE range_partition_desc>
+<b>PARTITION</b> [partition]
+[range_values_clause | range_partitions_clause_1]... 
+table_partition_description
+[ ( { range_subpartition_desc [, range_subpartition_desc] ...
+    | list_subpartition_desc [, list_subpartition_desc] ...
+    | individual_hash_subparts [, individual_hash_subparts] ...
+    } [ <b>CREATION DEFERRED</b> ]
+  ) | hash_subparts_by_quantity ]
+  [ <b>STORE IN</b> ( tablespace [, tablespace]...) ]      -- 33894860
+</PRE>  
+
+<pre model_column_clauses>
+[ <b>PARTITION BY</b> ("expr[c_alias]" ["{,expr[c_alias]}..."]) ]  
+  <b>DIMENSION BY</b> ("expr[c_alias]" ["{,expr[c_alias]}..."])
+  <b>MEASURES</b>     ("expr[c_alias]" ["{,expr[c_alias]}..."])
+</pre>
+
+<pre "expr[c_alias]">
+expr [c_alias]
+</pre>
+
+<pre "{,expr[c_alias]}...">
+{, "expr[c_alias]" }...
+</pre>
+
+
+<pre update_index_partition>
+index_partition_description
+     [ index_subpartition_clause ]
+[, index_partition_description
+      [ index_subpartition_clause ] ]...    
+</pre>
+
+<pre modify_table_subpartition>
+<b>MODIFY</b> subpartition_extended_name
+{ allocate_extent_clause 
+| deallocate_unused_clause   --> was: _cluse
+| shrink_clause
+| { { <b>LOB</b> LOB_item | <b>VARRAY</b> varray } (modify_LOB_parameters) }...
+| [ <b>REBUILD</b> ] <b>UNUSABLE LOCAL INDEXES</b>
+| { <b>ADD</b> | <b>DROP</b> } <b>VALUES</b> ( literal [, literal]... )
+}
+</pre>
+
+<PRE expression_list>
+{ "expr_list"
+| ( "expr_list" )        
+| ( )  
+}
+</PRE>
+
+<<"expr|Dexpr|condition">>
+    expr 
+  | <b>DISTINCT</b> expr
+  |  expr <b>DETERMINISTIC</b>
+  | condition
+<<>>
+
+
+<PRE "expr_list">
+{   "expr|Dexpr|condition"
+  | "expr_list" , "expr|Dexpr|condition"
+}
+</PRE>
+
+
+<pre model_expression>
+{ measure_column <b>[</b> "cond_or_expr"[ , "cond_or_expr" ]... <b>]</b> --> was "}...]"
+| { aggregate_function | function_call }
+	{ <b>[</b> "cond_or_expr"[ , "cond_or_expr" ]... <b>]</b>  --> ditto
+        | <b>[</b> single_column_for_loop [, single_column_for_loop] ... <b>]</b>
+
+	| <b>[</b> multi_column_for_loop <b>]</b>
+        }
+| analytic_function
+}
+</pre>
+
+<pre "cond_or_expr"> 
+--{ condition | expr }
+{ comparison_condition | model_condition | expr 
+| like_condition | in_condition | null_condition
+}
+</pre>
+
+<pre expr_as_alias_>        --> introduced to simplify pivot_in_clause
+{ expr                      --> which, before the fix, allowed "expr expr expr" chain
+         | ( "expr_list" )
+         } [ as_alias]
+</pre>
+
+<pre pivot_in_clause>
+<b>IN</b> ( { expr_as_alias_ [, expr_as_alias_]...
+     | subquery
+     | <b>ANY</b> [, <b>ANY</b>]...
+     }
+   )
+|  <b>IN</b> ()  
+</pre>
+
+
+<PRE index_org_table_clause>   --> index org rule is a mess; rewriting completely to fix example
+{
+    <B>INCLUDING</B> column_name 
+  | <B>INCLUDING</B> column_name 
+  | mapping_table_clause
+  | <B>PCTTHRESHOLD</B> integer [ segment_attributes_clause ]
+  | prefix_compression
+  | <B>OVERFLOW</B> [ segment_attributes_clause ]
+}...
+</PRE>
+  
+<PRE table_partitioning_clauses>   
+{ range_partitions
+| list_partitions
+| hash_partitions
+| composite_range_partitions
+| composite_list_partitions
+| composite_hash_partitions
+| reference_partitioning
+| system_partitioning
+| consistent_hash_partitions
+| directory_based_partitions
+| composite_directory_based_partitions
+| consistent_hash_with_subpartitions
+} 
+[ partitioning_storage_clause
+| partitionset_clauses
+| <B>FOR EXCHANGE WITH TABLE</B> identifier
+]...   
+</PRE>
+
+<PRE range_values_clause>
+<B>VALUES LESS THAN</B>
+  ({ expr | <B>MAXVALUE</B> }   --> literal -> expr , e.g. VALUES LESS THAN (TO_DATE('01-APR-1998','DD-MON-YYYY'))
+     [, { expr | <B>MAXVALUE</B> } ]...
+  )</PRE>
+  
+<PRE list_values_clause>
+<B>VALUES</B> (
+{
+  { expr | "expression_list" | <B>NULL</B> } [, { expr | "expression_list" | <B>NULL</B> }]...
+| <b>DEFAULT</b>
+}
+)</PRE>  
+  
+
+<pre ASM_filename>
+{ fully_qualified_file_name
+| numeric_file_name
+| incomplete_file_name
+| alias_file_name
+}</pre>
+
+<PRE redo_log_file_spec>[ filename 
+| (filename
+   [, filename ]...)
+]
+[ <B>SIZE</B> size_clause ]
+[ <B>BLOCKSIZE</b> size_clause ]
+[ <B>REUSE</B> ]</PRE>
+
+<PRE create_dimension>
+<B>CREATE DIMENSION [IF NOT EXISTS]</B> [ schema. ] identifier
+  {level_clause}...
+  { hierarchy_clause
+  | attribute_clause
+  | extended_attribute_clause
+  }...
+
+</PRE>
+
+<pre array_DML_clause>
+{ <b>WITH</b> 
+| <b>WITHOUT</b> 
+| <b>ARRAY</b>
+| <b>DML</b>
+| <b>CURRENT_USER</b>
+| schema_type_varray_type
+| , schema_type_varray_type
+}...
+</pre>
+
+<pre schema_type_varray_type>
+( [ schema. ]type
+   [, [ schema. ]varray_type ] )
+</pre>
+
+<PRE create_view>
+<B>CREATE</B> [<B>OR REPLACE</B>]
+  [<B>NO FORCE | NOFORCE | FORCE</B>] 
+  [<B>EDITIONING</b>|<B>NONEDITIONABLE</B>|<B>EDITIONABLE</B> [ <B>EDITIONING</B> ]] -- compare to doc: [['NO']'FORCE']
+  [<B>JSON [COLLECTION]</B>]
+  <B>VIEW [ IF NOT EXISTS ]</B> [schema.] view
+  [ container_things ]... 
+  create_view1
+</PRE>
+
+<PRE create_view1> 
+  [ <B>PDB_LOCAL_ONLY</B>|<B>SHARING</B> = { <B>OBJECT | METADATA | DATA | EXTENDED DATA | NONE</B> } ]...
+   [ ( alias_in_out_constraints [, alias_in_out_constraints ]... )
+   | object_view_clause
+   | XMLType_view_clause
+   ]
+   [annotations_clause]
+   [ <B>DEFAULT COLLATION</B> identifier ]
+   [ <B>BEQUEATH</B> { <B>CURRENT_USER</B> | <B>DEFINER</B> } ]
+   <B>AS</B> subquery [ subquery_restriction_clause ] 
+   [ container_things ]...
+</PRE>
+
+<PRE container_things>
+<B>CONTAINER_MAP | CONTAINERS_DEFAULT | CONTAINER_DATA 
+ | CONTAINER_DATA_ADMIT_NULL | CON_ID_FILTER | MIGRATE_CROSS_CON</B>
+</PRE>
+
+<pre create_schema>
+<b>CREATE SCHEMA AUTHORIZATION</b> schema
+   [ create_table_statement
+   | create_view
+   | grant_statement
+   ]...
+</pre>
+
+<pre alias_in_out_constraints>
+{ alias [<b>VISIBLE|INVISIBLE</b>] [ inline_constraint ]... [annotations_clause]
+       | out_of_line_constraint }
+</pre>
+
+<pre create_rollback_segment>
+<b>CREATE</b> [ <b>PUBLIC</b> ] <b>ROLLBACK SEGMENT [IF NOT EXISTS]</b> rollback_segment
+  [ <b>TABLESPACE</b> tablespace | storage_clause ]...
+</pre>
+
+<pre create_datafile_clause>
+<B>CREATE DATAFILE [IF NOT EXISTS]</B>
+   { string_literal | digits }
+     [, string_literal | digits ]...
+   [ <B>AS</B> { file_specification
+          [, file_specification ]...
+        | <B>NEW</B>
+        }
+   ]</pre>
+   
+<pre alter_datafile_clause>
+<B>DATAFILE</B>
+   { string_literal | digits | /*filename -- too broad*/ identifier . identifier }
+     [, string_literal | digits | /*filename*/ identifier . identifier ]...
+   [  -- optional to parse ALTER DATABASE DATAFILE 'data_file_name' ENABLE LOST WRITE PROTECTION
+     <B>ONLINE</B>
+   | <B>OFFLINE</B> [ <B>FOR DROP</B> ]
+   | <B>RESIZE</B> size_clause
+   | autoextend_clause
+   | <B>END BACKUP</B>
+   ]</pre>   
+   
+<pre register_logfile_clause>
+<b>REGISTER</b> [ <b>OR REPLACE</b> ]
+  [ <b>PHYSICAL</b> | <b>LOGICAL</b> ]
+<b>LOGFILE</b> [ file_specification  [, file_specification ]...]
+  [ <b>FOR</b> logminer_session_name ]</pre>
+ 
+
+<pre alter_procedure>
+<b>ALTER PROCEDURE [IF EXISTS]</b> [ schema. ] identifier 
+{
+  <b>COMPILE [ DEBUG ]</b>
+  [ identifier = expr [, expr]... ]... 
+  <b>[ REUSE SETTINGS ]</b>
+| 
+   <b>EDITIONABLE | NONEDITIONABLE</b>
+} 
+</pre>   
+
+<PRE create_user><B>CREATE USER [IF NOT EXISTS]</B> user
+     {  user_ident | user_aux }...
+</PRE>
+
+<PRE alter_user>  
+<B>ALTER USER [IF EXISTS]</B> user 
+  [user_ident | user_aux | user_aux_alter | proxy_clause ]...
+   
+</PRE>
+  
+<pre user_ident> {  
+   <B>IDENTIFIED</B> { <B>BY</B> password [ <b>REPLACE</b> identifier ]
+                     | <B>BY</B> *
+                     | <B>EXTERNALLY</B> [ <b>AS</b> {string_literal|identifier} ]
+                     | <B>GLOBALLY</B> [ <B>AS</B> {string_literal|identifier} ]
+              } 
+   | [<B>NO AUTHENTICATION</B>]            
+}
+</pre>
+  
+<pre user_aux> {  
+     <B>DEFAULT COLLATION</B>   identifier
+   | <B>DEFAULT TABLESPACE</B>   tablespace
+   | [ <B>LOCAL</B> ] <B>TEMPORARY TABLESPACE</B> tablespace 
+   | { <B>QUOTA</B> { size_clause | <B>UNLIMITED</B> } <B>ON</B> tablespace }...
+   | <B>PROFILE</B> profile
+   | <B>PASSWORD EXPIRE</B>
+   | <B>ACCOUNT</B> { <B>LOCK</B> | <B>UNLOCK</B> }  
+   | <B>ENABLE EDITIONS</b> [ <b>FOR</b> object_type [, object_type ]... ] [ <b>FORCE</b> ]
+   | [<B>HTTP</B>] <B>DIGEST</B> { <B>ENABLE</B> | <B>DISABLE</B> }
+   | <B>CONTAINER =</b> { <B>CURRENT</B> | <B>ALL</B> } 
+   | <B>ENABLE DICTIONARY PROTECTION</B>  
+   | <B>READ ONLY</B>  
+   | <B>READ WRITE</B>
+   | <B>RENAME TO</B> identifier  
+   | container_data_clause 
+} </pre>
+
+<pre user_aux_alter> {
+   <B>DEFAULT ROLE</b> { role [, role ]...
+                   | <B>ALL</B> [ <b>EXCEPT</B> role [, role ]... ]
+                   | <B>NONE</B>
+                   }
+} </pre>
+
+<pre db_user_proxy_clauses>
+[ <b>WITH</b>
+  { <b>ROLE</b> { role_name [, role_name]...
+         | <b>ALL</b> <b>EXCEPT</b> role_name [, role_name]...
+         }
+  | <b>NO</b> <b>ROLES</b>
+  }
+]
+[ <b>AUTHENTICATION REQUIRED</b> 
+    | <b>AUTHENTICATED USING PASSWORD</b> ] -- statements_4003.htm#SQLRF53652
+</pre>
+
+
+    
+<pre literal_list>
+      literal
+    | identifier
+    | digits <b>{K|M|G}</b>
+    | literal_list , literal 
+    | literal_list , identifier 
+    | literal_list , digits <b>{K|M|G}</b>
+</pre>    
+    
+<PRE relational_properties>
+col_properties
+  rel_prop_iter
+| col_properties
+</PRE>
+  
+<PRE rel_prop_iter>
+  [, col_properties]...
+</PRE>
+  
+    
+<PRE col_properties>
+{ column_definition
+| column_definition <b>COMPRESS</b>
+| column_definition <b>VIRTUAL</b>
+| virtual_column_definition
+| period_definition
+|  out_of_line_ref_constraint
+|  out_of_line_constraint
+| supplemental_logging_props
+} [annotations_clause]
+</pre>
+
+
+<PRE physical_attributes_clause>
+[ { <B>PCTFREE [=]</B> integer
+  | <B>PCTUSED [=]</B> integer
+  | <B>INITRANS [=]</B> integer
+  | <B>MAXTRANS [=]</B> integer   --> deprecated
+  | storage_clause
+  | table_compression
+  }...
+]</PRE>
+
+<pre enable_disable_clause>
+[ --<-- e.g. ALTER TABLE T2.PK_SUPPORT_INDEX DROP CONSTRAINT PK_TT1 CASCADE DROP INDEX;
+  { <b>ENABLE</b> | <b>DISABLE</b> }
+  [ <b>VALIDATE</b> | <b>NOVALIDATE</b> ]
+  { <b>UNIQUE</b> (column [, column ]...)
+  | <b>PRIMARY KEY</b>
+  | <b>CONSTRAINT</b> constraint_name
+  | <b>EXTERNAL_DATA_CACHE</b>
+  }
+  [ using_index_clause ]
+  [ exceptions_clause ]
+  [ <b>CASCADE</b> ]
+]
+[ { <b>KEEP</b> | <b>DROP</b> } {<b>INDEX | DOMAIN</b>} ]
+</pre>
+
+
+<PRE merge_table_partitions>
+<B>MERGE PARTITIONS</B> 
+   [ identifier  [<b>TO</b> identifier | [ , identifier ]... ] 
+   | <b>FOR</b> "(x,y,z)" [,<b>FOR</b> "(x,y,z)"]... ] 
+   [ <B>INTO</B> partition_spec ] 
+   [ (subpartition_spec [, subpartition_spec]...)
+   | filter_condition 
+   | dependent_tables_clause 
+   | update_index_clauses 
+   | parallel_clause 
+   | <b>ONLINE</b> 
+   | allow_disallow_clustering 
+   | <b>STORE IN</b> ( tablespace [, tablespace]...) ]...
+</PRE>
+    
+<PRE index_partition_description>
+<B>PARTITION</B>
+[ partition
+   [ { segment_attributes_clause
+     | key_compression
+     }...
+   | ( <B>PARAMETERS</B> string_literal )  --> missing <B>, quoted literal 
+   | <B>PARAMETERS</B> (string_literal)   
+   ]
+]</PRE>
+    
+    
+<PRE object_view_clause>
+<B>OF</B> [ schema. ] type_name
+{ <B>WITH OBJECT</B> {<B>ID | OID | IDENTIFIER</B>}
+  [ <B>DEFAULT</B> | ( attribute [, attribute ]... ) | ( expr ) ]
+| <B>UNDER</B> [ schema. ] identifier
+}
+[( 
+constr_or_attr_constr  [, constr_or_attr_constr]...
+)]</PRE>
+
+<PRE constr_or_attr_constr>
+{ out_of_line_constraint
+  | attribute { inline_constraint }...
+  }
+</PRE>    
+
+<pre system_partitioning>
+<b>PARTITION BY SYSTEM</b> 
+[ <b>PARTITIONS</b> integer
+  | reference_partition_desc [, reference_partition_desc]...
+  | ( reference_partition_desc [, reference_partition_desc]... )
+]</pre>
+
+<pre cell_assignment> 
+measure_column
+<b>[</b> { { condition
+                   | expr
+                   | single_column_for_loop
+                   }
+                     [, { condition
+                        | expr
+                        | single_column_for_loop
+                        }
+                     ]...
+                 | multi_column_for_loop
+                 }
+               <b>]</b> 
+               --> The Note getting in the way of HTML-BNF syntax  
+</pre>
+
+
+--numeric_function
+<pre character_function>
+    chr 
+  | treat
+  | trim
+</pre>
+-- datetime_function
+<pre datetime_function>
+    extract_datetime
+</pre>
+-- comparison_function
+<pre conversion_function>
+    cast 
+  | decompose
+  | to_binary_double
+  | to_binary_float
+  | to_boolean
+  | to_date
+  | to_dsinterval
+  | to_number
+  | to_timestamp
+  | to_timestamp_tz
+  | to_yminterval
+  | translate_using
+  | validate_conversion
+</pre>
+-- large_object_function
+<pre collection_function>
+  --cardinality
+    collect 
+  --| ...
+</pre>
+-- hierarchical_function
+-- data_mining_function
+<pre data_mining_function>
+    cluster_id1 
+  | cluster_probability 
+  | cluster_prob_analytic
+  | cluster_distance 
+  | cluster_distance_analytic 
+  | cluster_details 
+  | cluster_details_analytic 
+  | cluster_set
+  | cluster_set_analytic
+  | feature_compare
+  | feature_details
+  | feature_details_analytic
+  | feature_id
+  | feature_id_analytic
+  | feature_set
+  | feature_set_analytic
+  | feature_value
+  | feature_value_analytic
+  | ora_dm_partition_name
+  | prediction
+  | prediction_analytic
+  | prediction_bounds
+  | prediction_cost
+  | prediction_cost_analytic
+  | prediction_details
+  | prediction_probability
+  | prediction_prob_analytic
+  | prediction_set
+  | prediction_set_analytic
+</pre>
+<pre XML_function>
+    xmlcast 
+  | xmlcolattval
+  | xmlelement
+  | xmlexists
+  | xmlforest
+  | xmlparse
+  | xmlpi
+  | xmlquery
+  | xmlroot
+  | xmlserialize
+  | xmltable
+  | xmlroot
+</pre>
+<pre JSON_function>
+    json_array
+  | json_arrayagg
+  | json_dataguide
+  | json_mergepatch
+  | json_object 
+  | json_object format_clause
+  | json_objectagg
+  | json_query
+  | json_scalar
+  | json_serialize
+  | json_table
+  | json_transform
+  | json_value 
+</pre>
+
+<pre json_arrayagg>
+<b>JSON_ARRAYAGG</b>
+  ( expr [ <b>FORMAT JSON</b> ]  [ order_by_clause ]
+    [ JSON_on_null_clause ] [ JSON_on_no_rows_clause ] [ JSON_agg_returning_clause ]
+    [ <b>STRICT</b> ] 
+    [ format_clause ]  -- 33829182
+    [json_non_value_flag]
+  )
+</pre> 
+
+<pre JSON_on_no_rows_clause>
+<b>EMPTY ON NO ROWS</b>
+</pre>
+
+-- encoding_decoding_function
+-- NULL_related_function
+-- environment_id_function
+
+<PRE chr>
+<B>CHR</B>(expr [ <B>USING</B> { <B>CHAR_CS</B> | <B>NCHAR_CS</B> | identifier % <B>CHARSET</B> } ])
+</PRE>
+
+<PRE trim>
+<B>TRIM</B>([ { { <B>LEADING</B> | <B>TRAILING</B> | <B>BOTH</B> }
+         [ expr# ]
+       | expr#
+       }
+       <B>FROM</B> 
+     ]
+     expr
+)</PRE>
+
+<pre cast><b>CAST</b>({ expr | <b>MULTISET</b> scalar_subquery_expression } <b>AS [DOMAIN]</b> datatype --> was: type_name
+ [ <b>DEFAULT</b> expr <b>ON CONVERSION ERROR</b> ]
+  [, string_literal [, string_literal ] ]
+  [<b> VALIDATE | NOVALIDATE  </b>]
+)
+</pre>
+
+<PRE translate_using>
+<B>TRANSLATE</B> ( expr <B>USING</B>
+          { <B>CHAR_CS</B> | <B>NCHAR_CS</B> | identifier % <B>CHARSET</B> }
+          )</PRE>
+
+<PRE cluster_probability>
+<B>CLUSTER_PROBABILITY</B> ( [ schema . ] model
+   [ , literal ] mining_attribute_clause )
+</PRE>
+
+<pre cluster_prob_analytic>
+   <b>CLUSTER_PROBABILITY</b>    mining_analytic_body
+</pre>
+
+<PRE cluster_set>
+<B>CLUSTER_SET</B> ( [ schema . ] model [ , expr [ , expr ] ] mining_attribute_clause )
+</PRE>
+
+<PRE cluster_set_analytic>
+<B>CLUSTER_SET</B> mining_analytic_body
+</PRE>
+
+
+<PRE feature_set>
+<B>FEATURE_SET</B>( [ schema . ] model [, expr [, expr ] ] mining_attribute_clause )
+</PRE>
+
+<PRE feature_set_analytic>
+<B>FEATURE_SET</B> mining_analytic_body
+</PRE>
+
+
+<PRE feature_value>
+<B>FEATURE_VALUE</B>( [ schema . ] model [, expr ] mining_attribute_clause ) 
+</PRE>
+
+<pre feature_details>
+<b>FEATURE_DETAILS</b> ( [ schema . ] model
+        [ , expr [ , topN ] ] [ <b>DESC | ASC | ABS</b> ]
+        mining_attribute_clause )
+</pre>
+
+<pre mining_attribute_clause>
+<b>USING</b>
+[ * 
+| { [ schema . ] table . * 
+  | expr [ [<b>AS</b>] alias ]    --<< AS optional in doc examples
+  }
+    [, { [ schema . ] table . * 
+       | expr [ [<b>AS</b>] alias ]
+       }
+    ]...
+]
+</pre>
+
+
+<pre prediction_bounds>
+<b>PREDICTION_BOUNDS</b>
+( [schema.] model
+  [, literal [, literal]]
+  mining_attribute_clause
+)</pre>
+
+<PRE prediction_set>
+<B>PREDICTION_SET</B> ( [ schema . ] model [ , expr [ , expr ] ] 
+  [ cost_matrix_clause ] [mining_attribute_clause] )
+</PRE>
+
+<PRE prediction_set_analytic>
+  prediction_set <b>OVER</b> ( mining_analytic_clause )
+| prediction_set <b>OVER</b>  mining_analytic_clause  
+</PRE>
+
+<pre prediction_analytic>
+<b>PREDICTION</b> ( anomalouS_eXpreSsion [ cost_matrix_clause ] mining_attribute_clause ) -- was(), missing bold
+                   <b>OVER</b> ( mining_analytic_clause )
+|                   
+<b>PREDICTION</b> ( anomalouS_eXpreSsion [ cost_matrix_clause ] mining_attribute_clause ) -- was(), missing bold
+                   <b>OVER</b>  mining_analytic_clause 
+</pre>
+
+<pre prediction_details>
+<b>PREDICTION_DETAILS</b> ( [ schema . ] model 
+                      [ , class_value [ , topN ] ] [ <b>DESC | ASC | ABS</b>] -- bold
+                       mining_attribute_clause )
+</pre>
+
+<pre prediction_details_analytic>
+<b>PREDICTION_DETAILS</b> ( anomalouS_eXpreSsion
+     [ , class_value [ , topN ] ] [ <b>DESC | ASC | ABS</b> ]
+      mining_attribute_clause )
+      <b>OVER</b> ( mining_analytic_clause )
+|      
+<b>PREDICTION_DETAILS</b> ( anomalouS_eXpreSsion
+     [ , class_value [ , topN ] ] [ <b>DESC | ASC | ABS</b> ]
+      mining_attribute_clause )
+      <b>OVER</b> mining_analytic_clause 
+</pre>
+
+<pre prediction_prob_analytic>
+<b>PREDICTION_PROBABILITY</b> (   anomalouS_eXpreSsion
+   [ , class_value ]
+   mining_attribute_clause )
+   <b>OVER</b> (mining_analytic_clause )
+|
+<b>PREDICTION_PROBABILITY</b> (   anomalouS_eXpreSsion
+   [ , class_value ]
+   mining_attribute_clause )
+   <b>OVER</b> mining_analytic_clause 
+   
+</pre>
+
+<pre prediction_cost_analytic>
+<b>PREDICTION_COST</b> (  anomalouS_eXpreSsion
+   [ , string_literal ]
+   cost_matrix_clause mining_attribute_clause )
+   <b>OVER</b> (mining_analytic_clause )
+|   
+<b>PREDICTION_COST</b> ( anomalouS_eXpreSsion
+   [ , string_literal ]
+   cost_matrix_clause mining_attribute_clause )
+   <b>OVER</b> mining_analytic_clause
+</pre>
+
+
+<pre anomalouS_eXpreSsion> 
+  <b>OF ANOMALY</b>
+| <b>OF ANOMALY</b> expr
+| <b>FOR</b> expr
+| expr
+</pre>
+
+<PRE nth_value>{ 
+  <b>NTH_VALUE</b>(measure_expr, measure_expr)     
+  [ from_first_last ][ respect_ignore_nulls ] 
+  <b>OVER</b> (analytic_clause)
+|
+  <b>NTH_VALUE</b>(measure_expr, measure_expr)
+  [ from_first_last ][ respect_ignore_nulls ] 
+  <b>OVER</b> analytic_clause  
+}</pre>
+
+<pre from_first_last>
+    <b>FROM</b> { <b>FIRST</b> | <b>LAST</b> }
+</pre>
+ 
+<pre measure_expr>{
+   expr [ from_first_last ][ respect_ignore_nulls ]
+}</pre>
+  
+
+
+<pre xmlexists>
+<b>XMLEXISTS</b> ( /*{string_literal|bind_var}*/expr [ XML_passing_clause ] )
+</pre>
+
+<pre XML_condition>
+   xmlexists
+|  expr <b>NOT XMLTYPE</b>   -- 33853950
+</pre>
+
+<PRE xmlquery>
+<B>XMLQUERY</B>
+ ( /*{string_literal | identifier}*/expr
+   [ XML_passing_clause ] 
+   <B>RETURNING CONTENT [NULL ON EMPTY]</B> 
+ )
+|
+ <B>XMLQUERY</B>
+ ( /*{string_literal | identifier}*/expr 
+   [ XML_passing_clause ] 
+   <B>RETURNING SEQUENCE [BY REFERENCE]</B> 
+ )
+</PRE>
+
+/*<PRE XML__passing_clause>
+<b>PASSING [ BY VALUE ]</b> 
+    expr [ <b>AS</b> identifier ]
+      [, expr [ <b>AS</b> identifier ] 
+      ]...
+</PRE>*/      
+ 
+<pre XMLnamespaces_clause>
+<b>XMLNAMESPACES</b>
+  ( { /*string*/ expr <b>AS</b> identifier  |  <b>DEFAULT</b> string }     -- was: } | {
+      [, { /*string*/ expr <b>AS</b> identifier  |  <b>DEFAULT</b> string } ]...
+  )
+</pre>
+ 
+<PRE XMLSchema_spec>
+  [ <B>XMLSCHEMA</B> XMLSchema_URL ]
+[<B>ELEMENT</B> { element | XMLSchema_URL <B>#</B> element } ]
+  [ <b>ALLOW ANYSCHEMA
+  | ALLOW NONSCHEMA
+  | DISALLOW NONSCHEMA</b>
+  ]...
+</PRE>
+
+  
+<pre listagg>
+<b>LISTAGG | [SYS .] STRAGG</b>( [ <b>ALL | DISTINCT | UNIQUE</b> ]
+     expr [, expr] -- 24695983
+          /*[, string_literal]*/ 
+      [listagg_overflow_clause] )
+  [<b>WITHIN GROUP</b> (order_by_clause)] 
+  [<b>OVER</b> 
+  ([query_partition_clause | identifier])  -- missing paren, also: select listagg(ename, ';') within group (order by sal) over (w5) elist
+  ]
+</pre>
+
+<pre listagg_overflow_clause>
+{ <b>ON OVERFLOW ERROR</b> }
+|
+{ <b>ON OVERFLOW TRUNCATE</b> [ string_literal | <b>NULL</b> ] [ { <b>WITH</b> | <b>WITHOUT</b> } <b>COUNT</b> ] }
+</pre>
+
+<PRE object_privilege> 
+{ 
+<b>INHERIT PRIVILEGES |         
+INHERIT ANY PRIVILEGES |         
+--select distinct '' || REPLACE(name,' ',' ') || ' |' from TABLE_PRIVILEGE_MAP 
+ALTER |
+AUDIT |
+COMMENT |
+DELETE |
+GRANT |
+INDEX |
+INSERT |
+LOCK |
+RENAME |
+SELECT |
+UPDATE |
+REFERENCES |
+EXECUTE |
+CREATE |
+READ |
+WRITE |
+KEEP SEQUENCE |
+ENQUEUE |
+DEQUEUE |
+UNDER |
+ON COMMIT REFRESH |
+QUERY REWRITE |
+DEBUG |
+FLASHBACK |
+MERGE VIEW |
+USE |
+FLASHBACK ARCHIVE |
+SIGN |
+COLLECT DEBUG INFO </b>                                                                                                                                                                                                                                                                                                                      
+}                                                                                                                                                                                                                                                                                                                        
+</PRE>
+
+
+<pre on_object_clause> [  -- need optional to fix doc_plsql.test 
+                          -- ++296;  /*  subprograms.htm#sthref776  */
+                          -- GRANT INHERIT ANY PRIVILEGES TO unit_owner
+<b>ON</b> { [ schema. ] object    -- was "ON"
+   | <b>USER</b> user [, user]...
+   | <b>DIRECTORY</b> directory_name
+   | <b>EDITION</b> edition_name
+   | <b>MINING MODEL</b> [ schema. ] mining_model_name
+   | <b>JAVA</b> { <b>SOURCE</b> | <b>RESOURCE</b> } [ schema. ] object
+   | <b>SQL TRANSLATION PROFILE</b> [ schema. ] profile
+   }
+]
+</pre>
+
+
+<PRE datafile_tempfile_spec>
+[ string_literal 
+| <B>SIZE</B> size_clause 
+| <B>REUSE</B>
+| autoextend_clause 
+| <b>UNIFORM</b>]...
+</PRE>
+
+
+<pre tablespace_group_clause>
+<b>TABLESPACE GROUP</b> string 
+</pre>
+
+<PRE datafile_tempfile_clauses>   -- 'filename' -> string_literal & file_number -> number
+{ <B>ADD</B> { <B>DATAFILE</B> | <B>TEMPFILE</B> }
+   [ file_specification [, file_specification ]... ]
+| <B>DROP</B> {<B>DATAFILE</b> | <b>TEMPFILE</b> } { string_literal | number }
+| <B>SHRINK TEMPFILE</b> { string_literal | number } [<b>KEEP</b> size_clause]
+| <B>RENAME</B> <B>DATAFILE</B> string_literal [, string_literal ]...
+    <B>TO</B> string_literal [, string_literal ]...
+| { <B>DATAFILE</B> | <B>TEMPFILE</B> } { <B>ONLINE</B> | <B>OFFLINE</B> }
+}</PRE>
+
+
+<PRE interval_expression>( expr - expr )
+   { <b>DAY</b> [ ({digits| bind_var}) ] <b>TO</b>
+     <b>SECOND</b> [ ({digits| bind_var}) ]
+   | <b>YEAR</b> [ ({digits| bind_var}) ] <b>TO</b>
+     <b>MONTH</b>
+   } 
+   | interval_day_to_second
+   | interval_year_to_month
+</PRE>
+   
+
+<PRE interval_day_to_second> 
+<B>INTERVAL</B> {string_literal | bind_var}
+{ { <B>DAY</B> | <B>HOUR</B> | <B>MINUTE</B> } [ ({digits| bind_var}) ]
+| <B>SECOND</B> [ ({digits| bind_var} [, {digits| bind_var} ]) ]
+}
+[ <B>TO</B> { <B>DAY</B> | <B>HOUR</B> | <B>MINUTE</B> | <B>SECOND</B> [ ( {digits| bind_var} ) ] } ]
+</PRE>
+
+<PRE interval_year_to_month>
+<B>INTERVAL</B> {string_literal | bind_var}
+{ <B>YEAR</B> | <B>MONTH</B> } [ ({digits| bind_var}) ]
+[ <B>TO</B> { <B>YEAR</B> | <B>MONTH</B> } ]
+</PRE>
+
+<pre create_table><B>CREATE</B> [ 
+      { <B>GLOBAL</B> | <B>PRIVATE</B> } <B>TEMPORARY</B> 
+      |  <B>SHARDED</B> | <B>DUPLICATED</B> 
+      | <B>BLOCKCHAIN</B> 
+      | <B>IMMUTABLE</B> 
+      | <B>IMMUTABLE BLOCKCHAIN</B> 
+      | <B>JSON [COLLECTION]</B>   
+   ] 
+   <B>TABLE [IF NOT EXISTS]</B>
+  [ schema. ] colmapped_query_name --table
+  [ <B>SHARING</B> = { <B>METADATA | DATA | EXTENDED DATA | NONE | OBJECT</b> }
+  | <B>UNRECOVERABLE</B>
+  | <B>FOR STAGING</B>
+  ]
+  { relational_table | object_table | XMLType_table | [json_collection_table] [relational_table] }
+  [ <B>MEMOPTIMIZE FOR</B> {<B>READ | WRITE</B>} 
+  | <B>PARENT</B> [ schema. ] colmapped_query_name /*table*/ 
+  --| , [ <B>DOMAIN</B> ] [identifier.]identifier (column_name_list) ] [<B>USING</B> (column_name_list) ]
+       <B>REFRESH INTERVAL</B> number <B>{ SECOND | MINUTE | HOUR } </B>
+  | <B>SYNCHRONOUS</B> 
+  | <B>FOR STAGING</B>
+  | <B>FOR EXCHANGE WITH TABLE</B> [ schema. ] identifier
+  | annotations_clause
+  ]... 
+</pre>
+
+<pre relational_table>
+[ (relational_properties) ]
+[ annotations_clause ]
+[ blockchain_table_clauses ]      -- extra ()
+[ <b>DEFAULT COLLATION</b> collation_name ]
+[ <b>ON COMMIT</b> { <b>DROP</b> | <b>PRESERVE</b> } <b>DEFINITION</b> ]
+[ <b>ON COMMIT</b> { <b>DELETE</b> | <b>PRESERVE</b> } <b>ROWS</b> ]
+[ physical_properties ]
+[ table_properties ]
+</pre>
+
+
+<pre varray_item> expr | dont_substitute
+</pre>
+
+<pre varray_storage_clause>
+<B>STORE AS [SECUREFILE | BASICFILE] LOB</B>
+[ [LOB_segname] ( LOB_storage_parameters )      -- was {} e.g. bug 32527598
+| LOB_segname
+]
+|
+<B>STORE AS TABLE</B> identifier
+</pre>
+
+
+<PRE expr#> -- single alternative here (rules are prioritized)
+{ simple_expression
+| compound_expression
+| case_expression
+| cursor_expression
+| datetime_expression
+| function_expression
+| interval_expression
+| object_access_expression
+| scalar_subquery_expression
+| model_expression
+| type_constructor_expression
+-- missing:
+| multiset_expression   -- fix for 12350361
+| JSON_object_access_expr 
+| json_object
+| fuzzy_match
+} </PRE>
+
+
+<PRE expr> -- single alternative here (rules are prioritized)
+{ expr#
+| expr# <B>COLLATE</B> identifier -- plsql collate_opt has empty alternative
+| <b>OLD</b> expr#
+| <b>NEW</b> expr#
+} </PRE>
+
+<PRE multiset_expression>
+{ multiset_except
+| multiset_intersect
+| multiset_union
+}</PRE>
+
+
+<PRE create_directory>
+<B>CREATE</B> [ <B>OR REPLACE</B> ] <B>DIRECTORY [IF NOT EXISTS]</B> identifier
+  [<B>SHARING</B> = <B>{METADATA | NONE}</B>]
+  <B>AS</B> string_literal 
+</PRE>
+
+<PRE set_time_zone_clause>
+<B>SET TIME_ZONE</B> =
+   string_literal
+</PRE>
+
+<pre add_logfile_clauses>
+<B>ADD</B> [ <B>STANDBY</B> ] <B>LOGFILE</B>
+   { [ <b>INSTANCE</b> string_literal |  <b>THREAD</b> integer ]
+     [ <B>GROUP</B> integer ] redo_log_file_spec
+       [, [ <B>GROUP</B> integer ] redo_log_file_spec ]...
+   | <b>MEMBER</B> string_literal [ <B>REUSE</B> ] [, string_literal [ <B>REUSE</B> ] ]...
+        <B>TO</B> logfile_descriptor [, logfile_descriptor ]...
+   }</pre>
+      
+   
+<PRE instance_clauses>
+{ <B>ENABLE</B> | <B>DISABLE</b> } <b>INSTANCE</b> string_literal
+</PRE>
+
+<PRE drop_trigger>
+<B>DROP TRIGGER</B> [ schema. ] identifier </PRE>
+
+
+<pre rolling_migration_clauses>
+{ <b>START ROLLING MIGRATION TO</b> string_literal
+| <b>STOP ROLLING MIGRATION</b>
+}</pre>
+
+<PRE security_clauses>
+{ { <B>ENABLE</B> | <B>DISABLE</B> } <B>RESTRICTED SESSION</B>
+| <B>SET [ENCRYPTION] WALLET OPEN IDENTIFIED BY</B> identifier 
+| <B>SET [ENCRYPTION] WALLET CLOSE</B>
+  [ <B>IDENTIFIED BY</B> {identifier|*}  ]
+--??| identifier 
+| set_encryption_key
+}
+</PRE>
+
+<pre set_encryption_key>
+{ <b>SET ENCRYPTION KEY</b>
+  {
+    [ identifier ] <b>IDENTIFIED BY</b> identifier
+    |
+    <b>IDENTIFIED BY</b> identifier [ <b>MIGRATE USING</b> identifier ]
+  }
+}
+</pre>
+
+
+<pre like_condition>
+char1 [ <b>NOT</b> ] { <b>LIKE</b> | <b>LIKEC</b> | <b>LIKE2</b> | <b>LIKE4</b> }
+  char2 [ <b>ESCAPE</b> esc_char ]
+| regexp_like_condition
+ </pre>
+
+<pre regexp_like_condition>
+<b>REGEXP_LIKE</b>(expr, expr
+            [, expr ]
+           )</pre>
+
+<pre flashback_query_clause>
+{ <b>VERSIONS BETWEEN</b> { <b>SCN</b> | <b>TIMESTAMP</b> }
+    { expr | <b>MINVALUE</b> } <b>AND</b> { expr | <b>MAXVALUE</b> }
+| <b>VERSIONS PERIOD FOR</b> /*valid_time_*/column <b>BETWEEN</b>
+    { expr | <b>MINVALUE</b> } <b>AND</b> { expr | <b>MAXVALUE</b> }
+| <b>AS OF</b> { <b>SCN</b> | <b>TIMESTAMP</b> | <b>SNAPSHOT</b> } expr
+| <b>AS OF PERIOD FOR</b> /*valid_time_*/column expr
+}...
+</pre>
+
+
+<PRE create_database_link>
+<B>CREATE</B> [ <B>SHARED</B> ] [ <B>PUBLIC</B> ] <B>DATABASE LINK [IF NOT EXISTS]</B> [identifier.]... identifier [@ identifier]
+  [ "db_link_auth"
+  ]...
+  [ <B>USING</B> string_literal ] </PRE>
+  
+<PRE "db_link_auth">
+<B>CONNECT TO</B>
+    { <B>CURRENT_USER</B>
+
+    | user <B>IDENTIFIED BY</B> password [ dblink_authentication ]
+    | user <B>IDENTIFIED BY</B> *
+    | user 
+    }
+  | dblink_authentication  
+</PRE>  
+  
+<PRE in_condition>
+{ expr [ <B>NOT</B> ] <B>IN</B> {({ expression_list | subquery }) | expr }
+| ( "expr_list" )
+    [ <B>NOT</B> ] <B>IN</B> ({ expression_list [, expression_list ]...
+                | subquery
+                }
+               )
+|  ( "expr_list" ) [ <B>NOT</B> ] <B>IN</B> values_clause
+|     expr         [ <B>NOT</B> ] <B>IN</B> values_clause        
+}</PRE>
+
+<PRE overlaps_condition>
+{  ( "expr_list" )
+    [ <B>NOT</B> ] <B>OVERLAPS</B> ({ expression_list [, expression_list ]...
+                }
+               )
+}</PRE>
+
+
+<PRE create_library>
+<b>CREATE</b> [ <b>OR REPLACE</b> ]
+[ <b>EDITIONABLE</b> | <b>NONEDITIONABLE</b> ]
+<b>LIBRARY [IF NOT EXISTS]</b> plsql_library_source
+</PRE>
+
+<PRE plsql_library_source>
+{
+  [ schema. ] identifier 
+  [<b>TRUSTED</b>] 
+  { <b>IS | AS</b> }
+  {
+      { string_literal | string_literal <b>IN</b> identifier }
+      [ <b>AGENT</b> string_literal ] [ <b>CREDENTIAL</b> [schema.]identifier ]
+    |
+      <b>STATIC</b>
+  }   
+}
+</PRE>
+
+
+<PRE drop_library>
+<B>DROP LIBRARY [IF EXISTS]</B> [ schema. ] identifier 
+</PRE>
+
+<PRE order_by_clause>   -- c_alias has been reduced and all that is left is identifier
+                        -- whereas going through expr will give column
+<B>ORDER</B> [ <B>SIBLINGS</B> ] <B>BY</B>
+"ord_by_1desc"
+  [, "ord_by_1desc" ]...
+</PRE>
+  
+<PRE "ord_by_1desc">
+   expr
+     [ <B>ASC</B> | <B>DESC</B> ]
+     [ <B>NULLS FIRST</B> | <B>NULLS LAST</B> ]
+</PRE>  
+  
+<PRE unusable_editions_clause>
+[ <B>UNUSABLE BEFORE</B> { <B>CURRENT EDITION</B> | <B>EDITION</B> identifier } ]
+[ <B>UNUSABLE BEGINNING WITH</B> { <B>CURRENT EDITION</B> | <B>EDITION</B> edition | <B>NULL EDITION</B> } ] -- brackets order
+</PRE>
+
+<pre file_name_convert><b>FILE_NAME_CONVERT</b> =
+  { ( string_literal, string_literal
+      [, string_literal, string_literal ]... )
+    |
+    <b>NONE</b>
+  }</pre>
+  
+<PRE cycle_clause>{<b>CYCLE</b> c_alias [, c_alias]...
+    <b>SET</b> /*cycle_mark_*/c_alias <b>TO</b> /*cycle_value*/ {literal|bind_var}
+    <b>DEFAULT</b> /*no_cycle_value*/ {literal|bind_var}
+}</PRE>
+  
+<PRE decompose>
+<B>DECOMPOSE</B>( column [ <B>CANONICAL</B> | <B>COMPATIBILITY</B> ] )
+</PRE>
+
+
+<PRE alter_type>  -- -- -- -- -- -- -- -- pl/sql manual
+<B>ALTER TYPE [IF EXISTS]</B> [ schema. ]type
+  {  <b>EDITIONABLE | NONEDITIONABLE</b> 
+  | compile_type_clause
+  | replace_type_clause
+  | { alter_method_spec
+    | "alter_attribute_definition"
+    | alter_collection_clauses
+    | [ <B>NOT</B> ] { <B>INSTANTIABLE | FINAL</B> }
+    }
+    [ dependent_handling_clause ]
+  | <b>RESET</b>  
+  }
+;  
+</pre>
+
+<pre compile_type_clause>
+<B>COMPILE</B>
+   [ <B>DEBUG</B> ]
+   [ <B>SPECIFICATION | BODY</B> ]
+   [ compiler_parameters_clause ] ...
+   [ <B>REUSE SETTINGS</B> ]  
+</pre>
+ 
+<pre compiler_parameters_clause>
+	identifier = expr [, expr]...
+</pre>
+
+<pre replace_type_clause>
+	<B>REPLACE</B> [ invoker_rights_clause ] <B>AS OBJECT</B>
+   (attribute datatype [, attribute datatype ]...   [, element_spec [, element_spec ]... ])
+   |
+   <B>REPLACE UNDER</B> dotted_name ( adt_field_list ) NOT_opt_FINAL
+</pre>
+  
+  
+<pre alter_method_spec>
+ { <B>ADD | DROP</B> } { map_order_function_spec | subprogram_spec }
+  [, { <B>ADD | DROP</B> } { map_order_function_spec | subprogram_spec } ]... 
+</pre>
+
+<pre "alter_attribute_definition">
+	 <B>{ ADD | MODIFY } ATTRIBUTE</B>
+     { adt_field
+     | ( adt_field_list )
+     }
+| <b>DROP ATTRIBUTE</b>
+     { attribute
+     | ( attribute [, attribute ]... )
+     }
+</pre>
+
+<pre alter_collection_clauses>
+	<B>MODIFY</B> { <B>LIMIT</B> integer | <B>ELEMENT TYPE</B> datatype }
+</pre>
+
+<pre dependent_handling_clause>
+	{ <B>INVALIDATE
+       | CASCADE [ { [ NOT ] INCLUDING TABLE DATA
+            | CONVERT TO SUBSTITUTABLE
+            }
+          ]</B>
+     [ [<B>FORCE</B> ] exceptions_clause ]
+}
+</pre>
+
+<pre exceptions_clause>
+	<B>EXCEPTIONS INTO</B> [ schema. ] table
+</pre>
+
+<pre modify_column_clauses><b>MODIFY</b>  
+{ ( {modify_col_properties | modify_virtcol_properties | modify_col_visibility }    --<-- missing {}
+    [, {modify_col_properties | modify_virtcol_properties | modify_col_visibility} ]... ) 
+| modify_col_substitutable
+| modify_col_properties
+| modify_virtcol_properties
+| modify_col_visibility     -- missing e.g. alter table mytable modify column undesired_col_name INVISIBLE;
+}
+</pre>
+
+
+<pre modify_virtcol_properties>
+virtual_column_definition
+</pre>
+
+
+<pre modify_col_properties>
+column [ datatype ] 
+       [ <b>RESERVABLE | NOT RESERVABLE</b> ]
+	   [ <b>DOMAIN</b> [ schema ] . identifier ]
+       [ <b>COLLATE</b> column_collation_name ]
+       [ <b>DEFAULT</b> [ <b>ON NULL</b> ] [<b>FOR INSERT {ONLY | AND UPDATE}</b>] expr 
+       | identity_clause 
+       | <b>DROP</b> <b>IDENTITY</b> 
+       ]
+       [ inline_constraint ]...                                  -- was: ... ]
+       [  <b>ENCRYPT</b> encryption_spec | <b>DECRYPT</b>     
+       | LOB_storage_clause 
+       | alter_XMLSchema_clause 
+       | annotations_clause 
+       | <b>REPLACE</b> expr <b>WITH</b> expr
+       ]...    
+</pre>
+
+
+<pre grant>
+<b>GRANT</b>
+  { 
+  { { grant_system_privileges | grant_object_privileges } 
+    [ <b>CONTAINER</b> = { <b>CURRENT</b> | <b>ALL</b> } ] }
+  | grant_roles_to_programs
+  } --< missing
+  [;] -- optional in examples http://st-doc.us.oracle.com/database/121/LNPLS/subprograms.htm#sthref776  sthref779  
+</pre>
+
+<<grant_system_privileges>>
+{ system_privilege  | role | ALL PRIVILEGES } [ON [SCHEMA|USER] identifier]
+  [, { system_privilege | role | ALL PRIVILEGES } [ON [SCHEMA|USER] identifier] ]...  
+[
+TO { grantee_clause | grantee_identified_by } [ WITH { ADMIN | DELEGATE } OPTION ]
+]
+<<>>
+
+<pre package_compile_clause>  -- in PL/SQL manual
+<b>COMPILE</b> [ <b>DEBUG</b> ] [<b>PACKAGE | SPECIFICATION | BODY</b> ]
+[ identifier = expr [,expr]... ]... [ <b>REUSE SETTINGS</b> ]
+</pre>
+
+<pre function_compile_clause>  
+plsql_compile_clause  
+</pre>
+
+<pre trigger_compile_clause>  
+plsql_compile_clause  
+</pre>
+
+<pre library_compile_clause>  
+plsql_compile_clause  
+</pre>
+
+<pre plsql_compile_clause>  
+<b>COMPILE</b> [ <b>DEBUG</b> ] [ identifier = expr [, expr]... ]... [ <b>REUSE SETTINGS</b> ]
+</pre>
+
+<pre commit>
+<b>COMMIT</b> 
+   [ <b>WORK</b> 
+   | <b>COMMENT</b> string 
+   | <b>WRITE</b> 
+   | <b>WAIT</b>
+   | <b>NOWAIT</b> 
+   | <b>IMMEDIATE</b> 
+   | <b>BATCH</b> 
+   | <b>FORCE</b>  string [, integer ]
+   | <b>CORRUPT_XID</b> string
+   | <b>CORRUPT_XID_ALL</b>
+   ]... 
+-- no trailing ;
+</pre>
+
+<pre returning_clause>
+{ <b>RETURN</b> | <b>RETURNING</b> } expr [, expr ]...
+BULK_COLLECT_opt <b>INTO</b> data_item [, data_item ]...
+</pre>
+
+<pre data_item> {
+          identifier
+        | identifier . data_item 
+        | :identifier
+        | :digits
+        | identifier ( "expr_list" ) 
+        | identifier ( "expr_list" ) . data_item 
+}</pre>
+
+/*<pre bulk_collect_into_clause>  -- pl/sql; leverage BULK_COLLECT_opt instead
+BULK COLLECT INTO expanded_and_bind_n 
+  [, expanded_and_bind_n ]...
+</pre>*/
+
+<pre update_set_clause>
+<b>SET</b>
+{ update_set_clause_expr
+     [, update_set_clause_expr
+     ]...
+| <b>VALUE</b> ( id_or_qualid  -- e.g. UPDATE ot1 SET VALUE(ot1.x) = t1(20);
+) = { expr | (subquery) }
+}
+</pre>
+
+<pre update_set_clause_expr> -- refactored
+{ (column [, column ]...) = { expr | (subquery)}
+  | column = { expr | (subquery) | <b>DEFAULT</b> }
+  | identifier.column = { expr | (subquery) | <b>DEFAULT</b> }
+  }
+</pre>
+
+<pre values_clause> {
+  <b>VALUES</b> { expr [par_expr_list]    -- composites.htm#BABBCHAI, triggers.htm#CIHFBGDC, 
+                 | par_expr_list [, par_expr_list]... }
+  [ as_alias_parcol ]                
+| 
+  ( <b>VALUES</b> par_expr_list [, par_expr_list]... )
+  [ as_alias_parcol ] 
+| 
+  ( <b>VALUES</b> (subquery) )
+  [ as_alias_parcol ]   
+}</pre>
+
+<pre as_alias_parcol>
+   [<b>AS</b>] t_alias ( c_alias[,c_alias]... )
+</pre>
+
+<pre par_expr_list>
+("expr_list")
+</pre>
+
+<pre full_database_recovery>
+[ <b>STANDBY</b> ] 
+[<b>DATABASE</b>]  -- made optional to parse ALTER DATABASE RECOVER AUTOMATIC UNTIL TIME '2001-10-27:14:00:00'; (statements_1006.htm#SQLRF52573)
+[ { <b>UNTIL</b> { <b>CANCEL</b>
+          | <b>TIME</b> date
+          | <b>CHANGE</b> integer
+          | <b>CONSISTENT</b>
+          }
+  | <b>USING BACKUP CONTROLFILE</b>
+  | <b>SNAPSHOT TIME</b> date
+  }...
+]
+</pre>
+
+<pre alter_dimension>
+<b>ALTER DIMENSION [IF EXISTS]</b> [ schema. ] dimension
+{ -- missing brackets
+  { <b>ADD</b> { level_clause
+        | hierarchy_clause
+        | attribute_clause
+        | extended_attribute_clause
+        }
+  } ...
+  |
+  { <b>DROP</b> { <b>LEVEL</b> level [ <b>RESTRICT</b> | <b>CASCADE</b> ]
+         | <b>HIERARCHY</b> hierarchy
+         | <b>ATTRIBUTE</b> attribute [ <b>LEVEL</b> level [ <b>COLUMN</b> column ] ]...
+         }
+  } ...
+  |
+  <b>COMPILE</b>
+}
+  ;
+</pre>
+
+<pre pdb_storage_clause>
+<b>STORAGE</b>
+  { ( { <b>MAXSIZE</b> { <b>UNLIMITED</b> | size_clause }  -- "(" -> "( {"
+    |
+    <b>MAX_SHARED_TEMP_SIZE</b> { <b>UNLIMITED</b> | size_clause } }... )   --> "}...)" -> "}}...)"
+  |
+  <b>UNLIMITED</b>
+  }
+</pre>
+
+
+<pre XMLType_storage>
+<b>STORE</b>
+{ <b>AS</b>
+	 { <b>OBJECT RELATIONAL</b>
+	 | [<b>SECUREFILE | BASICFILE</b>] { <b>CLOB</b> | <b>[[NOT] TRANSPORTABLE] BINARY XML</b> }
+	   [ { LOB_segname [ (LOB_storage_parameters) ]   -- was: LOB_parameters
+	       | (LOB_storage_parameters)                   -- was: LOB_parameters
+	       }
+	     ]
+	 --| { <b>ALL VARRAYS AS</b> { <b>LOBS</b> | <b>TABLES</b> }  -- with AS???
+	 }
+|  <b>ALL VARRAYS AS</b> { <b>LOBS</b> | <b>TABLES</b> }  -- doc
+}
+</pre>
+
+<pre object_properties>
+{ { column | attribute }
+    [ <b>DEFAULT</b> expr ]
+    [ { inline_constraint }...  | inline_ref_constraint ]
+| { out_of_line_constraint
+  | out_of_line_ref_constraint
+  | supplemental_logging_props
+  }
+| object_properties , object_properties   -- to fix statements_7002.htm#SQLRF54666  
+}
+</pre>
+
+<pre XMLType_view_clause>
+<b>OF [SYS.]XMLTYPE</b> [ XMLSchema_spec ]
+[<b>WITH OBJECT</b> {<b>IDENTIFIER | ID | OID</b>}   -- abbreviated "ID" in statements_8004.htm#sthref5882
+  { <b>DEFAULT</b> | ( expr [, expr ]...) }]
+</pre>
+
+<pre global_partitioned_index>
+<B>GLOBAL</b>
+{ range_partitions
+| hash_partitions
+} 
+</pre>
+
+<pre hash_partitions>
+<b>PARTITION BY HASH</b> (column [, column ] ...)
+[ individual_hash_partitions
+| hash_partitions_by_quantity
+]     -- optional 33901893
+</pre>
+
+<pre collection_expression> {
+subquery|expr
+}
+</pre>
+    
+        
+<pre row_pattern_clause>
+<b>MATCH_RECOGNIZE</b> (   -- was {
+  [ row_pattern_partition_by ]
+  [ row_pattern_order_by ]
+  [ row_pattern_measures ]
+  [ row_pattern_rows_per_match ]
+  [ row_pattern_skip_to ]
+  <b>PATTERN</b> (row_pattern)
+  [ row_pattern_subset_clause ]
+  <b>DEFINE</b> row_pattern_definition_list
+)
+</pre>        
+        
+<pre row_pattern>
+row_pattern_term
+| row_pattern <b>sbar</b> row_pattern_term
+</pre>
+
+<pre row_pattern_factor>
+row_pattern_primary [ row_pattern_quantifier ]      --<-- wrong, should be
+                                              ...   ----- iterative e.g. PATTERN (S DOWN+ UP{2}?)
+</pre>
+
+<pre row_pattern_primary>
+variable_name
+| <b>$</b>
+| <b>^</b>
+| ( [ row_pattern ] )
+| <b>lcp</b> - row_pattern - <b>rcp</b>
+| row_pattern_permute
+</pre>
+
+<pre row_pattern_quantifier>
+* [ ? ]
+| + [ ? ]
+| ? [ ? ]
+| <b>lcp</b> [ integer ] , [ integer ] <b>rcp</b> [ ? ]
+| <b>lcp</b> integer <b>rcp</b>
+</pre>
+
+<pre constraint>  -- loaded name
+{ inline_constraint
+| out_of_line_constraint
+| inline_ref_constraint
+| out_of_line_ref_constraint
+---- added ----
+| id_or_qualid  
+| identifier . identifier @ dblink
+| identifier @ dblink
+}
+</pre>
+
+<pre explain_plan>
+<b>EXPLAIN PLAN</b>
+   [ <b>SET STATEMENT_ID</b> [=] string ]
+   [ <b>INTO</b> [ schema. ] table [ @ dblink ] ]
+<b>FOR</b> {sql_stmt | create | alter}
+     /*[row_limiting_clause]      -- to fix optimization issue
+                                -- "order by x desc" conflicts with [DESC]RIBE command
+                                -- Alt solution: make DESCRIBE recognizable at lexical analysis level
+                                introduced Earley.isOptimizable() 
+                                */ 
+;   -- statement -> sql_stmt
+</pre>
+
+<pre lockmode>{
+<b>ROW SHARE  
+|
+ROW EXCLUSIVE  
+|
+SHARE UPDATE
+|
+SHARE 
+|
+SHARE ROW EXCLUSIVE 
+|
+EXCLUSIVE</b>
+}</pre>
+
+<pre alter_java>
+<b>ALTER JAVA [IF EXISTS]</b>
+  { <b>SOURCE</b> | <b>CLASS</b> } [ schema. ]object_name 
+  [ <b>RESOLVER</b> 
+      ( { ( /*match_string*/{identifier|*} [, ] { schema_name | - } ) }... )   -- missing curly paren
+  ]
+  { { <b>COMPILE</b> | <b>RESOLVE</b> }
+  | invoker_rights_clause
+  } 
+</pre>
+
+
+<pre system_privilege>
+<b>
+{
+  COMMENT TABLE
+| COMMENT ANY PROPERTY GRAPH
+| DELETE TABLE
+| DELETE FROM identifier
+| EXECUTE PROCEDURE
+| CALL
+| CLEAR ALL LOCAL CONTEXTS
+| GRANT DIRECTORY
+| GRANT privilege ON directory
+| REVOKE privilege ON directory
+| GRANT PROCEDURE
+| GRANT privilege ON procedure
+| REVOKE privilege ON procedure
+| GRANT SEQUENCE
+| GRANT privilege ON sequence
+| REVOKE privilege ON sequence
+| GRANT TABLE
+| GRANT privilege ON table
+| REVOKE privilege ON table
+| GRANT TYPE
+| GRANT privilege ON TYPE
+| REVOKE privilege ON TYPE
+| INSERT TABLE
+| INSERT INTO TABLE
+| LOCK TABLE
+| SELECT SEQUENCE
+| SELECT TABLE
+| SELECT FROM TABLE
+| UPDATE TABLE
+| UPDATE table
+-- select distinct '| ' || name a from system_privilege_map
+-- union
+-- select distinct '| ' || substr(name,instr(name,' ')+1) where name not like '%ANY%'
+-- order by '| ' || name;
+| ADMINISTER ANY SQL TUNING SET
+| ADMINISTER DATABASE TRIGGER
+| ADMINISTER FINE GRAINED AUDIT POLICY
+| ADMINISTER KEY MANAGEMENT
+| ADMINISTER REDACTION POLICY
+| ADMINISTER RESOURCE MANAGER
+| ADMINISTER ROW LEVEL SECURITY POLICY
+| ADMINISTER SQL FIREWALL
+| ADMINISTER SQL MANAGEMENT OBJECT
+| ADMINISTER SQL TUNING SET
+| ADVISOR
+| AUDIT ANY
+| AUDIT SYSTEM
+| BACKUP ANY TABLE
+| BECOME USER
+| CHANGE NOTIFICATION
+| COMMENT ANY MINING MODEL
+| COMMENT ANY TABLE
+
+| CREATE ANY priv_subjects
+
+| CREATE priv_subjects
+
+| DROP ANY priv_subjects
+
+| DROP priv_subjects
+
+| ALTER ANY priv_subjects
+
+| ALTER priv_subjects
+
+| ANALYZE ANY
+| ANALYZE ANY DICTIONARY
+| ANALYZE DICTIONARY
+
+| DEBUG ANY PROCEDURE
+| DEBUG CONNECT ANY
+| DEBUG CONNECT SESSION
+| DELETE ANY CUBE DIMENSION
+| DELETE ANY MEASURE FOLDER
+| DELETE ANY TABLE
+| DEQUEUE ANY QUEUE
+| EM EXPRESS CONNECT
+| ENABLE DIAGNOSTICS
+| ENQUEUE ANY QUEUE
+| EXECUTE ANY ASSEMBLY
+| EXECUTE ANY CLASS
+| EXECUTE ANY DOMAIN
+| EXECUTE ANY EVALUATION CONTEXT
+| EXECUTE ANY INDEXTYPE
+| EXECUTE ANY LIBRARY
+| EXECUTE ANY OPERATOR
+| EXECUTE ANY PROCEDURE
+| EXECUTE ANY PROGRAM
+| EXECUTE ANY RULE
+| EXECUTE ANY RULE SET
+| EXECUTE ANY TYPE
+|  EXECUTE ON DBMS_JOB
+| EXECUTE ON DBMS_RLS
+|   EXECUTE ON DBMS_REDACT
+| EXECUTE ON  DBMS_TSDP_MANAGE
+|   EXECUTE ON DBMS_TSDP_PROTECT
+| EXECUTE ON DBMS_NETWORK_ACL_ADMIN,
+| EXECUTE ON DBMS_SCHEDULER
+
+| EXECUTE ASSEMBLY
+| EXECUTE DYNAMIC MLE
+| EXEMPT ACCESS POLICY
+| EXEMPT IDENTITY POLICY
+| EXEMPT REDACTION POLICY
+| EXPORT FULL DATABASE
+| FLASHBACK ANY TABLE
+| FLASHBACK ARCHIVE ADMINISTER
+| FORCE ANY TRANSACTION
+| FORCE TRANSACTION
+| GLOBAL QUERY REWRITE
+| GRANT ANY OBJECT PRIVILEGE
+| GRANT ANY PRIVILEGE
+| GRANT ANY ROLE
+| GRANT ANY SCHEMA PRIVILEGE
+| IMPORT FULL DATABASE
+
+| INHERIT PRIVILEGES
+| INHERIT REMOTE PRIVILEGES
+| INHERIT ANY PRIVILEGES
+| INHERIT ANY REMOTE PRIVILEGES
+| INHERIT PRIVILEGES ON USER identifier
+| INHERIT REMOTE PRIVILEGES ON USER identifier
+| INHERIT ANY PRIVILEGES ON USER identifier
+| INHERIT ANY REMOTE PRIVILEGES ON USER identifier
+
+| INSERT ANY CUBE DIMENSION
+| INSERT ANY MEASURE FOLDER
+| INSERT ANY TABLE
+| INSERT ROLES identifier /* DBA */
+| KEEP DATE TIME
+| KEEP SYSGUID
+| LOCK ANY TABLE
+| LOGMINING
+| MANAGE ANY FILE GROUP
+| MANAGE ANY QUEUE
+| MANAGE FILE GROUP
+| MANAGE SCHEDULER
+| MANAGE TABLESPACE
+| MERGE ANY VIEW
+| ON COMMIT REFRESH
+| PURGE DBA_RECYCLEBIN
+| QUERY REWRITE
+| READ ANY ANALYTIC VIEW CACHE
+| READ ANY FILE GROUP
+| READ ANY PROPERTY GRAPH
+| READ ANY TABLE
+| REDEFINE ANY TABLE
+| RESTRICTED SESSION
+| RESUMABLE
+| SELECT ANY CUBE
+| SELECT ANY CUBE BUILD PROCESS
+| SELECT ANY CUBE DIMENSION
+| SELECT ANY DICTIONARY
+| SELECT ANY MEASURE FOLDER
+| SELECT ANY MINING MODEL
+| SELECT ANY SEQUENCE
+| SELECT ANY TABLE
+| SELECT ANY TRANSACTION
+| SET CONTAINER
+| SET ROLE
+| SYSBACKUP
+| SYSDBA
+| SYSDG
+| SYSKM
+| SYSOPER
+| SYSRAC
+| TABLE RETENTION
+| TEXT DATASTORE ACCESS
+| TRANSLATE ANY SQL
+| TRUNCATE TABLE
+| UNDER ANY TABLE
+| UNDER ANY TYPE
+| UNDER ANY VIEW
+| UNLIMITED TABLESPACE
+| UPDATE ANY CUBE
+| UPDATE ANY CUBE BUILD PROCESS
+| UPDATE ANY CUBE DIMENSION
+| UPDATE ANY TABLE
+| USE ANY JOB RESOURCE
+| USE ANY SQL TRANSLATION PROFILE
+| WRITE ANY ANALYTIC VIEW CACHE
+
+| ACCESS POLICY                            
+| ADVISOR                                  
+| ARCHIVE ADMINISTER                       
+| ASSEMBLY                                 
+| CLUSTER                                  
+| COMMIT REFRESH                           
+| CONNECT SESSION                          
+| CONTAINER                                
+| CREDENTIAL                               
+| CUBE                                     
+| CUBE BUILD PROCESS                       
+| CUBE DIMENSION                           
+| DATABASE                                 
+| DATABASE LINK                            
+| DATABASE TRIGGER                         
+| DATE TIME                                
+| DBA_RECYCLEBIN                           
+| DDL REDACTION POLICY                     
+| DIMENSION  
+| DIRECTORY     -- 20041686                            
+| DML REDACTION POLICY                     
+| EVALUATION CONTEXT                       
+| EXPRESS CONNECT                          
+| EXTERNAL JOB                             
+| FILE GROUP                               
+| FULL DATABASE                            
+| IDENTITY POLICY                          
+| INDEXTYPE                                
+| JOB                                      
+| KEY MANAGEMENT                           
+| LIBRARY                                  
+| LOGMINING                                
+| MATERIALIZED VIEW                        
+| MATERIALIZED ZONEMAP                       
+| MEASURE FOLDER                           
+| MINING MODEL                             
+| NOTIFICATION                             
+| OPERATOR                                 
+| PLUGGABLE DATABASE                       
+| PROCEDURE                                
+| PROFILE                                  
+| PUBLIC DATABASE LINK                     
+| PUBLIC SYNONYM                           
+| QUERY REWRITE                            
+| REDACTION POLICY                         
+| RESOURCE COST                            
+| RESOURCE MANAGER                         
+| RESUMABLE                                
+| REWRITE                                  
+| ROLE                                     
+| ROLLBACK SEGMENT                         
+| RULE                                     
+| RULE SET                                 
+| SCHEDULER                                
+| SEQUENCE                                 
+| SESSION                                  
+| SYNONYM                                  
+| SYSBACKUP                                
+| SYSDBA                                   
+| SYSDG                                    
+| SYSGUID                                  
+| SYSKM                                    
+| SYSOPER                                  
+| SYSRAC                                   
+| SYSTEM                                   
+| TABLE                                    
+| TABLESPACE                               
+| TRANSACTION                              
+| TRIGGER                                  
+| TYPE                                     
+| USER                                     
+| VIEW  
+
+| CONNECT
+| RESOURCE  
+
+| DEBUG CONNECT
+| DEBUG CONNECT ANY
+| TRANSLATE SQL
+
+| READ ON PROPERTY GRAPH
+| READ ON PROPERTY GRAPH identifier
+| SELECT ON PROPERTY GRAPH
+| SELECT ON PROPERTY GRAPH identifier
+
+| LOGON
+| LOGOFF
+| COMMIT
+| SELECT ( identifier ) ON column   -- create audit policy hack
+| INSERT ( identifier ) ON column   -- alter  audit policy hack
+
+| EXECUTE ON DOMAIN column
+
+| GRANT
+| REVOKE  
+}            
+</b>
+</pre>
+
+<pre priv_subjects>
+<b>
+{ 
+  ANALYTIC VIEW
+| ANY VALIDATION DIRECTIVE  
+| ASSEMBLY
+| ASSERTION
+| ATTRIBUTE DIMENSION
+| CLUSTER
+| CONTEXT
+| CREDENTIAL
+| CUBE
+| CUBE BUILD PROCESS
+| CUBE DIMENSION
+| DATABASE     
+| DATABASE DICTIONARY                            
+| DATABASE LINK                            
+| DATABASE TRIGGER                         
+| DIMENSION
+| DIRECTORY
+| DOMAIN
+| EDITION
+| EVALUATION CONTEXT
+| EXTERNAL JOB
+| FUNCTION
+| HIERARCHY
+| INDEX
+| INDEXTYPE
+| JAVA
+| JOB
+| LIBRARY
+| LOCKDOWN PROFILE
+| LOGICAL PARTITION TRACKING
+| MATERIALIZED VIEW
+| MATERIALIZED ZONEMAP
+| MEASURE FOLDER
+| MINING MODEL
+| MLE
+| NOTIFICATION DIRECTIVE
+| OPERATOR
+| OUTLINE
+| PROCEDURE
+| PACKAGE
+| PACKAGE BODY
+| PLUGGABLE DATABASE
+| PROPERTY GRAPH
+| PROFILE                                  
+| PUBLIC DATABASE LINK
+| PUBLIC SYNONYM 
+| RESOURCE COST                    
+| ROLE                                     
+| ROLLBACK SEGMENT                         
+| RULE                                     
+| RULE SET                                 
+| SCHEDULER                                
+| SEQUENCE                                 
+| SESSION
+| SNAPSHOT
+| SPFILE
+| SQL PROFILE
+| SQL TRANSLATION PROFILE
+| SYNONYM
+| SYSTEM
+| TABLE
+| TABLESPACE
+| TRIGGER
+| TYPE
+| TYPE BODY
+| USER
+| VIEW
+}
+</b>
+</pre>
+
+<pre sql_operation>
+<b>
+{
+   ALTER
+|  AUDIT
+|  COMMENT
+|  DELETE
+|  FLASHBACK 
+|  GRANT
+|  INDEX
+|  INSERT
+|  LOCK
+|  RENAME
+|  SELECT
+|  UPDATE
+
+|  READ
+|  EXECUTE
+}            
+</b>
+</pre>
+
+
+<pre audit_schema_object_clause>
+{ sql_operation  
+    [, sql_operation]...  -- iterate, e.g. AUDIT INSERT, UPDATE ON oe.customers;  
+   [, object_option]
+| <b>ALL</b>
+} auditing_on_clause
+</pre>
+
+
+<pre revoke>
+<b>REVOKE</b>
+  { { revoke_system_privileges | revoke_object_privileges }
+    [ <b>CONTAINER</b> = { <b>CURRENT</b> | <b>ALL</b> } ]  ---> moved }
+  | revoke_roles_from_programs } ; --<----------------------------------
+</pre>
+
+<<revoke_system_privileges>>
+{ system_privilege  | role | ALL PRIVILEGES } [ON SCHEMA identifier]
+  [, { system_privilege | role | ALL PRIVILEGES } [ON SCHEMA identifier] ]...
+FROM revokee_clause
+<<>>
+
+<pre flashback_database>
+<b>FLASHBACK</b> [ <b>STANDBY</b> ] <b>DATABASE</b> [ database ]
+   { <b>TO</b> { { <b>SCN</b> | <b>TIMESTAMP</b> } expr
+        | <b>RESTORE POINT</b> restore_point
+        }
+   | <b>TO BEFORE</b> { <b>SCN</b> | <b>TIMESTAMP</b>} expr
+               | <b>RESETLOGS</b> 
+         -- extra      }
+   } ;
+</pre>
+
+
+<pre physical_properties>
+{ deferred_segment_creation | segment_attributes_clause | table_compression 
+    | inmemory_table_clause | ilm_clause  
+| [ deferred_segment_creation ] [<b>ORGANIZATION</b>]
+  { <b>[HYBRID COLUMNAR | HEAP | ROW]...</b> [ segment_attributes_clause ] heap_org_table_clause 
+  | <b>INDEX</b> [ segment_attributes_clause ] index_org_table_clause
+  | <b>INDEX</b> index_org_table_clause segment_attributes_clause index_org_table_clause  --<--added; this rule prevents index_org_table_clause from being empty
+  | <b>INDEX</b> segment_attributes_clause                                                --<--                            
+  | <b>EXTERNAL [PARTITION ATTRIBUTES]</b> external_table_clause [ REJECT LIMIT ]
+  | <b>EXTERNAL</b> external_table_data_props
+  } 
+| <b>CLUSTER</b> cluster (column [, column ]...)
+| read_only_clause
+}...</pre>
+
+<pre table_properties> 
+[ column_properties
+| , column_properties 
+| indexing_clause 
+| table_partitioning_clauses 
+| attribute_clustering_clause 
+| <b>CACHE</b> | <b>NOCACHE</b> 
+| <b>RESULT_CACHE</b> ( <b>MODE</b> {<b>DEFAULT | FORCE</b> } ) 
+| <b>MONITORING</b>
+| parallel_clause 
+| <b>ROWDEPENDENCIES</b> 
+| <b>NOROWDEPENDENCIES</b> 
+| enable_disable_clause 
+| <b>ENABLE ROW CHANGE TRACKING</b> 
+| row_movement_clause 
+| flashback_archive_clause 
+| <b>ROW ARCHIVAL</b>
+| logging_clause 
+
+| physical_properties 
+| , physical_properties 
+| logical_replication_clause
+| <b>CLUSTER</b> table_reference ( column_name_list )
+| usage_clause
+]...
+[ <b>AS</b> subquery ]
+</pre>
+
+<pre usage_clause>
+  <b>USAGE</b> identifier
+</pre>
+
+
+<pre column_properties>
+{ object_type_col_properties
+| nested_table_col_properties
+| { varray_col_properties | LOB_storage_clause  }
+    [ (LOB_partition_storage [, LOB_partition_storage ]...) ]
+| XMLType_column_properties
+| JSON_storage_clause
+}...</pre>
+
+<pre JSON_column_properties>  -- 
+<b>JSON</b> [ <b>COLUMN</B> ] column
+   [ XMLType_storage ]
+   [ XMLSchema_spec ]</pre>
+
+
+<pre alter_mv_refresh>
+<b>REFRESH</b>
+   { { <b>FAST</b> | <b>COMPLETE</b> | <b>FORCE</b> }
+   | <b>ON</b> { <b>DEMAND</b> | <b>COMMIT</b> }
+   | { <b>START WITH</b> | <b>NEXT</b> } date
+   | <b>WITH PRIMARY KEY</b>
+   | <b>WITH ROWID</b>
+   | <b>USING</b>
+        { <b>DEFAULT MASTER ROLLBACK SEGMENT</b>
+        | <b>MASTER ROLLBACK SEGMENT</b> rollback_segment
+        }
+   | <b>USING</b> { <b>ENFORCED</b> | <b>TRUSTED</b> } <b>CONSTRAINTS</b>
+   }  ... -- missing iteration 
+</pre>
+
+<pre "create_java">
+<b>CREATE</b> [ <b>OR REPLACE</b> ] [ <b>AND</b> { <b>RESOLVE | COMPILE</b> } ] [ <b>NOFORCE</b> ]
+  <b>JAVA</b> { { <b>SOURCE | RESOURCE</b> } <b>[IF NOT EXISTS]</b> <b>NAMED</b> [ schema. ] primary_name
+       | <b>CLASS</b> [ <b>SCHEMA</b> schema ]
+       }
+  [ invoker_rights_clause ]
+  [ <b>RESOLVER</b> ( {(match_string [,] { schema_name | - })}...) ]      -- perpahs should allow ")..." syntax
+  { <b>USING</b> { <b>BFILE</b> (directory_object_name, server_file_name)
+          | { <b>CLOB</b> | <b>BLOB</b> | <b>BFILE</b> } subquery
+          | string_literal       -- was 'key_for_blob'
+          }
+  | <b>AS</b> compilationUnit   --java_class   -- more descriptive name
+  } [;|/]
+</pre>
+
+/*
+<pre java_class> {
+     <b>PUBLIC CLASS</b> identifier <b>lcp</b> java_source_str <b>rcp</b>
+   | <b>CLASS</b> identifier <b>lcp</b> java_source_str <b>rcp</b>  
+}
+</pre>
+
+<pre java_source_str> {
+     java_source_char
+   | java_source_str java_source_char  
+}
+</pre>
+
+<pre java_source_char> {
+            identifier
+          | <b>lbr</b>  
+          | <b>rbr</b>  
+          | <b>lcp</b>  
+          | <b>rcp</b>  
+          | <b>sbar</b>   
+          -- redundant and wont work: | <b>dbar</b>   
+          | <b>lt</b>  
+          | <b>gt</b> 
+          | ;
+          | (
+          | )
+          | =
+}
+</pre>
+*/
+
+<pre drop_disk_clause>
+<b>DROP</b>
+{ [<b>QUORUM</b> |<b>REGULAR</b>] <b>DISK</b>
+    disk_name [ <b>FORCE</b> | <b>NOFORCE</b> ]
+    [, disk_name [ <b>FORCE</b> | <b>NOFORCE</b> ] ]...
+| disks_in_clause [ <b>FORCE</b> | <b>NOFORCE</b> ]
+    [, failgroup_name [ <b>FORCE</b> | <b>NOFORCE</b> ] ]...
+}
+</pre>
+
+<pre disk_online_clause>
+<b>ONLINE</b>
+  { { [<b>QUORUM</b> |<b>REGULAR</b>] <b>DISK</b> disk_name [, disk_name]...
+    | disks_in_clause
+    } ...
+  | <b>ALL</b>
+  } [ <b>POWER</b> integer ] [ <b>WAIT | NOWAIT</b> ]
+</pre>
+
+<pre disk_offline_clause> 
+<b>OFFLINE</b>
+  { [<b>QUORUM</b> |<b>REGULAR</b>] <b>DISK</b> disk_name [, disk_name ] ...
+  | disks_in_clause
+  } ... [timeout_clause]
+</pre>
+
+<pre resize_disk_clause>
+<b>RESIZE</b>
+{ <b>ALL</b> [ <b>SIZE</b> size_clause ]
+| [<b>QUORUM | REGULAR</b>] <b>DISK</b>
+   disk_name [ <b>SIZE</b> size_clause ]
+   [, disk_name [ <b>SIZE</b> size_clause ] ]...
+| disks_in_clause [ <b>SIZE</b> size_clause ]
+    [, failgroup_name [ <b>SIZE</b> size_clause ] ]...
+}
+</pre>
+
+
+<pre disks_in_clause> -- refactored
+    <b>DISKS IN</b> [<b>QUORUM | REGULAR</b>] <b>FAILGROUP</b> failgroup_name [, failgroup_name]... -- misplaced <b>&</b>, unbalanced [
+</pre>
+
+<pre check_diskgroup_clause>
+<b>CHECK</b> [<b>ALL</b>] [ <b>REPAIR</b> | <b>NOREPAIR</b> ]
+</pre>
+
+<pre qualified_template_clause>
+<b>ATTRIBUTES</b>  -- was: ATTRIBUTE
+( redundancy_clause 
+  striping_clause 
+  -- no longer in 21c grammaar: disk_region_clause
+)
+</pre>
+
+<pre create_materialized_vw_log>
+<b>CREATE {MATERIALIZED VIEW [IF NOT EXISTS]|SNAPSHOT} LOG ON</b> [ schema. ] table
+  [ physical_attributes_clause
+  | <b>TABLESPACE</b> tablespace
+  | logging_clause
+  | { <b>CACHE</b> | <b>NOCACHE</b> }
+  ]...
+  [ parallel_clause ]
+  [ table_partitioning_clauses ]
+  [ <b>WITH</b> 
+          -- 2 problematic examples: statements_6002.htm#SQLRF54189
+          -- http://st-doc.us.oracle.com/database/121/SQLRF/statements_6003.htm#SQLRF54227
+         "mv_log_details"
+         [, "mv_log_details"]...      
+    [ new_values_clause ]
+  ] [ mv_log_purge_clause ] [ for_refresh_clause ]
+</pre>
+
+<pre "mv_log_details">
+        [ <b>OBJECT ID</b>
+         | <b>PRIMARY KEY</b>
+         | <b>ROWID</b>
+         | <b>SEQUENCE</b>
+         | <b>COMMIT SCN</b>
+        ] [(column [, column ]...)]
+</pre>
+
+<pre level_clause>
+<b>LEVEL</b> level <b>IS</b>
+   { level_table.level_column
+   | (level_table.level_column
+      [, level_table.level_column ]...
+     )
+   }
+   [<b>SKIP WHEN NULL</b>] -- missing
+</pre>
+
+<pre object_action>{
+   object_privilege
+}</pre>
+<pre system_action>
+     [<b>ADD</b>] system_privilege
+   | [<b>DROP</b>] system_privilege
+   | {<b>AUDIT | GRANT | READ | WRITE | EXECUTE</b>} {<b>DIRECTORY | TABLE | VIEW | PROCEDURE | PACKAGE</b>}
+</pre>
+
+<pre standard_actions>
+<b>ACTIONS</b>
+  { { object_action | <b>ALL</b> }
+    <b>ON</b> { <b>DIRECTORY</b> directory_name
+       | <b>MINING MODEL</b> [ schema. ] object_name
+       | [ schema. ] object_name }
+  | { system_action | <b>ALL</b> }
+  }
+    [ ,{ --<-- missing comma
+      { object_action | <b>ALL</b> }
+      <b>ON</b> { <b>DIRECTORY</b> directory_name
+         | <b>MINING MODEL</b> [ schema. ] object_name
+         | [ schema. ] object_name }
+    | { system_action | <b>ALL</b> } } ]...
+</pre>
+
+<pre component_action>identifier | <b>ALL</b></pre>
+
+<pre analyze>
+<b>ANALYZE</b>
+  { { <b>TABLE</b> [ schema. ] table
+    | <b>INDEX</b> [ schema. ] index
+    } [ partition_extension_clause ]
+  | <b>CLUSTER</b> [ schema. ] cluster
+  }
+  { validation_clauses
+  | <b>LIST CHAINED ROWS</b> [ into_clause ]
+  --| {<b>DELETE | COMPUTE | ESTIMATE</b>} [ <b>SYSTEM</b> ] <b>STATISTICS [FOR ALL INDEXES]</b> 
+  | estimate_statistics  -- exists in 12c deprecated in 21c?
+  } ;
+|
+ <b>VALIDATE INDEX</b> [ schema. ] index ;
+</pre>
+
+<pre estimate_statistics>
+--<b>ESTIMATE</b> [ <b>SYSTEM</b> ] <b>STATISTICS</b> 
+{<b>DELETE | COMPUTE | ESTIMATE</b>} [ <b>SYSTEM</b> ] <b>STATISTICS</b>
+[ for_statistics_clause 
+| <b>SAMPLE</b> integer { <b>ROWS</b> | <b>PERCENT</b> } ]...
+</pre>
+
+<pre for_statistics_clause>   
+<b>FOR</b>
+   { <b>TABLE</b>
+   | <b>ALL</b> [ <b>INDEXED</b> ] <b>COLUMNS</b> [ <b>SIZE</b> integer ]
+   | <b>COLUMNS</b> [ <b>SIZE</b> integer ]
+     { column | attribute } [ SIZE integer ]
+       [ { column | attribute }
+         [ <b>SIZE</b> integer ]
+       ]...
+   | <b>ALL</b> [ <b>LOCAL</b> ] <b>INDEXES</b>
+   }
+   [ <b>FOR</b>
+    { <b>TABLE</b>
+    | <b>ALL</b> [ <b>INDEXED</b> ] <b>COLUMNS</b>
+         [ <b>SIZE</b> integer ]
+    | <b>COLUMNS</b> [ <b>SIZE</b> integer ]
+      { column | attribute } [ <b>SIZE</b> integer ]
+        [ { column | attribute }
+          [ <b>SIZE</b> integer ]
+        ]...
+    | <b>ALL</b> [ <b>LOCAL</b> ] <b>INDEXES</b>
+    }
+   ]...
+</pre>
+
+
+<pre validation_clauses>
+{ <b>VALIDATE REF UPDATE</b> [ <b>SET DANGLING TO NULL</b> ]
+| <b>VALIDATE STRUCTURE</b>
+     [ <b>CASCADE</b> ]  -- made CASCADE optional to fix statements_4005.htm#SQLRF53687:
+						  -- ANALYZE TABLE employees VALIDATE STRUCTURE CASCADE;
+     [ <b>FAST</b> | <b>COMPLETE</b> ] -- statements_4005.htm#SQLRF53687
+     [{ <b>OFFLINE</b> | <b>ONLINE</b> } [ into_clause ]  ]
+}
+</pre>
+
+<pre create_controlfile> -- doesn't parse statements_5004.htm#SQLRF53839 
+<b>CREATE CONTROLFILE  [IF NOT EXISTS]</b>
+  [ <b>REUSE</b> ] [ <b>SET</b> ] <b>DATABASE</b> database
+  [ {<b>RESETLOGS</b> | <b>NORESETLOGS</b>} 
+  | <b>MAXLOGFILES</b> integer     
+  | <b>MAXLOGMEMBERS</b> integer
+  | <b>MAXLOGHISTORY</b> integer
+  | <b>MAXDATAFILES</b> integer
+  | <b>MAXINSTANCES</b> integer
+  | { <b>ARCHIVELOG</b> | <b>NOARCHIVELOG</b> }
+  | <b>FORCE</b> <b>LOGGING</b>
+  | logfile_clause 
+  |<B>#</b> <b>STANDBY LOGFILE</b> -- added
+  | <b>DATAFILE</b> file_specification
+             [, file_specification ]... 
+  | character_set_clause 
+  ]... 
+</pre>
+
+<pre unified_audit>
+<b>AUDIT</b> 
+  { <b>POLICY</b> policy
+    [ { <b>BY</b> user [, user]... } | { <b>EXCEPT</b> user [, user]... } ]
+    [ <b>WHENEVER</b> [ <b>NOT</b> ] <b>SUCCESSFUL</b> ]
+  --}   statements_4008.htm#SQLRF56427 
+  |
+  --{ 
+  <b>CONTEXT</b> <b>NAMESPACE</b> namespace <b>ATTRIBUTES</b> attribute [, attribute ]...
+      [, <b>CONTEXT</b> <b>NAMESPACE</b> namespace <b>ATTRIBUTES</b> attribute [, attribute ]... ]...
+    [ <b>BY</b> user [, user]... ]
+  } 
+;
+</pre>
+
+<pre interval_expr> -- truncated interval_literal
+    string_literal interval_literal_qualifier
+    | 
+    expr
+</pre>
+
+<pre cluster_details>
+<b>CLUSTER_DETAILS</b> ( [ schema . ] model 
+        [ , cluster_id [ , expr] ] [<b>DESC | ASC | ABS </b>]  -- <b></b>
+        mining_attribute_clause )
+</pre>
+
+<pre cluster_details_analytic>
+<b>CLUSTER_DETAILS</b> mining_analytic_body
+</pre>
+
+<pre cluster_distance_analytic>
+<b>CLUSTER_DISTANCE</b> mining_analytic_body
+</pre>
+
+<pre feature_id_analytic>
+<b>FEATURE_ID</b> mining_analytic_body
+</pre>
+
+<pre feature_value_analytic>
+<b>FEATURE_VALUE</b> mining_analytic_body
+</pre>
+
+<pre feature_details_analytic>
+<b>FEATURE_DETAILS</b> mining_analytic_body
+</pre>
+
+
+<pre mining_analytic_body> 
+( <b>INTO</b> expr
+        [ , cluster_id [ , expr ] ] [ <b>DESC | ASC | ABS</b> ] -- <b></b>
+        mining_attribute_clause )
+        <b>OVER</b> 
+{        
+  ( mining_analytic_clause )
+|
+    mining_analytic_clause 
+}
+</pre>        
+
+
+<pre cluster_id_analytic>
+<b>CLUSTER_ID</b>  mining_analytic_body
+</pre>
+
+<pre cluster_id1> -- name conflict
+<b>CLUSTER_ID</b> ( [ schema . ] model mining_attribute_clause )
+</pre>
+
+
+<pre create_indextype>
+<b>CREATE</b> [ <b>OR REPLACE</b> ] <b>INDEXTYPE  [IF NOT EXISTS]</b> [ schema. ] indextype
+  <b>FOR</b> [ schema. ] operator (parameter_type [, parameter_type ]...) -- typo 
+        [ [<b>REWRITE JOIN</b>],  [ schema. ] operator (parameter_type [, parameter_type ]...)
+        ]...
+  using_type_clause
+  [ <b>WITH LOCAL [RANGE] PARTITION</b>
+  | <b>WITH COMPOSITE INDEX</b> 
+  | <b>WITHOUT COLUMN DATA</b>
+  | <b>WITH ARRAY DML</b> [(parameter_type [, parameter_type ]...)]
+  | <b>WITH REBUILD ONLINE</b>
+  | <b>WITH ORDER BY</b> column [(datatype)] 
+  ]...
+  [ storage_table_clause ]
+</pre>
+
+<pre alter_database_link>
+<b>ALTER [SHARED] [PUBLIC] DATABASE LINK [IF EXISTS]</b> dblink  -- missing [SHARED] [PUBLIC]
+  { "db_link_auth" [ dblink_authentication ]
+  | dblink_authentication
+  }
+</pre>
+
+/* more general in create_database_link 
+<pre "db_link_auth">  
+<b>CONNECT TO</b> user <b>IDENTIFIED BY</b> password
+</pre>
+*/
+
+<pre json_query>
+<b>JSON_QUERY</b>
+  ( expr [ <b>FORMAT JSON</b> ], JSON_basic_path_expression
+    [ JSON_passing_clause 
+    | JSON_query_returning_clause  
+    | JSON_query_wrapper_clause 
+    | JSON_query_quotes_clause   
+    | JSON_query_on_error_clause 
+    | JSON_query_on_empty_clause 
+    | JSON_query_on_mismatch_clause 
+    | <b>{KEEP|OMIT} QUOTES [ON SCALAR STRING]</b> 
+    | inline_constraint
+    | type_strict_lax
+    ]...
+  )
+</pre>
+
+<pre JSON_basic_path_expression>
+   identifier
+ | string_literal
+ | string_literal identifier 
+ | string_literal JSON_query_returning_clause  identifier
+ | <b>STREAM</b> string_literal
+</pre> 
+
+<pre JSON_passing_clause>
+<b>PASSING</b> expr <b>AS</b> identifier
+</pre>
+
+<pre JSON_table_on_error_clause>
+{<b>DEFAULT</b> expr|<b>NULL</b>|<b>ERROR</b>}  <b>ON ERROR</b>
+</pre>
+
+<pre JSON_table_on_empty_clause>
+{<b>DEFAULT</b> expr|<b>NULL|ERROR|PRESENT</b>}  <b>ON EMPTY</b>
+</pre>
+
+
+<pre JSON_query_returning_clause>
+[ <b>RETURNING</b> JSON_value_return_type ] <b>[ {ALLOW | DISALLOW} SCALARS ] [ PRETTY ] [ ASCII ]</b>
+</pre>
+
+<pre JSON_columns_clause>
+<b>COLUMNS</b> ( JSON_column_definition [, JSON_column_definition ]... )
+|
+<b>COLUMNS</b>  JSON_column_definition [, JSON_column_definition ]... 
+</pre>
+
+<pre json_value>
+<b>JSON_VALUE</b>
+  ( expr [ format_clause ], JSON_basic_path_expression 
+    [ json_value_on__ ]...
+    [ type_strict_lax ]
+  )
+</pre>
+
+<pre json_value_on__>
+      JSON_value_returning_clause 
+    | JSON_value_on_error_clause 
+    | JSON_value_on_empty_clause 
+    | JSON_value_on_mismatch_clause
+    | JSON_passing_clause 
+    | allow_boolean_number_conversion    
+</pre>
+
+
+<pre JSON_value_on_mismatch_clause>
+<b> {
+   { IGNORE | ERROR | NULL }
+    ON MISMATCH 
+   [( {MISSING DATA | EXTRA DATA | TYPE ERROR} 
+      [ , {MISSING DATA | EXTRA DATA | TYPE ERROR}  ]... )]
+  } ...
+  </b>
+</pre>  
+
+
+<pre JSON_value_return_type>
+    [<b>NATIONAL</b>] 
+    {<b>VARCHAR2|VARCHAR|NVARCHAR2|NVARCHAR|CHAR|CHARACTER</b>} 
+    [ ( size [<b>BYTE | CHAR</b>] ) | <b>VARYING</b> [ (size) ] ]
+    [ <b>ASCII</b> ][ <b>TRUNCATE|PRETTY</b> ] 
+| <b>CLOB</b> 
+| <b>BLOB</b>
+| <b>NUMBER</b> [ ( precision [, scale] ) ] [<b>DEFAULT</b> expr <b>ON ERROR</b>]
+| <b>NUMBER</b> [ ( precision [, scale] ) ] [<b>DISALLOW BOOL TO NUMBER</b>]
+| <b>NUMBER ORDERED</b>
+| <b>INTEGER</b>
+| <b>DATE [ { TRUNCATE | PRESERVE } TIME ]</b>
+| <b>TIMESTAMP</b>
+| <b>TIMESTAMP WITH TIME ZONE</b>
+| <b>TIMESTAMP WITH LOCAL TIME ZONE</b>
+| <b>INTERVAL YEAR TO MONTH</b>
+| <b>INTERVAL DAY TO SECOND</b>
+| <b>RAW</b> [ ( precision [, scale] ) ] [<b>WITH TYPENAME</b>]
+| <b>SDO_GEOMETRY [WITH VALIDATION]</b> 
+| <b>JSON</b>
+| <b>ASCII</b>
+| allow_boolean_number_conversion
+| <b> BOOLEAN [ TYPE ( STRICT ) ]  </b>
+| [<b>ANY</b>] JSON_value_return_object_instance
+| vector_type --vector_function?
+</pre>
+
+<pre allow_boolean_number_conversion>
+<b> {ALLOW | DISALLOW} [ BOOLEAN | BOOL ] TO NUMBER [CONVERSION]  </b>
+</pre>
+
+<pre create_sequence>
+<b>CREATE SEQUENCE [IF NOT EXISTS]</b> [ schema. ] sequence
+  [ <b>SHARING</b> = { <b>METADATA</b> | <b>DATA</b> | <b>NONE</b> } ]
+  [ { <b>INCREMENT BY</b> | <b>START WITH</b> } expr
+  | { <b>MAXVALUE</b> expr | <b>NOMAXVALUE</b> }
+  | { <b>MINVALUE</b> expr | <b>NOMINVALUE</b> }
+  | { <b>CYCLE</b> | <b>NOCYCLE</b> }
+  | { <b>CACHE</b> integer | <b>NOCACHE</b> }
+  | { <b>ORDER</b> | <b>NOORDER</b> }
+  | { <b>KEEP</b> | <b>NOKEEP</b> }
+  | { <b>SESSION</b> | <b>GLOBAL</b> }
+  | { <b>PARTITION</b> | <b>NOPARTITION</b> }  -- encountered in DDL for "SYS"."UGROUP_SEQUENCE"
+  | { <b>SCALE</b> | <b>NOSCALE</b> }     -- "SYS"."AWSEQ$"
+  ]...
+</pre>
+
+<pre storage_clause>
+<b>STORAGE</b>
+({ <b>INITIAL</b> size_clause
+ | <b>NEXT</b> size_clause
+ | <b>MINEXTENTS</b> integer
+ | <b>MAXEXTENTS</b> { integer | <b>UNLIMITED</b> }
+ | maxsize_clause
+ | <b>PCTINCREASE</b> integer
+ | <b>FREELISTS</b> integer
+ | <b>FREELIST GROUPS</b> integer
+ | <b>OPTIMAL</b> [ size_clause | <b>NULL</b> ]
+ | <b>BUFFER_POOL</b> { <b>KEEP</b> | <b>RECYCLE</b> | <b>DEFAULT</b> }
+ | <b>FLASH_CACHE</b> { <b>KEEP</b> | <b>NONE</b> | <b>DEFAULT</b> }
+ | <b>CELL_FLASH_CACHE</b> { <b>KEEP</b> | <b>NONE</b> | <b>DEFAULT</b> } -- encountered in DDL for "SYS"."C_USER#"
+ | <b>ENCRYPT</b>
+ } ...
+)
+</pre>
+
+<pre parallel_clause>
+{ <b>NOPARALLEL</b> 
+| <b>PARALLEL</b> [ integer ] 
+| <b>PARALLEL</b> ( <b>DEGREE</b> integer <b>INSTANCES</b> integer ) -- encountered in DDL for "SYS"."C_USER#"
+| <b>PARALLEL</b> ( <b>DEGREE</b> integer <b>INSTANCES DEFAULT</b>   ) 
+| <b>PARALLEL</b> ( <b>DEGREE</b> integer ) 
+| <b>PARALLEL</b> ( <b>DEGREE DEFAULT INSTANCES</b> integer )    
+| <b>PARALLEL</b> ( <b>DEGREE DEFAULT INSTANCES DEFAULT</b> )    
+| <b>PARALLEL</b> ( <b>DEGREE DEFAULT</b> )    
+} [reject_limit_unlimited]
+</pre>
+
+<pre purge>
+<b>PURGE</b> { { <b>TABLE [IF EXISTS]</b> table | <b>INDEX [IF EXISTS]</b> index }
+      | { <b>RECYCLEBIN</b> | <b>DBA_RECYCLEBIN</b> | <b>USER_RECYCLEBIN</b> } 
+      | <b>TABLESPACE [IF EXISTS]</b> tablespace [ <b>USER</b> username ]
+      } ;
+</pre>
+
+<pre last_value>
+first_last_value
+</pre>
+<pre first_value>
+first_last_value
+</pre>
+
+<PRE any_types>
+{ <b>SYS</b>.<b>AnyData</b> | <b>SYS</b>.<b>AnyType</b> | <b>SYS</b>.<b>AnyDataSet</b> }
+</PRE>
+
+<pre opt_AS>
+[<b>AS</b>]
+</pre>
+
+<pre aux_xml_value_expr>
+value_expr [ opt_AS { c_alias | <b>EVALNAME</b> value_expr } ]
+</pre>
+
+<pre XML_attributes_clause>
+<b>XMLATTRIBUTES</b> (
+  <B>[ENTITYESCAPING | NOENTITYESCAPING]
+  [SCHEMACHECK | NOSCHEMACHECK]</B>
+    aux_xml_value_expr -- was: value_expr [ <b>AS</b> c_alias ]
+    [, aux_xml_value_expr ]...
+)
+</pre>
+
+
+<pre xmlforest>
+<b>XMLFOREST</b> ( 
+    [<b>NOENTITYESCAPING</b>]
+    aux_xml_value_expr
+    [, aux_xml_value_expr ]...
+)
+</pre>
+
+<pre application_clauses>
+<b>APPLICATION</b>
+{ /*{ <<<<error*/ app_name
+    { <b>BEGIN INSTALL</b> string_literal [ <b>COMMENT</b> string_literal ]
+    | <b>END INSTALL</b> [ string_literal ]
+    | <b>BEGIN PATCH</b> number [ <b>MINIMUM VERSION</b> string_literal ] [ <b>COMMENT</b> string_literal ]
+    | <b>END PATCH</b> [ number ]
+    | <b>BEGIN UPGRADE</b> [string_literal] <b>TO</b> string_literal [ <b>COMMENT</b> string_literal ]
+    | <b>END UPGRADE</b> [ <b>TO</b> string_literal ]
+    | <b>BEGIN UNINSTALL</b>
+    | <b>END UNINSTALL</b>
+    | <b>SET PATCH</b> number
+    | <b>SET VERSION</b> string_literal
+    | <b>SET COMPATIBILITY VERSION</b> { string_literal | <b>CURRENT</b> }
+    | <b>SYNC</b>  }
+  |
+  { <b>ALL SYNC</b> }
+}
+</pre>
+
+<pre partitioning_storage_clause>
+[  <b>TABLESPACE</b> tablespace 
+  | <b>TABLESPACE SET</b> tablespace_set 
+  | <b>OVERFLOW</b>
+  | table_compression
+  | key_compression
+  | index_compression
+  | inmemory_clause
+  | ilm_clause
+  | LOB_partitioning_storage
+  | , LOB_partitioning_storage
+  | <b>VARRAY</b> varray_item <b>STORE AS [SECUREFILE | BASICFILE] LOB</b> LOB_segname
+  | JSON_storage_clause
+  | <b>READ ONLY</b>
+  | logging_clause
+]...
+</pre>
+
+/* also defined in JSON FS:
+partitioning_storage_clause ::= (( 'TABLESPACE' tablespace | 'OVERFLOW' ('TABLESPACE'
+tablespace)? | table_compression | key_compression | LOB_partitioning_storage | 'VARRAY' varray_item
+'STORE' 'AS' (SECUREFILE | BASICFILE)? 'LOB' LOB_segname | JSON_storage_clause )?)+
+;*/
+
+
+
+<pre type_name>
+<b>
+       BINARY_DOUBLE
+     | BINARY_FLOAT
+     | DATE
+     | INTERVAL DAY TO SECOND
+     | INTERVAL YEAR TO MONTH
+     | NUMBER
+     | TIMESTAMP
+     | TIMESTAMP WITH TIME ZONE
+     | TIMESTAMP WITH LOCAL TIME ZONE
+</b> 
+     | identifier
+     | <b>TIMESTAMP</b> ( digits )
+</pre>
+
+<pre create_attribute_dimension>
+<b>CREATE</b> [ <b>OR REPLACE</b> ] [ <b>FORCE</b> | <b>NOFORCE</b> ] <b>ATTRIBUTE DIMENSION [IF NOT EXISTS]</b>
+  [ schema. ] identifier  
+  [ sharing_clause 
+  | classification_clause 
+  | <b>DIMENSION TYPE</b> { <b>STANDARD</b> | <b>TIME</b> } 
+  ]...
+  attr_dim_using_clause
+  attributes_clause
+  [ attr_dim_level_clause ]...
+  [ all_clause ]
+</pre>
+
+
+<pre classification_clause>
+[ <b>CAPTION</b> /*caption*/ identifier ]
+[ <b>DESCRIPTION</b> /*description*/ identifier ]
+[ <b>CLASSIFICATION</b> /*classification_name*/ identifier
+  [ <b>VALUE</b> /*classification_value*/ string_literal ] 
+  [ <b>LANGUAGE</b> /*language*/ string_literal ]
+]...
+</pre>
+
+<pre attr_dim_using_clause>
+  <b>USING</b> [ schema. ] /*dim_source*/ identifier [ [ <b>AS</b> ] alias]
+</pre>
+
+<pre attributes_clause>
+  <b>ATTRIBUTES</b> ( "attr_dim_attribute_clause" [, "attr_dim_attribute_clause" ]... )
+</pre>
+
+<pre "attr_dim_attribute_clause">
+  [ alias. ] column [ [ <b>AS</b> ] /*attribute_name*/ identifier ] [ classification_clause ]...
+</pre>
+
+<pre attr_dim_level_clause>
+<b>LEVEL</b> level [ { <b>NOT NULL</b>  |  <b>SKIP WHEN NULL</b> } ]
+  [classification_clause]...
+  [ <b>LEVEL TYPE</b> 
+      {   <b>STANDARD</b> 
+        | <b>YEARS</b> 
+        | <b>HALF_YEARS</b>
+        | <b>QUARTERS</b>
+        | <b>MONTHS</b>
+        | <b>WEEKS</b>
+        | <b>DAYS</b>
+        | <b>HOURS</b>
+        | <b>MINUTES</b>
+        | <b>SECONDS</b>
+      }
+  ]
+  [classification_clause]...   
+  key_clause [ alternate_key_clause ]
+  [ <b>MEMBER NAME</b> expr ]
+  [ <b>MEMBER CAPTION</b> expr ] 
+  [ <b>MEMBER DESCRIPTION</b> expr ]
+  [ <b>ORDER BY</b>  <b>[ MIN | MAX ]</b> dim_order_clause 
+                    [, <b>[ MIN | MAX ]</b> dim_order_clause ]... 
+  ]
+  [ <b>DETERMINES</b> ( attribute [, attribute]... ) ]
+</pre>
+
+/*<pre classification_clause_iter>
+  { classification_clause }...
+</pre>*/
+
+<pre key_clause>
+<b>KEY</b> { attribute | ( attribute ) | ( attribute [, attribute]... ) }
+</pre>
+
+<pre alternate_key_clause>
+<b>ALTERNATE KEY</b> { attribute | ( attribute ) 
+                |  
+                ( attribute [, attribute ]... )
+              }
+</pre>
+
+<pre dim_order_clause>
+attribute [ <b>ASC</b> | <b>DESC</b> ] [ <b>NULLS</b> { <b>FIRST</b> | <b>LAST</b> } ]
+</pre>
+
+<pre all_clause>
+     <b>ALL</b> 
+            { <b>MEMBER NAME</b> expr 
+            | <b>MEMBER CAPTION</b> expr 
+            | <b>MEMBER DESCRIPTION</b> expr 
+            }...
+</pre>
+
+
+<pre create_hierarchy>
+<b>CREATE</b> [ <b>OR REPLACE</b> ] [ <b>FORCE</b> | <b>NOFORCE</b> ] 
+  <b>HIERARCHY [IF NOT EXISTS]</b> [ schema. ] /*hierarchy*/identifier
+  [ sharing_clause ]
+  [ classification_clause ]... --]
+  hier_using_clause
+  [ level_hier_clause ]
+  [ hier_attrs_clause ]
+</pre>
+
+
+<pre hier_using_clause>
+<b>USING</b> [ schema. ] /*attribute_dimension*/identifier level_hier_clause
+</pre>
+
+<pre level_hier_clause>
+( /*level*/identifier [ <b>CHILD  OF</b> /*level*/identifier ]... )
+</pre>
+
+<pre hier_attrs_clause>
+<b>HIERARCHICAL ATTRIBUTES</b> ( hier_attr_clause [, hier_attr_clause ]... )
+</pre>
+
+<pre hier_attr_clause>
+hier_attr_name [ classification_clause ]...
+</pre>
+
+<pre hier_attr_name>
+{   <b>MEMBER_NAME</b>
+  | <b>MEMBER_UNIQUE_NAME</b>
+  | <b>MEMBER_CAPTION</b>
+  | <b>MEMBER_DESCRIPTION</b>
+  | <b>LEVEL_NAME</b>
+  | <b>HIER_ORDER</b>
+  | <b>DEPTH</b>
+  | <b>DEPTH_CHARGE</b>
+  | <b>IS_LEAF</b>
+  | <b>PARENT_LEVEL_NAME</b>
+  | <b>PARENT_UNIQUE_NAME</b>
+}
+</pre>
+
+
+<pre create_analytic_view>
+<b>CREATE</b> [ <b>OR REPLACE</b> ] [ { <b>FORCE</b> | <b>NOFORCE</b> } ] [<b>EDITIONABLE</b>]
+   <b>ANALYTIC VIEW</b> [ schema. ] /*analytic_view*/identifier 
+    [ sharing clause ] 
+    [ classification_clause ]...
+    analytic_view_using_clause 
+    dim_by_clause 
+    measures_clause 
+    [ create_analytic_view_1 ]...
+</pre>
+
+<pre create_analytic_view_1>
+      default_measure_clause  
+    | default_aggregate_clause 
+    | cache_clause 
+    | fact_columns_clause 
+    | qry_transform_clause 
+</pre>
+
+<pre fact_columns_clause>
+      <b>FACT COLUMNS</b> "(x,y,z)"
+</pre>
+
+<pre sharing_clause>
+  <b>SHARING</b> = { <b>METADATA</b> | <b>DATA</b> | <b>NONE</b> }
+</pre>
+
+<pre analytic_view_using_clause>
+  <b>USING</b> [ schema. ] /*fact_table_or_view*/identifier  [ [ <b>AS</b> ] alias ]
+</pre>
+
+<pre dim_by_clause>
+  <b>DIMENSION BY</b> ( dim_key [, dim_key ]... )
+</pre>
+
+<pre dim_key>
+dim_ref 
+  [classification_clause]...
+  <b>KEY</b>  
+    {[alias.] /*fact_column*/identifier   
+     |
+     (  [alias.] /*fact_column*/identifier [, [alias.] /*fact_column*/identifier]... )
+    }
+  <b>REFERENCES</b> 
+     {   attribute   
+      | 
+      ( attribute [, attribute]... )
+     }   
+  <b>HIERARCHIES</b> ( hier_ref [, hier_ref]... )
+</pre>
+
+<pre dim_ref>
+  [ schema. ] /*attr_dim_name*/identifier [ [<b>AS</b>] dim__alias ]
+</pre>
+
+<pre hier_ref>
+  [ schema. ] /*hier_name*/identifier [ [ <b>AS</b> ] /*hier_*/alias ] [ <b>DEFAULT</b> ]
+  | *
+</pre>
+
+<pre measures_clause>
+  <b>MEASURES</b>  ( av_measure [, av_measure]... )
+</pre>
+
+<pre av_measure>
+  meas_name  [{ base_measure_clause | calc_measure_clause }]
+    [ classification_clause ]...
+</pre>
+
+<pre base_measure_clause>
+  [ <b>FACT</b> ] expr [ meas_aggregate_clause ]
+</pre>
+
+<pre calc_measure_clause>
+  <b>AS</b> ( calc_meas_expression )
+</pre>
+
+<pre meas_aggregate_clause>
+  <b>AGGREGATE BY</b> /*aggr_function*//*analytic_function*/"aggr_name"
+</pre>
+
+<pre default_measure_clause>
+  <b>DEFAULT MEASURE</b> /*measure*/identifier
+</pre>
+
+<pre default_aggregate_clause>
+  <b>DEFAULT AGGREGATE BY</b> /*aggr_function*//*analytic_function*/"aggr_name"
+</pre>
+
+<pre cache_clause>
+  <b>CACHE</b> cache_specification [, cache_specification]...
+</pre>
+
+<pre cache_specification>
+<b>MEASURE GROUP</b>
+ {    <b>ALL</b> 
+   | ( /*measure_name*/identifier [, /*measure_name*/identifier ]... ) [ levels_clause  ]...
+ }
+</pre>
+
+<pre levels_clause>
+  <b>LEVELS</b> ( level_specification [, level_specification ]... )
+ [<b>MATERIALIZED</b>]
+ [<b>USING</b> identifier]
+</pre>
+
+<pre level_specification>
+  --( 
+  [ [ /*dim_name*/identifier. ] /*hier_name*/identifier. ] /*level_name*/identifier 
+  --) 
+</pre>
+
+
+<pre calc_meas_expression>
+{    av_meas_expression
+   | av_simple_expression
+   | single_row_function_expression
+   | case_expression
+   | compound_expression
+   | datetime_expression
+   | interval_expression
+   | expr    --<--
+   | av_hier_expression    -- originally in av_expression (which is orphan in the doc) together with av_meas_expression   
+}
+</pre>
+
+<pre av_meas_expression>
+{  lead_lag_expression
+ | av_window_expression 
+ | rank_expression 
+ | share_of_expression
+ | qdr_expression 
+}
+</pre>
+
+<pre lead_lag_expression>
+  lead_lag_function_name ( calc_meas_expression ) <b>OVER</b> ( lead_lag_clause )
+</pre>
+
+
+<pre lead_lag_function_name>
+  { <b>LAG</b> | <b>LAG_DIFF</b> | <b>LAG_DIFF_PERCENT</b> | <b>LEAD</b> | <b>LEAD_DIFF</b> | <b>LEAD_DIFF_PERCENT</b> }
+</pre>
+
+<pre lead_lag_clause>
+<b>HIERARCHY</b> hierarchy_ref <b>OFFSET</b> /*offset_*/expr
+  [ { 
+      <b>WITHIN</b> { <b>LEVEL</b> | <b>PARENT</b> }
+    | <b>ACROSS ANCESTOR AT LEVEL</b> /*level_ref*/identifier [ <b>POSITION FROM</b> { <b>BEGINNING</b> | <b>END</b> } ]
+    }  
+  ]   
+</pre>
+
+<pre hierarchy_ref>
+  [ /*attr_dim_*/alias. ] /*hier_*/alias
+</pre>
+
+<pre av_window_expression>
+	aggregate_function <b>OVER</b> ( av_window_clause )
+</pre>
+
+<pre av_window_clause>
+<b>HIERARCHY</b> hierarchy_ref
+  <b>BETWEEN</b> { preceding_boundary | following_boundary }
+[ <b>WITHIN</b> {   <b>LEVEL</b> 
+           | <b>PARENT</b>
+           | <b>ANCESTOR AT LEVEL</b> level_name 
+         }
+]
+</pre>
+
+<pre preceding_boundary>
+{ <b>UNBOUNDED</b> <b>PRECEDING</b> | offset_expr <b>PRECEDING</b> }
+<b>AND</b>
+{ <b>CURRENT MEMBER</b> 
+  | offset_expr  { <b>PRECEDING</b> | <b>FOLLOWING</b> }
+  | <b>UNBOUNDED FOLLOWING</b>
+}
+</pre>
+
+<pre following_boundary>
+{ <b>CURRENT MEMBER</b> | /*offset_*/expr <b>FOLLOWING</b> }
+<b>AND</b>
+{ /*offset_*/expr <b>FOLLOWING</b> | <b>UNBOUNDED FOLLOWING</b> }
+</pre>
+
+
+<pre calc_meas_order_by_clause>
+  calc_meas_expression [ { <b>ASC</b> | <b>DESC</b> } ]  [ <b>NULLS</b> { <b>FIRST</b> | <b>LAST</b> } ]
+</pre>
+
+
+<pre share_of_expression>
+  <b>SHARE_OF</b> ( calc_meas_expression  share_clause )
+</pre>
+
+<pre share_clause>
+<b>HIERARCHY</b> hierarchy_ref
+  { <b>PARENT</b> 
+  | <b>LEVEL</b> /*level_ref*/identifier
+  | <b>MEMBER</b> member_expression
+  }
+</pre>
+
+<pre level_member_literal>
+  /*level_ref*/identifier { pos_member_keys | named_member_keys }
+</pre>
+
+<pre pos_member_keys>
+  <b>[</b>  member_key_expr [, member_key_expr]...<b>]</b>
+</pre>
+
+<pre named_member_keys>
+  <b>[</b>  /*attr_name*/identifier = member_key_expr [, /*attr_name*/identifier = member_key_expr ]... <b>]</b>
+</pre>
+
+<pre hier_navigation_expression>
+{
+    hier_ancestor_expression
+  | hier_parent_expression
+  | hier_lead_lag_expression
+}
+</pre>
+
+<pre hier_ancestor_expression>
+<b>HIER_ANCESTOR</b> ( member_expression AT 
+                       {   <b>LEVEL</b> /*level_ref*/identifier
+                         | <b>DEPTH</b> depth_expression
+                       }
+                     )
+</pre>
+
+<pre member_expression>
+{   level_member_literal
+  | hier_navigation_expression
+  | <b>CURRENT MEMBER</b>
+  | <b>NULL</b>
+  | <b>ALL</b>
+}
+</pre>
+
+<pre hier_parent_expression>
+  <b>HIER_PARENT</b> ( member_expression )
+</pre>
+
+<pre hier_lead_lag_expression>
+{ <b>HIER_LEAD</b> | <b>HIER_LAG</b> } ( hier_lead_lag_clause )
+</pre>
+
+
+<pre hier_lead_lag_clause>
+member_expression  <b>OFFSET</b> offset_expr
+  [ <b>WITHIN</b> 
+    {  { <b>LEVEL</b> | <b>PARENT</b> }
+    | <b>ACROSS ANCESTOR AT LEVEL</b> /*level_ref*/identifier [ <b>POSITION FROM</b> { <b>BEGINNING</b> | <b>END</b> } ]
+    }
+  ]
+</pre>
+
+<pre qdr_expression>
+  <b>QUALIFY</b> ( calc_meas_expression, qualifier )
+</pre>
+
+<pre qualifier>
+  hierarchy_ref = member_expression
+</pre>
+
+<pre av_simple_expression>
+  { string_literal | number_literal | <b>NULL</b> | measure_ref }
+</pre>
+
+<pre measure_ref>
+  [ <b>MEASURES</b>. ] /*meas_name*/identifier
+</pre>
+
+<pre create_pdb_from_seed>   
+<b>ADMIN USER</b> admin_user_name <b>IDENTIFIED BY</b> password
+[
+  [ pdb_dba_roles ]
+  [ parallel_pdb_creation_clause ]
+  [ default_tablespace ]
+  [ file_name_convert ]
+  [ pdb_storage_clause ]
+  [ service_name_convert ]
+  [ path_prefix_clause ]
+][   -- 16384 rules without this split 
+  [ tempfile_reuse_clause ]
+  [ user_tablespaces_clause ]
+  [ standbys_clause ]
+  [ logging_clause ]
+  [ create_file_dest_clause ]
+  [ <b>HOST</b> = string_literal ]
+  [ <b>PORT</b> = number ]
+]
+</pre>
+
+<pre create_pdb_from_xml>
+[ <b>AS CLONE</b> ] <b>USING</b> filename
+[
+  [ source_file_name_convert | source_file_directory ]
+  [ { [ <b>COPY</b> | <b>MOVE</b> ] file_name_convert } | <b>NOCOPY</b> ]
+  [ service_name_convert ]
+  [ default_tablespace ]
+  [ pdb_storage_clause ]
+  [ path_prefix_clause ]
+][  -- 16384 rules without this split 
+  [ tempfile_reuse_clause ]
+  [ user_tablespaces_clause ]
+  [ standbys_clause ]
+  [ logging_clause ]
+  [ create_file_dest_clause ]
+  [ <b>HOST</b> = string_literal ]
+  [ <b>PORT</b> = number ]
+]
+</pre>
+
+<pre create_pdb_clone>
+{ { <b>FROM</b> { src_pdb_name [ @ dblink ] } | { <b>NON$CDB</b> @ dblink } }
+|
+  { <b>AS PROXY FROM</b> src_pdb_name @ dblink }
+}
+[
+  [ parallel_pdb_creation_clause ]
+  [ default_tablespaces ]
+  [ pdb_storage_clause ]
+  [ file_name_convert ]
+  [ service_name_convert ]
+  [ path_prefix_clause ]
+  [ tempfile_reuse_clause ]
+  [ <b>SNAPSHOT COPY</b> ]
+  [ user_tablespaces_clause ]
+][   
+  [ standbys_clause ]
+  [ logging_clause ]
+  [ create_file_dest_clause ]
+  [ keystore_clause ]
+  [ pdb_refresh_mode_clause ]
+  [ <b>RELOCATE</b> ]
+  [ <b>NO DATA</b> ]
+  [ <b>HOST</b> = string_literal ]
+  [ <b>PORT</b> = number ]
+]
+</pre>
+
+<pre modify_table_default_attrs>
+<b>MODIFY DEFAULT ATTRIBUTES</b>
+[
+   [ <b>FOR</b> partition_extended_name ]
+   [ deferred_segment_creation ]
+   [ read_only_clause ]
+   [ indexing_clause ]
+   [ segment_attributes_clause ]
+   [ table_compression ]
+][   
+   [ inmemory_clause ]
+   [ <b>PCTTHRESHOLD</b> integer ]
+   [ prefix_compression ]
+   [ alter_overflow_clause ]
+   [ { <b>LOB</b> (LOB_item) | <b>VARRAY</b> varray } (LOB_parameters) ]...
+]   
+</pre>
+
+<pre unified_noaudit>
+<b>NOAUDIT</b>
+  {{ <b>POLICY</b> policy [ { <b>BY</b> user [, user]... } | by_users_with_roles ] }
+  |
+  { <b>CONTEXT NAMESPACE</b> namespace <b>ATTRIBUTES</b> attribute [, attribute ]...
+      [, <b>CONTEXT NAMESPACE</b> namespace <b>ATTRIBUTES</b> attribute [, attribute ]... ]...
+    [ <b>BY</b> user [, user]... ]
+  }} ;
+</pre>
+
+<pre create_tablespace_set>
+<b>CREATE TABLESPACE SET [IF NOT EXISTS]</b> tablespace_set
+  [ <b>IN SHARDSPACE</b> shardspace ]
+  [ <b>USING TEMPLATE </b>
+    ( /*{<<<wrong*/[ <b>DATAFILE</b> file_specification/*<<<missing*/ [, file_specification ]... ] permanent_tablespace_attrs )
+  ] 
+</pre>
+
+
+<pre XML_table_column>
+column
+  { <b>FOR ORDINALITY</b> 
+  | [/*<--was: { */ datatype | <b>XMLTYPE</b> [ (<b>SEQUENCE</b>) <b>BY REF</b> ] ] 
+    [ <b>[EXISTS] PATH</b> {string|bind_var} ] [ <b>DEFAULT</b> expr ]     -- 33838774
+  }
+</pre>
+
+
+<pre object_access_expression>
+{ table_alias.column.
+| object_table_alias.
+| (expr).
+}
+{ attribute [.attribute ]...
+  [.method_call ]...
+| method_call [.method_call ]...
+}
+</pre>
+
+<pre method_call>
+method ([ argument [, argument ]... ])
+</pre>
+
+<pre type_constructor_expression>
+[ <b>NEW</b> ] [ schema. ]type_name
+   paren_expr_list                            --was: ([ expr [, expr ]... ])
+</pre>
+
+<<constraint_clauses>>
+{ ADD { { out_of_line_constraint }...
+      | out_of_line_REF_constraint
+      }
+   | MODIFY { { CONSTRAINT constraint_name [ precheck_state ]
+             | PRIMARY KEY
+             | UNIQUE (column [, column ]...) }
+          [constraint_state]  [ CASCADE ] }
+   | RENAME CONSTRAINT old_name TO new_name
+   | { drop_constraint_clause }...
+}
+<<>>
+
+<pre constraint_state> 
+{
+   [<b>NOT</b>] <b>DEFERRABLE</b> [<b>INITIALLY</b> {<b>IMMEDIATE</b> | <b>DEFERRED</b>}] --was: extra ]
+ |  <b>INITIALLY</b> { <b>IMMEDIATE</b> | <b>DEFERRED</b> } [[ <b>NOT</b> ]  <b>DEFERRABLE</b> ]
+|  <b>RELY</b> | <b>NORELY</b>  
+| using_index_clause 
+| <b>ENABLE</b> | <b>DISABLE</b> 
+| <b>VALIDATE</b> | <b>NOVALIDATE</b> 
+| exceptions_clause 
+}...</pre>
+
+<pre database_logging_clauses>
+{ <b>LOGFILE</b>
+    [ <b>GROUP</b> integer ] file_specification
+      [, [ <b>GROUP</b> integer ] file_specification ]...
+| <b>MAXLOGFILES</b> integer
+| <b>MAXLOGMEMBERS</b> integer
+| <b>MAXLOGHISTORY</b> integer
+| { <b>ARCHIVELOG</b> | <b>NOARCHIVELOG</b> }
+| <b>FORCE</b> <b>LOGGING</b>
+| <b>SET STANDBY NOLOGGING FOR</b> {<b>DATA AVAILABILITY</b> | <b>LOAD PERFORMANCE</b>} --missing }
+}</pre>
+
+<pre create_pluggable_database><b>CREATE PLUGGABLE DATABASE [IF NOT EXISTS]</b>
+  { { pdb_name [ <b>AS APPLICATION CONTAINER</b> ] | using_snapshot_clause} | { <b>AS SEED</b> } }
+  { create_pdb_from_seed | create_pdb_clone | create_pdb_from_xml | create_pdb_from_mirror_copy 
+    | using_snapshot_clause | container_map_clause 
+    | pdb_snapshot_clause }                           -- was: } pdb_snapshot_clause 
+</pre>
+
+<pre add_disk_clause><b>ADD</b>
+  { [ <b>SITE</b> sitename ] [ <b>QUORUM</b> | <b>REGULAR</b> ] [ <b>FAILGROUP</b> failgroup_name ]   -- missing []
+    <b>DISK</b> qualified_disk_clause [, qualified_disk_clause ]...
+  }...</pre>
+  
+<pre create_role>
+<b>CREATE ROLE [IF NOT EXISTS]</b> role
+   [ <b>NOT IDENTIFIED</b>
+   | <b>IDENTIFIED</b> { <b>BY</b> password
+                | <b>USING</b> [ schema. ] package
+                | <b>EXTERNALLY</b>
+                | <b>GLOBALLY</b> [<b>AS</b> string_literal]     -- test 882;  CREATE ROLE warehouse_user IDENTIFIED GLOBALLY                       
+         }
+   ] [ <b>CONTAINER</b> = { <b>CURRENT</b> | <b>ALL</b> } ] 
+</pre>  
+
+<pre alter_database>
+<b>ALTER DATABASE [IF EXISTS]</b> [ database ]
+  { startup_clauses
+  | recovery_clauses
+  | database_file_clauses
+  | logfile_clauses
+  | controlfile_clauses
+  | standby_database_clauses
+  | default_settings_clauses
+  | instance_clauses
+  | security_clause
+  | prepare_clause     
+  | drop_mirror_copy   
+  | lost_write_protection    
+  | cdb_fleet_clauses  
+  | property_clause
+  | replay_upgrade_clause
+  | <b>ENCRYPT CREDENTIALS</b>
+  | <b>RESET COMPATIBILITY</b>
+  | <b>DROP TRANSACTION QUARANTINE</b> number number number
+  }...      -- iterate to satisfy failing ALTER DATABASE DATAFILE 'data_file_name' ENABLE LOST WRITE PROTECTION
+</pre>  
+
+<pre alter_pluggable_database>
+<b>ALTER PLUGGABLE DATABASE [IF EXISTS]</b> [ database ]    -- missing <b> and [ database ] 
+  { "alter_pluggable_database_clause"
+  }...      -- missing iterator
+</pre>  
+
+<pre "alter_pluggable_database_clause"> 
+    pdb_unplug_clause
+  | pdb_settings_clauses
+  | pdb_datafile_clause
+  | pdb_recovery_clauses
+  | pdb_change_state
+  | pdb_change_state_from_root
+  | application_clauses
+  | snapshot_clauses
+  | prepare_clause
+  | drop_mirror_copy
+  | lost_write_protection
+  | <b>ON ERROR CAPTURE</b>
+</pre>  
+
+<pre lost_write_protection>[ { <b>ENABLE | DISABLE | REMOVE | SUSPEND</b> } ] <b>LOST WRITE PROTECTION</b></pre>   -- missing <b></b>
+
+<pre move_datafile_clause>
+<b>MOVE DATAFILE</b> { string_literal | file_number }  -- was: ()
+ [ <b>TO</b> string_literal  ]                         -- ditto
+ [ <b>REUSE</b> ] [ <b>KEEP</b> ]</pre>
+ 
+<pre alter_tablespace_attrs>{ 
+  default_tablespace_params
+| <b>MINIMUM EXTENT</b> size_clause
+| <b>RESIZE</b> size_clause
+| <b>COALESCE</b>
+| <b>SHRINK SPACE</b> [ <b>KEEP</b> size_clause ]
+| <b>RENAME TO</b> new_tablespace_name
+| { <b>BEGIN</b> | <b>END</b> } <b>BACKUP</b>
+| datafile_tempfile_clauses
+| tablespace_logging_clauses
+| tablespace_group_clause
+| tablespace_state_clauses
+| autoextend_clause
+| flashback_mode_clause
+| tablespace_retention_clause
+| alter_tablespace_encryption
+| lost_write_protection       
+| <b>CLEAR FREE SPACE</b> 
+} </pre> 
+
+<pre permanent_tablespace_attrs>{ <b>MINIMUM EXTENT</b> size_clause
+| <b>BLOCKSIZE</b> integer [ <b>K</b> ]
+| logging_clause
+| <b>FORCE LOGGING</b>
+| tablespace_encryption_clause
+| default_tablespace_params
+| { <b>ONLINE</b> | <b>OFFLINE</b> }
+| extent_management_clause
+| segment_management_clause
+| flashback_mode_clause
+| lost_write_protection       -- missing 
+| <b>UNIFORM SIZE</b> digits [<b>K | M | G | T</b>]
+}...</pre>
+
+<pre inline_external_table>
+  <b>EXTERNAL</b> ( ( column_definition [, column_definition]... ) inline_external_table_properties )   -- railroad OK, description broken
+</pre>
+
+<pre inline_external_table_properties> [<b>TYPE</b> [ access_driver_type ]] external_table_data_props 
+  [ reject_limit_unlimited  ]                -- missing ]
+</pre>
+
+<pre modify_external_table_properties>
+ ( modify_external_table_properties )
+|
+ [<b>DEFAULT DIRECTORY</b> identifier    
+  | 
+    <b>ACCESS PARAMETERS</b> 
+    [ <b>BADFILE</b> filename ]
+    [ <b>NOBADFILE</b> ]
+    [ <b>LOGFILE</b> filename ]
+    [ <b>NOLOGFILE</b> ]
+    [ <b>DISCARDFILE</b> filename ] 
+  | 
+    <b>ACCESS PARAMETERS</b> (
+         [ <b>BADFILE</b> filename ]
+         [ <b>NOBADFILE</b> ]
+         [ <b>LOGFILE</b> filename ]
+         [ <b>NOLOGFILE</b> ]
+         [ <b>DISCARDFILE</b> filename ]
+    )
+  | 
+    <b>ACCESS PARAMETERS</b> ( expr ) 
+  | 
+    <b>ACCESS PARAMETERS</b> ( {JSON_object_access_expr = id_percent_permuted}... )        
+  | 
+     <b>LOCATION</b> ( expr [, expr]... ) 
+  | reject_limit_unlimited | (reject_limit_unlimited)
+ ]...
+</pre>
+
+
+<pre table_collection_expression>
+{ <b>TABLE</b> | identifier | identifier . identifier } (collection_expression) [ (+) ]
+</pre>
+
+<pre partition_extension_clause>
+{ <b>PARTITION</b> ( expr )        -- was partition
+| <b>PARTITION FOR</b> (partition_key_value [, partition_key_value]...)      
+| <b>SUBPARTITION</b> (expr)
+| <b>SUBPARTITION FOR</b> (subpartition_key_value [, subpartition_key_value]...)
+}</pre>
+
+<pre list_partition_desc>
+<b>PARTITION</b> [partition]
+[list_values_clause]
+[table_partition_description]
+  [ ( {range_subpartition_desc [, range_subpartition_desc]...                         -- missing {}
+      | list_subpartition_desc [, list_subpartition_desc]... 
+      | individual_hash_subparts [, individual_hash_subparts]...
+      }
+    )
+    | hash_subparts_by_quantity
+  ]</pre>
+  
+
+<pre nested_clause>  -- erroneous https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/img_text/nested_clause.html
+                     -- redefined in json section of  SqlFixes.bnf
+   nested_clause_1   
+</pre>
+
+<pre index>   -- index.html is something different 
+   identifier   
+</pre>
+
+<pre is_JSON_condition>  expr 
+{ <b>IS</b> [ <b>NOT</b> ] <b>JSON</b> [( {allow_disallow_strict_lax_JSON}...  )] -- not empty not to degrade performance (expr is too broad)
+  |  allow_disallow_strict_lax_JSON   }
+[ format_clause  ] [ allow_disallow_strict_lax_JSON ]...
+</pre>
+
+<pre allow_disallow_strict_lax_JSON>
+<b>{ALLOW SCALARS | STRICT | LAX | ( LAX ) | DISALLOW SCALARS}</b>
+|
+ { <b>WITH</b> | <b>WITHOUT</b> } <b>UNIQUE [KEYS]</b> 
+|  <b>SIZE LIMIT </b> size_clause
+|  (<b>SIZE LIMIT </b> size_clause)
+| <b>[IS] JSON VALIDATE [CAST] [USING]</b> string_literal
+| <b>[IS] JSON (VALIDATE [CAST] [USING]</b> string_literal)
+</pre> 
+
+<pre collect>
+<b>COLLECT</b>( [ <b>DISTINCT</b> | <b>UNIQUE</b> ] expr     --was: column 
+[ <b>ORDER BY</b> expr_desc_asc_nulls
+    [, expr_desc_asc_nulls]... ] )
+</pre>
+
+<pre inmemory_clause>
+<B>INMEMORY</B> [ inmemory_attributes ] [<B>TEXT</B> ( column [<b>USING</B> policy_name] [, column [<b>USING</B> policy_name]]...  )]    -- too many fixes
+| <B>NO INMEMORY</B></pre>
+
+<pre blockchain_row_retention_clause>
+<b>NO DELETE</b> { [ <b>LOCKED</b> ] | <b>UNTIL</b> number <b>DAYS AFTER INSERT</b>
+[ <b>VERSION</b> identifier ] [ <b>LOCKED</b> ] }
+</pre>
+
+<pre drop_constraint_clause>
+<b>DROP</b>
+   { { <b>PRIMARY KEY</b>
+     | <b>UNIQUE</b> (column [, column ]...)
+     }
+     [ <b>CASCADE</b> ]
+     [ { <b>KEEP</b> | <b>DROP</b> } <b>INDEX</b> ]
+   | <b>CONSTRAINT</b> constraint_name
+     [ <b>CASCADE</b> ]
+   } [ <b>ONLINE</b> ]</pre>
+   
+<pre pdb_settings_clauses>{ [ pdb_name ]   
+  { <b>DEFAULT EDITION</b> = edition_name
+  | <b>SET DEFAULT</b> ( <b>BIGFILE</b> | <b>SMALLFILE</b> ) <b>TABLESPACE</b>
+  | <b>DEFAULT TABLESPACE</b> tablespace_name
+  | <b>DEFAULT TEMPORARY TABLESPACE</b> { tablespace | tablespace_group_name }
+  | <b>RENAME GLOBAL_NAME TO</b> database.domain [. domain ]...
+  | set_time_zone_clause
+  | database_file_clauses
+  | supplemental_db_logging
+  | pdb_storage_clause
+  | pdb_logging_clauses
+  | pdb_refresh_mode_clause
+  | <b>REFRESH</b> [ pdb_refresh_switchover_clause ]
+    | <b>SET CONTAINER_MAP</b> = string_literal
+  }
+}
+| <b>CONTAINERS</b> 
+{ <b>DEFAULT TARGET</b> = { (container_name) | <b>NONE</b> }
+             | <b>HOST</b> = string_literal    -- was: "'" hostname "'"
+             | <b>PORT</b> = number
+             }
+</pre>   
+
+<pre result_cache_clause> <b>RESULT_CACHE</b>   (        -- mismatched paren
+    { [ <b>MODE {DEFAULT | FORCE}</b> ] [ , <b>STANDBY {ENABLE | DISABLE}</b> ] }
+    |
+    { [ <b>STANDBY {ENABLE | DISABLE}</b> ] [ , <b>MODE {DEFAULT | FORCE}</b> ] }    
+   )  </pre>
+   
+   
+<pre dependent_tables_clause>  -- 33901911
+<b>DEPENDENT TABLES</b>
+( table ( partition_spec [, partition_spec]... )
+          [, table ( partition_spec [, partition_spec]... ) ]...   
+)</pre>  
+
+<pre reference_partition_desc>
+<b>PARTITION</b> [partition] [table_partition_description] --}
+</pre> 
+
+<pre pdb_close>
+{<b>CLOSE</b> [ <b>IMMEDIATE</b> ] [ instances_clause | relocate_clause ] -- misplaced (
+   | [ <b>ABORT</b> ] [ instances_clause ] }</pre>
+   
+<pre window_clause>   -- was iterated without comma
+  <b>WINDOW</b> window_name <b>AS</b> window_specification [ , window_name <b>AS</b> window_specification ]... 
+</pre>  
+   
+<pre window_specification>
+   window_specification1
+ | ( window_specification1 )  
+</pre>   
+
+<pre window_specification1>
+[ identifier ]
+  [ query_partition_clause ]
+  [ order_by_clause ]
+  [ windowing_clause ]  
+</pre>  
+
+
+<pre reject_limit_unlimited> 
+<b>REJECT LIMIT</b> { expr | <b>UNLIMITED</b> }
+</pre>
+
+<pre xmlelement>
+<b>XMLELEMENT</b>
+ ( [ <b>ENTITYESCAPING</b> | <b>NOENTITYESCAPING</b> ]
+   [ <b>NAME</b> ]
+     { identifier
+     | <b>EVALNAME</b> value_expr
+     }
+   [, XML_attributes_clause ]
+   [, value_expr [ "as_alias" ]]...
+ )</pre>
+ 
+<pre "as_alias">
+[<b>AS</b>] c_alias 
+</pre>
+
+
+/* file JSON_value_on_mismatch_clause.html defining JSON_value_on_mismatch with broken syntax */
+<pre JSON_value_on_mismatch_clause> [ 
+   (  <b>IGNORE</b>  |  <b>ERROR</b>  |  <b>NULL</b>  ) 
+     <b>ON</b>   <b>MISMATCH</b>  
+   [  ( ( <b>MISSING</b>   <b>DATA</b> ) | ( <b>EXTRA</b>   <b>DATA</b> ) | ( <b>TYPE</b>   <b>ERROR</b> ) )  ]
+  ]... </pre>
+
+<pre json_serialize>
+<b>JSON_SERIALIZE</b> 
+ ( expr  [ JSON_returning_clause ] 
+ [ <b>PRETTY</b> 
+ |  <b>ASCII</b> 
+ |  <b>ORDERED</b> 
+ |  <b>EXTENDED</b> 
+ |  <b>TRUNCATE</b>  ]... 
+ [ <b>{  NULL | ERROR  | EMPTY  [   ARRAY |  OBJECT  ] } ON ERROR </b> ] 
+ )
+</pre>
+
+<pre json_objectagg><b>JSON_OBJECTAGG</b>
+  ( [ <b>KEY</b> ] expr {<b>VALUE</b>|<b>IS</b>|,} expr [ format_clause ]
+    [ JSON_on_null_clause [ format_clause ]] 
+    [ JSON_value_on_empty_clause [ format_clause ]] 
+    [ JSON_agg_returning_clause [ format_clause ]]  
+    [ <b>STRICT</b> [ format_clause ]] 
+    [ allow_disallow_strict_lax_JSON [ format_clause ]] 
+  )
+</pre>
+
+/* examples are without paren */
+<pre immutable_table_no_delete_clause><b>NO DELETE</b> { [ <b>LOCKED</b> ] 
+                                                  | { <b>UNTIL</b> integer <b>DAYS AFTER INSERT [LOCKED]</b> } }</pre>
+/*<pre immutable_table_no_drop_clause><b>NO DROP</b> [ <b>UNTIL</b> integer <b>DAYS IDLE</b> ]  </pre>*/    
+
+<pre percentile_disc>
+<b>PERCENTILE_DISC</b>(expr) <b>WITHIN GROUP</b>
+   (order_by_clause)
+   [ <b>OVER</b> (query_partition_clause) 
+     | <b>OVER</b> ()                             -- LRGDBCONAP1 
+   ]
+</pre>
+
+<pre percentile_cont>
+<b>PERCENTILE_CONT</b>(expr) <b>WITHIN GROUP</b>
+   (order_by_clause)
+   [ <b>OVER</b> (query_partition_clause)    
+     | <b>OVER</b> ()                             -- optional query_partition_clause
+   ]
+</pre>  
+
+<pre model_rules_clause>
+[ <b>RULES</b>
+  [update_upsert_all]
+  <b>[ { AUTOMATIC | SEQUENTIAL } ORDER ]</b>
+  [ model_iterate_clause ]
+]
+([                                                    --optional
+  [update_upsert_all]
+     cell_assignment [ order_by_clause ] = expr
+  [,  [update_upsert_all]
+         cell_assignment [ order_by_clause ] = expr
+  ]...
+])
+</pre>
+
+<pre update_upsert_all>
+<b>UPDATE | UPSERT [ ALL ]</b>
+</pre>
+      
+<pre model_clause>
+MODEL_kw
+   [ cell_reference_options ]
+   [ return_rows_clause ]
+   [ reference_model ]...
+main_model 
+</pre>    
+
+<pre MODEL_kw>
+  <b>MODEL | SPREADSHEET</b>
+</pre>
+
+<pre multi_column_for_loop >
+<b>FOR</b> (dimension_column
+      [, dimension_column ]...)
+<b>IN</b> ( { (expr [, expr ]...)
+       [, (expr [, expr ]...) ]...     -- 1) literal -> expr   2)  missing ,
+     | subquery
+     }
+   )
+</pre>     
+
+<pre row_pattern_subset_item>
+variable_name = ( variable_name [, variable_name ]... )    -- missing ...
+</pre>
+  
+<pre row_pattern_rows_per_match> {<b>
+  ONE ROW PER MATCH
+| ALL ROWS PER MATCH
+</b>}  --  missing:
+[<b>      
+  SHOW EMPTY MATCHES
+| OMIT EMPTY MATCHES
+| WITH UNMATCHED ROWS 
+</b>]</pre>  
+
+<pre row_pattern_measure_column> {
+    opt_FINAL_RUNNING arow_pattern_recognition_function opt_AS c_alias 
+  | opt_FINAL_RUNNING expr opt_AS c_alias -- e.g. 'FINAL' 'LAST'
+}</pre>
+
+<pre opt_FINAL_RUNNING>
+  [  <b>FINAL</b> | <b>RUNNING</b> ]
+</pre>  
+
+<pre row_pattern_order_by>{   -- missing 'ASC'
+     order_by_clause     
+  |  dummy_rule
+}</pre> 
+
+<pre arow_pattern_recognition_function>
+   row_pattern_classifier_function
+ | row_pattern_match_number_function
+ | row_pattern_navigation_function
+ | row_pattern_aggregate_function
+</pre>
+ 
+<pre row_pattern_classifier_function>
+  <b>CLASSIFIER</b>( )
+</pre>  
+ 
+<pre row_pattern_match_number_function>
+  <b>MATCH_NUMBER</b>( )
+</pre>  
+
+<pre row_pattern_navigation_function>
+   row_pattern_navigation_logical
+  | row_pattern_navigation_physical
+  | row_pattern_navigation_compound
+</pre>
+
+<pre row_pattern_navigation_logical>
+   opt_FINAL_RUNNING {<b>FIRST|LAST</b>} (expr[,offset])
+</pre>   
+
+<pre row_pattern_navigation_physical>
+   {<b>PREV|NEXT</b>}(expr[, offset])
+</pre>   
+
+<pre row_pattern_navigation_compound>
+   {<b>PREV | NEXT</b>} (
+     opt_FINAL_RUNNING {<b>FIRST|LAST</b>} (expr[, offset]) [,offset])
+</pre>     
+     
+
+<pre move_table_clause>  -- segment_attributes_clause before UPDATE INDEXES: alter table x1 move update indexes tablespace sysaux online
+ <b>MOVE</b> 
+   { filter_condition 
+   | <b>ONLINE</b> 
+   | segment_attributes_clause 
+   | table_compression 
+   | index_org_table_clause 
+   | LOB_storage_clause 
+   | varray_col_properties 
+   | parallel_clause 
+   | allow_disallow_clustering 
+   | <b>UPDATE INDEXES</b>
+   | <b>UPDATE INDEXES</b>
+      ( index { segment_attributes_clause
+               | update_index_partition }
+         [, index { segment_attributes_clause
+                  | update_index_partition } ]...
+      )
+     
+   }...
+ </pre>  
+
+<pre range_partitions>
+<b>PARTITION BY RANGE</b> (expr[, expr ]...)  -- was column
+  [ <b>INTERVAL</b> ( expr ) [ <b>STORE IN</b> ( tablespace [, tablespace]...) ]]
+( <b>PARTITION</b> [ partition ]
+    range_partitions_clause_1
+      [, <b>PARTITION</b> [ partition ]
+        range_partitions_clause_1
+      ]...
+)
+[<b>AUTO ONLINE</b>]
+</pre>
+
+<pre range_partitions_clause_1>
+ [ range_values_clause 
+ | table_partition_description
+ | external_part_subpart_data_props 
+ ]...
+</pre> 
+
+
+<pre composite_range_partitions>
+<b>PARTITION BY RANGE</b> (expr[, expr ]...)  -- was column
+  [ <b>INTERVAL</b> ( expr ) [ <b>STORE IN</b> ( tablespace [, tablespace]... ) ]]
+  { subpartition_by_range
+  | subpartition_by_list
+  | subpartition_by_hash
+  }
+( range_partition_desc [, range_partition_desc ]... )
+</pre>
+
+<pre alter_table>
+<b>ALTER TABLE [IF EXISTS]</b> [ schema. ] table
+  [ memoptimize_read_clause 
+  | memoptimize_write_clause 
+  | alter_table_properties
+  | column_clauses
+  | constraint_clauses
+  | alter_table_partitioning
+  | alter_external_table
+  | move_table_clause
+  | modify_to_partitioned
+  | modify_opaque_type
+  | immutable_table_clauses
+  | blockchain_table_clauses
+  | <b>NO CELLMEMORY</b>
+  | <b>ENABLE TRACKING</b>
+  | <b>ENABLE ROW CHANGE TRACKING</b>
+  | update_all_indexes_clause
+  | <b>SET SUBPARTITIONING MANUAL</b>
+  ] ...           -- missing iteration e.g.: 
+                  -- alter table x1 modify
+                  -- partition by range(a+b)
+                  -- (partition p1 values less than (10),
+                  -- partition p2 values less than (maxvalue)) parallel 2alter table x1 move update indexes tablespace sysaux online
+  [ enable_disable_clause
+  | <b>{ ENABLE | DISABLE }
+    { TABLE LOCK | ALL TRIGGERS | CONTAINER_MAP | CONTAINERS_DEFAULT }</b>
+  ] ...
+</pre>    
+
+<pre move_table_partition>
+<b>MOVE</b> partition_extended_name
+   [ <b>MAPPING TABLE</b> 
+   | table_partition_description 
+   | filter_condition
+   | update_index_clauses 
+   | parallel_clause 
+   | allow_disallow_clustering 
+   | <b>ONLINE</b>
+   | /*table_compression more general:*/ physical_attributes_clause
+   | physical_properties 
+   ] ...
+</pre> 
+
+
+<pre move_table_subpartition>
+<b>MOVE</b> subpartition_extended_name
+   [ indexing_clause
+   | partitioning_storage_clause 
+   | update_index_clauses 
+   | filter_condition
+   | parallel_clause 
+   | allow_disallow_clustering 
+   | <b>ONLINE</b>
+   ] ...
+</pre> 
+
+
+  
+<pre lead_lag_order>   -- select lead(ename, 2) ignore nulls over (w1) ldename, ...
+      order_by_clause
+    | expr 
+</pre>
+  
+<pre analytic_clause>  
+  { [ window_name ] | [ query_partition_clause ] }
+[order_by_clause] [windowing_clause]         -- avg(s_amount) over (w rows between 10 preceding and current row)
+</pre>
+
+<pre model_iterate_clause>
+  <b>ITERATE</b> ( number ) 
+| <b>ITERATE</b> ( number )  <b>UNTIL</b> ( condition ) 
+| <b>ITERATE</b> ( bind_var )                              -- added
+| <b>ITERATE</b> ( bind_var ) <b>UNTIL</b> ( condition )   -- added
+| <b>ITERATE</b> ( number )  <b>UNTIL</b>  condition       -- added
+</pre>
+
+<pre search_clause>
+{ <b>SEARCH</b>
+        { <b>DEPTH FIRST BY</b> ordered_c_alias [, ordered_c_alias]...
+            -- [ <b>ASC | DESC</b> ],    wrong place, e.g. SEARCH DEPTH FIRST BY rl desc, dc1, dc2, sortorder SET order1
+            [ <b>NULLS FIRST | NULLS LAST</b> ]
+         | <b>BREADTH FIRST BY</b> ordered_c_alias [, ordered_c_alias]...
+            --[ <b>ASC | DESC</b> ]
+            [ <b>NULLS FIRST | NULLS LAST</b> ]
+        }
+        <b>SET</b> ordering_column
+}
+</pre>
+
+<pre ordered_c_alias>
+     c_alias  [ <b>ASC | DESC</b> ]
+</pre>
+
+<pre approx_percentile>
+<b>APPROX_PERCENTILE</b>( expr [ <b>DETERMINISTIC</b> ] [, expr ] )      -- e.g. approx_percentile(0.25, :1 ) within group...
+  <b>WITHIN GROUP</b> ( <b>ORDER BY</b> expr [ <b>ASC | DESC</b> ] [ <b>NULLS FIRST | NULLS LAST</b> ] )  -- missing NULLS FIRST
+</pre>
+
+<pre approx_rank>
+  <b>APPROX_RANK</b> ( [expr] [ <b>PARTITION BY</b> expr ] [ /*<b>ORDER BY</b>*/ order_by_clause ] )   -- expr is optional & missing closing paren & extra keywords
+</pre>
+
+<pre xmltable>
+<b>XMLTABLE</b>
+ ( 
+  [ XMLnamespaces_clause , ] XQuery_string [string_literal] XMLTABLE_options 
+ )
+[<b>AS</b>  identifier [ ( "expression_list" ) ] -- 33838323
+|
+(+)]    -- 33838787
+</pre> 
+
+<pre to_yminterval><b>TO_YMINTERVAL</b>
+  ( expr
+    [ <b>DEFAULT</b> return_value <b>ON CONVERSION ERROR</b> ]
+  )</pre>
+  
+<pre LOB_partitioning_storage>
+  <b>LOB</b> (LOB_item) <b>STORE AS [BASICFILE | SECUREFILE] </b>
+  [ LOB_segname [ ( {<b>TABLESPACE</b> tablespace | <b>TABLESPACE SET</b> tablespace_set} ) ]     -- scope of alternative, added {}
+  | ( { <b>TABLESPACE</b> tablespace | <b>TABLESPACE SET</b> tablespace_set} )             -- same
+  ] 
+</pre>   
+
+<pre subpartition_by_hash>
+<b>SUBPARTITION BY HASH</b> (column [, column ]...)
+   [ [<b>SUBPARTITIONS</b> integer]     -- 33900845
+        [ <b>STORE IN</b> (tablespace [, tablespace ]...) ]
+   | subpartition_template
+   ]</pre>
+   
+   
+
+<pre add_meas_clause>
+<b>ADD MEASURES</b>  ( cube_meas [, cube_meas ]... ) 
+</pre>  
+
+<pre cube_meas>   -- add_meas_clause_ in doc
+ meas_name  {base_meas_clause | calc_meas_clause}  -- wrong parenthesis
+</pre> 
+
+<pre base_meas_clause>
+[<b>FACT</b> [  { expr /*ession*/ }...  ]  ] [ meas_aggregate_clause ]
+</pre>
+
+<pre calc_meas_clause>   
+ /*  <b>AS</b> subquery  
+ | <b>AS</b> ( expr ) 
+ | */ calc_measure_clause
+</pre> 
+
+<pre approx_sum><b>APPROX_SUM</b> (  { * | expr }[ , string_literal ] )</pre>
+
+<pre treat><b>TREAT</b>( expr <b>AS</b> {[ <b>REF</b> ] [ schema. ]type | <b>JSON</b> [(identifier JSON_value_return_type)]} )</pre>
+
+<pre xmlpi>
+<b>XMLPI</b>
+ ( { [ <b>NAME</b> ] identifier
+   | <b>EVALNAME</b> value_expr
+   } [, value_expr ]
+ )
+</pre> 
+
+<pre default_tablespace_params>
+<b>DEFAULT</b> [ default_table_compression ] [ default_index_compression ]
+        [ inmemory_clause ] [ ilm_clause ] [ storage_clause ]
+|
+<b>DEFAULT</b> default_index_compression default_table_compression
+        [ inmemory_clause ] [ ilm_clause ] [ storage_clause ]
+|
+<b>DEFAULT COMPRESS</b>         
+</pre>
+   
+<pre inmemory_attributes>   
+   { inmemory_memcompress 
+   | inmemory_priority 
+   | inmemory_distribute 
+   | inmemory_duplicate 
+   | inmemory_spatial }...
+</pre>    
+
+<pre hierarchies_clause><b>HIERARCHIES</b> ( [ hier_ref [, hier_ref]...] )
+</pre>
+
+<pre filter_clauses><b>FILTER FACT</b> (filter_clause [, filter_clause]...)
+</pre>
+
+<pre create_materialized_view> -- split to have less # of generated rule productions
+   create_materialized_view1   
+   create_materialized_view2
+   create_materialized_view3  
+<b>AS</b> subquery 
+</pre>
+
+<pre create_materialized_view1>
+  <b>CREATE MATERIALIZED VIEW [IF NOT EXISTS]</b> 
+| <b>CREATE SNAPSHOT</b>
+</pre>
+
+<pre create_materialized_view2>
+[ schema. ] materialized_view
+  [ <b>OF</b> [ schema. ] object_type ]
+  [ (  
+       column_alias [<b>ENCRYPT</b> [encryption_spec]] [[,]scoped_table_ref_constraint | annotations_clause]     
+      [,  column_alias [<b>ENCRYPT</b> [encryption_spec]] [[,]scoped_table_ref_constraint | annotations_clause] ]...
+    )
+  ]
+  [ annotations_clause
+  | <b>DEFAULT COLLATION</b> collation_name 
+  | <b>CACHE</b> 
+  | attribute_clustering_clause
+  ]...
+</pre>   
+
+<pre create_materialized_view3>
+{ <b>ON PREBUILT TABLE</b>
+    [ { <b>WITH</b> | <b>WITHOUT</b> } <b>REDUCED PRECISION</b> ]
+  | physical_properties materialized_view_props
+  }
+  [ <b>USING INDEX</b>
+    [ physical_attributes_clause
+    | <b>TABLESPACE</b> tablespace
+    ]...
+  | <b>USING NO INDEX</b>
+  ]
+  [ create_mv_refresh 
+  | evaluation_edition_clause 
+  | { <b>ENABLE</b> | <b>DISABLE</b> } <b>ON QUERY COMPUTATION</b> 
+  | { <b>ENABLE</b> | <b>DISABLE</b> } <b>CONCURRENT REFRESH</b> 
+  | query_rewrite_clause 
+  | annotations_clause 
+  ]...
+ </pre>
+ 
+ 
+ <pre create_flexible_domain> <b> CREATE  FLEXIBLE  DOMAIN  [IF NOT EXISTS]</b> [ schema .]domain_name
+    ( domain_column [ , domain_column]... )     
+flexible_domain_choose_clause
+flexible_domain_from_clause 
+</pre>
+
+<pre flexible_domain_choose_clause> 
+     <b> CHOOSE  DOMAIN  USING </b>  ( column datatype_possibly_strict [ , column datatype_possibly_strict]... )   
+</pre>
+
+<pre flexible_domain_from_clause> 
+ <b>FROM</b>   
+{  <b>DECODE</b> ( expr , flexible_domain_expr_result_expr [, flexible_domain_expr_result_expr]... [ , result_expr] ) 
+   |  <b>CASE </b>  { expr [ flexible_domain_when_expr ]... 
+                    |      [ flexible_domain_when_condition ]... }  
+   [  <b> ELSE </b>  else_expr ] 
+    <b> END </b>  
+} 
+</pre>
+
+<pre flexible_domain_expr_result_expr> 
+expr , result_expr
+</pre>
+
+
+<pre flexible_domain_when_expr> 
+<b> WHEN </b>  /*comparison_expr*/ expr  <b> THEN </b>  return_expr
+</pre>
+
+<pre flexible_domain_when_condition> 
+<b>WHEN </b>  condition  <b> THEN </b>  return_expr
+</pre>
+
+
+<pre result_expr>[ schema .]domain_name ( domain_column [, domain_column]... ) </pre>
+
+<pre flush_clause>
+<b> FLUSH </b>  {  <b> SQL_MONITOR </b>  
+|  <b> QUERY_HISTORY </b>  
+|  <b> SHARED_POOL </b>  
+|  <b> GLOBAL </b>   <b> CONTEXT </b> 
+| {  <b> BUFFER_CACHE </b> |  <b> FLASH_CACHE </b>  } [  <b> LOCAL </b>  |  <b> GLOBAL </b>  ]        
+|  <b> REDO </b>   <b> TO </b>  target_db_name [ [  <b> NO </b>  ]  <b> CONFIRM </b>   <b> APPLY </b>  ] 
+|  <b> FLUSH </b>   <b> PASSWORDFILE_METADATA_CACHE </b> 
+}</pre>
+
+<pre insert_values_clause> -- 150 regressions with doc definition 
+     dummyRule
+   | values_clause  
+</pre>
+
+
+<pre xmlroot>
+<span class="bold">XMLROOT</span>
+  ( value_expr, <span class="bold">VERSION</span> 
+  { value_expr | <span class="bold">NO VALUE</span> }
+  [, <span class="bold">STANDALONE</span> { <span class="bold">YES</span> | <span class="bold">NO</span> | <span class="bold">NO VALUE</span> } ]
+  )</pre>
+
+
+
+<< column_properties_clause >>{
+ default_clause 
+  | NULL | NOT NULL 
+  |  constraint_clause
+  |  inline_constraint
+  | VALIDATE USING string_literal 
+  | COLLATE column_collation_name
+}...<<>>
+
+<< default_clause >>
+DEFAULT [ ON NULL [ 
+                    FOR   INSERT { ONLY | AND UPDATE } [number]
+                  | FOR ( INSERT { ONLY | AND UPDATE } [number])
+                  ] 
+        ] {expr|condition}
+<<>>
+  
+<< create_domain >>{ 
+    create_single_column_domain 
+  | create_multi_column_domain 
+  | create_flexible_domain 
+  | CREATE DOMAIN [IF NOT EXISTS][schema.]domain_name AS JSON VALIDATE [USING] string_literal
+  | CREATE DOMAIN [IF NOT EXISTS][schema.]domain_name AS ENUM( enum_lst [,] ) [datatype_possibly_strict]     
+} <<>>
+ 
+<<create_multi_column_domain>>
+CREATE DOMAIN [ IF NOT EXISTS ][ schema .] domain_name AS
+(  domain_column_def [, domain_column_def]... )
+[constraint_clause
+ | inline_constraint
+ | DISPLAY display_expression 
+ | ORDER order_expression 
+ | annotations_clause ]...
+<<>>
+
+<<constraint_clause>> 
+[
+CONSTRAINT [ constraint_name ] { [NOT] NULL | CHECK ( condition )} constraint_state 
+|
+CONSTRAINT [ constraint_name ] { [NOT] NULL | CHECK ( condition )} 
+|
+CONSTRAINT [ constraint_name ]  constraint_state 
+]...
+<<>>
+
+<<domain_column_def>>
+   domain_column AS datatype [OR datatype]
+   {annotated_column_properties_clause}... 
+<<>>    
+ 
+<<create_single_column_domain>>
+CREATE [ENUMERATED | USECASE]
+DOMAIN [IF NOT EXISTS ][ schema .] domain_name AS datatype_possibly_strict [OR datatype_possibly_strict]... 
+[annotated_column_properties_clause]...
+<<>>  
+
+<<annotated_column_properties_clause>>
+    column_properties_clause  
+ |  DISPLAY display_expression 
+ |  ORDER order_expression 
+ |  annotations_clause 
+ |  inline_constraint
+ |  STRICT
+<<>>
+
+<<enum_lst>>
+  enum_item 
+| enum_item , enum_lst 
+<<>>
+ 
+<<enum_item>> 
+  name [ = name ]... [ = expr ] 
+<<>>
+
+<<datatype_possibly_strict>>
+  datatype [NOT NULL][STRICT]
+  |
+  NOT NULL
+  |
+  DEFAULT expr
+<<>>
+ 
+/******** MLE ********/
+
+<< create_mle_env >>
+CREATE [ OR REPLACE ] MLE ENV [ IF NOT EXISTS ]
+[schema.] name
+{ [ CLONE [schema.] environment_name ] |
+{ [ IMPORTS (mle_import_module1 [ ,mle_import_module1] ... )]
+[ LANGUAGE OPTIONS string_literal ] } };
+<<>>
+
+<< drop_mle_env >>
+DROP MLE ENV [ IF EXISTS ] [schema.] name;
+<<>>
+
+<< alter_mle_env >>
+ALTER MLE ENV [ IF EXISTS ] [schema.] name
+{ADD IMPORTS (mle_import_module1 [ , mle_import_module1]...)
+| DROP IMPORTS (import_name[ , import_name]...)
+| ALTER IMPORTS (mle_import_module1 [ , mle_import_module1]...)
+| SET LANGUAGE OPTIONS string_literal
+| COMPILE };
+<<>>
+
+<<import_name>>
+    identifier
+  | string_literal
+<<>>  
+
+<<mle_import_module1>>
+import_name MODULE [schema.] mle_module_name
+<<>>
+
+<< create_mle_module >>
+CREATE [ OR REPLACE ] MLE MODULE [ IF NOT EXISTS ]
+[schema.] name
+LANGUAGE [schema.] identifier
+[ VERSION string_literal ]
+{USING
+{BFILE(directory_name,file_name) |
+{CLOB|BLOB|BFILE} {( select ) | select } } |
+AS javascript}
+<<>>
+
+<< drop_mle_module >>
+DROP MLE MODULE [ IF EXISTS ] [schema.] name
+<<>>
+
+<< alter_mle_module >>
+ALTER MLE MODULE [ IF EXISTS ] [schema.] name 
+{   
+    SET METADATA 
+	{ 
+	  json
+	| USING CLOB [ ( [mle_CLOB] ) | mle_CLOB ] 
+	} 
+| 
+    COMPILE
+}
+<<>>
+
+<< mle_CLOB >>
+  SELECT JSON(string_literal)
+| SELECT string_literal
+| string_literal
+<<>>
+
+/*<< create_mle_function >>
+CREATE [ OR REPLACE ] {FUNCTION | PROCEDURE}
+[schema.] < call_spec_name > [( param_declaration [ ,] ...) ]
+[RETURN datatype ]
+[{ invoker_rights_clause | DETERMINISTIC |
+parallel_enable_clause | result_cache_clause }]
+{ AS | IS } MLE MODULE [schema.] module_name
+[ ENV [schema.] < mle -env > ]
+SIGNATURE '< function_name_in_module >[( mle_param_declaration
+)] ';
+<<>>*/
+
+
+<< create_property_graph >>
+CREATE [  OR REPLACE  ] PROPERTY GRAPH [IF NOT EXISTS] [ schema . ] graph_name
+     vertex_tables_clause [ edge_tables_clause ]  [ graph_options ]
+<<>>
+
+<< vertex_tables_clause >>
+VERTEX TABLES ( vertex_tables_definition [ , vertex_tables_definition ]... )
+<<>>
+
+<< graph_element_name_and_key >>
+graph_element_object_name [  AS graph_element_name  ] [ graph_element_key ]
+<<>>
+
+<< graph_element_object_name >>
+  [schema .] identifier 
+<<>>
+
+<< graph_table_label_and_properties >>
+  { graph_table_label_properties_clause 
+   | { graph_table_label_clause }... [ graph_table_label_properties_clause ] }
+   [ { graph_table_label_clause }... ]
+<<>>
+
+<< graph_table_label_properties_clause >>
+{ NO PROPERTIES |  PROPERTIES graph_table_properties_alternatives  }
+<<>>
+
+<< graph_table_properties_alternatives >>
+  [ ARE ] ALL COLUMNS [ EXCEPT  ( column_name_list ) ] 
+|  ( column_or_expression [, column_or_expression]...)   
+<<>>
+
+<< column_name_list >>
+column_name [, column_name]... 
+<<>>
+
+<< column_or_expression >>
+ /*column_name [ AS property_name ]  |*/  value_expression   [AS property_name] 
+<<>>
+
+<< graph_table_label_clause >>
+{LABEL identifier  | DEFAULT LABEL } [ graph_table_label_properties_clause ]
+<<>>
+
+<< edge_tables_clause >>
+EDGE TABLES ( edge_tables_definition [ , edge_tables_definition]... ) 
+<<>>
+
+<< graph_options >>
+OPTIONS ( {graph_options1
+        | graph_options2
+        | graph_options1 , graph_options2
+        | graph_options2 , graph_options1} )
+<<>>
+
+<< graph_options1 >>
+{ ENFORCED | TRUSTED } MODE
+<<>>
+
+<< graph_options2 >>
+{ ALLOW | DISALLOW } MIXED PROPERTY TYPES
+<<>>
+
+<< alter_property_graph >>
+ALTER PROPERTY GRAPH [ schema.] graph_name { identifier}...; -- ALTER PROPERTY GRAPH tkgaimpopstat_graph INMEMORY PRIORITY &1;
+<<>>
+
+
+
+<< annotations_clause>>
+  ANNOTATIONS ( annotation_element [, annotation_element]... )
+| OPTIONS ( annotation_element [, annotation_element]... )
+<<>>
+
+<<annotation_element>>
+[ ADD [IF NOT EXISTS] | DROP [IF EXISTS]  | REPLACE ] annotation_name [ expr/*annotation_value*/ ]
+<<>>
+
+<<blockchain_row_version_user_chain_clause>> [ WITH { USER CHAIN |  ROW VERSION  [ AND USER CHAIN ]  } row_version_name 
+    (  column [, column]... ) ]
+<<>>    
+
+<< blockchain_data_format_clause>> 
+VERSION { V1 | V2 }
+<<>> 
+
+<<alter_indextype>> ALTER INDEXTYPE [ IF EXISTS ] [ schema. ] indextype
+  [ { ADD | DROP } [ schema. ] operator ( parameter_types ) 
+      [ , { ADD | DROP } [schema. ] operator ( parameter_types ) ]... 
+  | COMPILE
+  ]
+  [ using_type_clause ]
+  [ [WITH|WITHOUT] LOCAL [ RANGE ] PARTITION ] [ storage_table_clause ]
+<<>>
+
+<<parameter_types>> 
+     datatype
+   | parameter_types , datatype
+<<>>
+
+
+<<drop_materialized_zonemap>>DROP MATERIALIZED ZONEMAP /*ON*/ [ schema. ] zonemap_name 
+<<>>
+
+<<create_inmemory_join_group>>
+CREATE INMEMORY JOIN GROUP [ IF NOT EXISTS ] [ schema. ] join_group
+  ( [ schema. ] table ( column ) --, [ schema. ] table ( column )
+    [, [ schema. ] table ( column ) ]... ) 
+<<>>    
+
+
+<<fuzzy_match>>
+FUZZY_MATCH (
+  { LEVENSHTEIN 
+    | DAMERAU_LEVENSHTEIN
+    | JARO_WINKLER 
+    | BIGRAM 
+    | TRIGRAM 
+    |  WHOLE_WORD_MATCH 
+    | LONGEST_COMMON_SUBSTRING 
+  } , string , string [, { UNSCALED | RELATE_TO_SHORTER | EDIT_TOLERANCE literal }... ] 
+  ) 
+<<>>  
+
+<<OID_clause>>
+OBJECT { IDENTIFIER | ID } [IS]
+{ SYSTEM GENERATED | PRIMARY KEY }
+<<>>
+
+<<alter_session_set_clause>> 
+{ SET { parameter_name = literal_list    -- parameter_value is used in set_parameter_clause
+    | parameter_name = ON                -- keyword
+    | EDITION = edition_name
+    | CONTAINER = container_name [ SERVICE = service_name ]
+    | ROW ARCHIVAL VISIBILITY = { ACTIVE | ALL }
+    | DEFAULT COLLATION = { collation_name | NONE }
+    | EVENTS literal
+    | RECYCLEBIN = { ON | OFF }
+    | APPLICATION MODULE = string_literal
+    } ...
+| RESET identifier
+}
+<<>>
+
+<<alter_system_set_clause>>
+{ set_parameter_clause
+| USE_STORED_OUTLINES = {TRUE | FALSE | category_name}
+| GLOBAL_TOPIC_ENABLED = {TRUE | FALSE}
+| EVENTS string_literal
+}
+<<>>
+
+<<create_flashback_archive>>
+CREATE FLASHBACK ARCHIVE [DEFAULT] flashback_archive
+  TABLESPACE tablespace
+  [ flashback_archive_quota 
+  | [NO] OPTIMIZE DATA 
+  | flashback_archive_retention ]...
+;
+<<>>
+
+<<boolean_test_condition>>
+condition IS [NOT] {TRUE | FALSE /*| NULL  ambiguous with simple_expression*/ }
+<<>>
+
+<<JSON_value_on_empty_clause>>
+{ EMPTY [OBJECT|ARRAY] | ERROR | [SQL] NULL | DEFAULT literal } ON {EMPTY | NO ROWS}
+<<>>
+
+<<JSON_value_on_error_clause>>
+{ EMPTY [OBJECT|ARRAY] | ERROR | [SQL] NULL | DEFAULT literal } ON ERROR
+<<>>
+
+<<drop_package>>
+DROP PACKAGE [ BODY ] [ IF EXISTS ] [ schema. ] package 
+<<>>
+
+<<property_clause>>
+PROPERTY { SET | REMOVE } { DEFAULT_CREDENTIAL = qualified_credential_name | identifier | identifier = string_literal }
+<<>>
+
+<<alter_domain>>
+ALTER DOMAIN [ IF EXISTS ][ schema . ] domain_name {
+     { ADD | MODIFY } DISPLAY display_expression
+   | DROP DISPLAY
+   | { ADD | MODIFY } ORDER order_expression 
+   | DROP ORDER  
+   | annotations_clause
+}<<>>
+
+<<end_session_clauses>>
+{ DISCONNECT SESSION string_literal
+     [ POST_TRANSACTION ]
+| KILL SESSION string_literal
+}
+[ IMMEDIATE | FORCE | NOREPLAY ]
+[ TIMEOUT integer ]
+<<>>
+
+<<domain_clause>>
+DOMAIN 
+[ schema . ] domain_name 
+[ ( column [, column]... ) ]
+[ USING ( column [, column]... ) ]
+[ VALIDATE | NOVALIDATE ]
+<<>>
+
+
+<<type_strict_lax>>
+  TYPE ( STRICT ) 
+| TYPE ( LAX )  
+<<>>
+
+<<JSON_exists_condition>>
+JSON_EXISTS( expr [ FORMAT JSON ], JSON_basic_path_expression
+  [ JSON_passing_clause 
+  | JSON_exists_on_error_clause 
+  | JSON_exists_on_empty_clause  
+  | type_strict_lax 
+  ]...
+)
+<<>>  
+
+<<column_definition>>
+column [ datatype  ]
+  [ COLLATE column_collation_name 
+  | SORT  
+  | VISIBLE 
+  | INVISIBLE 
+  --| DEFAULT [ ON NULL [ FOR { INSERT { ONLY | AND UPDATE } } ] ] {expr|condition}
+  | default_clause
+  | identity_clause 
+  | ENCRYPT encryption_spec 
+  | inline_constraint 
+  | inline_ref_constraint
+  | RESERVABLE
+  | annotations_clause
+  | REPLACE NULL WITH expr
+  | GUARD COLUMN
+  | GUARD ID expr
+  ]...
+<<>>
+
+/*<<partition_extended_names>>
+{ PARTITION | PARTITIONS }
+{ 
+  partition | { FOR ( partition_key_value [, partition_key_value ]... ) }
+  [, partition | { FOR ( partition_key_value [, partition_key_value ]... ) } ]...
+}
+<<>>*/
+
+<<tablespace_encryption_spec>>
+USING string_literal [MODE string_literal]
+<<>>
+
+<<create_logical_partition_tracking>>
+CREATE LOGICAL PARTITION TRACKING ON table_name
+  PARTITION BY RANGE ( column [, column]... )
+  [ INTERVAL ( expr ) ]
+  (  PARTITION [ partition ] range_values_clause [, PARTITION [ partition ] range_values_clause ]... ) 
+<<>>  
+
+<<static_base_profile>>
+[FROM  identifier] 
+<<>> 
+
+<<dynamic_base_profile>>
+[INCLUDING  identifier] 
+<<>> 
+
+<<create_index>>
+CREATE VECTOR INDEX [IF NOT EXISTS] identifier
+ON [schema.] identifier ( column [, column]... )
+[ INCLUDE  paren_expr_list
+| [GLOBAL] ORGANIZATION [INMEMORY | NEIGHBOR | GRAPH | PARTITIONS]...
+| [WITH] DISTANCE identifier   --<-- EUCLIDEAN, COSINE, etc
+| [WITH] [TARGET] ACCURACY [expr_percent] 
+| [PARAMETERS ( accuracy_parameter [, accuracy_parameter]... )]
+| PARALLEL digits
+| index_attributes
+]...
+--;
+<<>>
+
+<<accuracy_clause>>
+[WITH] [TARGET] ACCURACY [expr_percent] 
+[PARAMETERS ( accuracy_parameter [, accuracy_parameter]... )]
+<<>>
+
+<<accuracy_parameter>>{
+  TYPE identifier   --<-- IVF, HNSW 
+ |
+  {NEIGHBORS|NEIGHBOR|NEIGHBOURS|NEIGHBOUR} [PARTITION|PARTITIONS][identifier] {expr | M expr }
+ |
+  {EFCONSTRUCTION|EFSEARCH} expr 
+ |
+  {MIN_VECTORS_PER_PARTITION|SAMPLES_PER_PARTITION} expr  
+}<<>>
+
+<<vector_chunks>>
+ VECTOR_CHUNKS ( chunks_arguments )
+<<>> 
+ 
+<<chunks_arguments>>
+ expr [ chunking_spec ]
+<<>>
+
+<<chunking_spec>>
+    [ BY chunking_mode ]
+    [ MAX digits ]
+    [ OVERLAP digits ]
+    [ SPLIT [ BY ] split_character_list ]
+    [ LANGUAGE identifier ]
+    [ NORMALIZE normalization_spec ]
+    [ EXTENDED ]
+<<>>
+
+<<chunking_mode>>
+ WORDS
+ | CHARS
+ | CHARACTERS
+ | VOCABULARY column
+<<>>
+ 
+/* <chunker name> ::=
+ <qualified name>
+ 
+ <chunker partitioning spec> ::=
+ <left paren>
+ <value expression> [ { <comma> <value expression> } ... ]
+ <right paren>
+*/ 
+ 
+<<split_character_list>>
+   NONE
+ | BLANKLINE
+ | NEWLINE
+ | SPACE
+ | RECURSIVELY
+ | SENTENCE
+ | CUSTOM custom_split_character_list
+<<>> 
+ 
+ <<custom_split_character_list>>
+ (
+ literal [ , literal ] ...
+ )
+ <<>>
+ 
+ <<normalization_spec>>
+   NONE
+ | ALL
+ | custom_normalization_spec
+ <<>>
+ 
+ <<custom_normalization_spec>>
+ (
+ normalization_mode [ , normalization_mode ] ... 
+ )
+ <<>>
+ 
+ <<normalization_mode>>
+ WHITESPACE
+ | PUNCTUATION
+ | WIDECHAR
+ <<>>
+
+<<json_oper>>
+    add_set_op
+  | append_op 
+  | assign_op
+  | case_op 
+  | copy_op
+  | insert_op
+  | intersect_op
+  | keep_op
+  | merge_op
+  | minus_op  
+  | nested_path_op
+  | prepend_op
+  | remove_op
+  | remove_set_op
+  | rename_op
+  | replace_op   
+  | set_op  
+  | sort_op
+  | union_op
+ <<>>
+ 
+ <<sort_op>>
+ SORT path_expr 
+   {    REVERSE 
+     | [ REMOVE NULLS ] ORDER BY { path_expr [ ASC | DESC ] }
+             [ , { path_expr [ ASC | DESC ] } ]... 
+     | [ ASC | DESC ] [ UNIQUE ] [ REMOVE NULLS ]       
+    }  
+  [ {  IGNORE | ERROR | NULL } ON MISSING ]
+  [ {  IGNORE | ERROR | NULL } ON MISMATCH ]
+  [ {  IGNORE | ERROR } ON EMPTY ]
+  [ {  IGNORE | ERROR } ON ERROR ]
+<<>>
+
+<<case_op>>
+   CASE 
+      { WHEN string_literal THEN ( json_oper [, json_oper]... ) }...
+      ELSE ( json_oper [, json_oper]... )
+   END
+<<>>   
+  
+<<intersect_op>>
+INTERSECT pathExpr = rhsExpr 
+    [ { IGNORE | ERROR | CREATE | NULL } ON MISSING 
+    | { IGNORE | ERROR | CREATE | NULL } ON MISMATCH
+    | { IGNORE | ERROR | NULL } ON NULL 
+    ]... 
+<<>>    
+
+<<union_op>>
+UNION pathExpr = rhsExpr 
+    [ { IGNORE | ERROR | CREATE | NULL } ON MISSING 
+    | { IGNORE | ERROR | CREATE | NULL } ON MISMATCH
+    | { IGNORE | ERROR | NULL } ON NULL 
+    ]... 
+<<>> 
+
+<<minus_op>>
+MINUS pathExpr = rhsExpr 
+    [ { IGNORE | ERROR | CREATE | NULL } ON MISSING 
+    | { IGNORE | ERROR | CREATE | NULL } ON MISMATCH
+    | { IGNORE | ERROR | NULL } ON NULL 
+    ]... 
+<<>> 
+
+<<nested_path_op>>
+NESTED [PATH] path_expr ( [ [ operation ] [ , operation ]...] )  
+<<>>
+
+<<consistent_hash_partitions>>
+{
+PARTITION BY CONSISTENT HASH (column [, column ]...)
+|
+PARTITIONS AUTO 
+|
+TABLESPACE SET tablespace_set
+}...
+<<>>   
+
+<<skewness_pop>>
+     SKEWNESS_POP ( [DISTINCT | ALL | UNIQUE] expr )  -- was: ... UNIQUE] ( expr ...
+<<>>  
+<<skewness_samp>>
+     SKEWNESS_SAMP ( [DISTINCT | ALL | UNIQUE] expr )
+<<>>   
+
+<<xmlparse>>
+XMLPARSE
+  ({ DOCUMENT | CONTENT } value_expr [ WELLFORMED | JSON_table_on_error_clause ])
+<<>>  
+
+<<prediction_cost>>
+PREDICTION_COST ( [ schema . ] model [ , class ] cost_matrix_clause mining_attribute_clause )
+<<>>
+
+<<range_subpartition_desc>>
+SUBPARTITION [subpartition] 
+  [  range_values_clause
+   | read_only_clause
+   | indexing_clause 
+   | partitioning_storage_clause 
+   | external_part_subpart_data_props
+   | SEGMENT CREATION {DEFERRED | IMMEDIATE}
+  ]...
+<<>>  
+
+<<modify_index_subpartition>>
+MODIFY SUBPARTITION subpartition
+[ UNUSABLE
+| COALESCE
+| LOGGING
+| NOLOGGING
+| allocate_extent_clause
+| deallocate_unused_clause
+]...
+<<>>
+
+<<list_subpartition_desc>>
+SUBPARTITION 
+[  subpartition
+ | list_values_clause
+ | read_only_clause
+ | indexing_clause
+ | partitioning_storage_clause
+ | external_part_subpart_data_props
+ | physical_properties
+]...
+<<>>
+
+<<materialized_view_props>>
+[ column_properties 
+| table_partitioning_clauses 
+| CACHE | NOCACHE 
+| parallel_clause
+| build_clause 
+]...
+<<>>
+
+<<clustering_join>>
+[ schema. ] table JOIN [ schema. ] table ON  equijoin_condition 
+                    [ JOIN [ schema. ] table ON  equijoin_condition  ]...
+<<>>
+
+<<clustering_when>>
+[ { YES | NO } ON LOAD 
+| { YES | NO } ON DATA MOVEMENT 
+]...
+<<>>
+
+<<alter_materialized_view>>
+ALTER MATERIALIZED VIEW [ IF EXISTS ]
+  [ schema. ] materialized_view
+  [ physical_attributes_clause
+  | modify_mv_column_clause
+  | constraint_clauses
+  | table_compression
+  | inmemory_table_clause
+  | LOB_storage_clause [, LOB_storage_clause ]...
+  | modify_LOB_storage_clause [, modify_LOB_storage_clause ]...
+  | alter_table_partitioning
+  | parallel_clause
+  | logging_clause
+  | allocate_extent_clause
+  | deallocate_unused_clause
+  | shrink_clause
+  | { CACHE | NOCACHE }
+  | alter_iot_clauses 
+  | USING INDEX physical_attributes_clause 
+  | MODIFY scoped_table_ref_constraint
+  | alter_mv_refresh
+  | evaluation_edition_clause 
+  | { ENABLE | DISABLE } ON QUERY COMPUTATION 
+  | alter_query_rewrite_clause 
+  | { ENABLE | DISABLE } CONCURRENT REFRESH 
+  | COMPILE
+  | CONSIDER FRESH
+  | MODIFY CLUSTERING WITH MATERIALIZED ZONEMAP
+  ]... 
+  [ annotations_clause ]
+  <<>>
+
+<<disassociate_statistics>>
+  DISASSOCIATE STATISTICS FROM
+   { COLUMNS [ schema. ]identifier.identifier
+               [, [ schema. ]identifier.identifier ]...
+   | FUNCTIONS [ schema. ]identifier
+                 [, [ schema. ]identifier ]...
+   | PACKAGES [ schema. ]identifier
+                [, [ schema. ]identifier ]...
+   | TYPES [ schema. ]identifier
+             [, [ schema. ]identifier ]...
+   | INDEXES [ schema. ]identifier
+               [, [ schema. ]identifier ]...
+   | INDEXTYPES [ schema. ]identifier
+                  [, [ schema. ]identifier ]...
+   }
+   [ FORCE ] ;
+<<>>  
+
+<<add_range_subpartition>>
+ADD range_subpartition_desc [ dependent_tables_clause ] [ update_index_clauses ]
+ [, range_subpartition_desc [ dependent_tables_clause ] [ update_index_clauses ] ]...
+<<>>
+
+<<XMLType_column_properties>>
+XMLTYPE [ COLUMN ] [column]
+   [ XMLType_storage ]
+   [ XMLSchema_spec ]
+<<>>   
+
+<<table_partition_description>>
+{ 
+  INTERNAL 
+| EXTERNAL 
+| deferred_segment_creation 
+--| read_only_clause   in physical_properties
+| indexing_clause 
+| segment_attributes_clause 
+| table_compression 
+| prefix_compression 
+| inmemory_clause 
+| ilm_clause 
+| OVERFLOW [ segment_attributes_clause ] 
+| LOB_storage_clause
+| varray_col_properties
+| nested_table_col_properties
+| JSON_storage_clause 
+| , LOB_storage_clause
+| LOCATION ( string_literal )  
+| physical_properties
+| external_table_data_props       
+}...
+<<>>
+
+<<create_context>>
+CREATE [ OR REPLACE ] CONTEXT namespace
+  USING [ schema. ] package
+  [ INITIALIZED 
+  | EXTERNALLY 
+  | GLOBALLY 
+  | LOCALLY 
+  | ACCESSED
+  ]... ;
+<<>>  
+
+<<drop_language>>
+DROP LANGUAGE JAVASCRIPT
+<<>>  
+
+<<XMLType_table>>
+OF [SYS.]XMLTYPE
+ [ (object_properties) 
+  --| ID
+  | ID literal
+  | XMLTYPE XMLType_storage 
+  | XMLSchema_spec 
+  | XMLType_virtual_columns 
+  | ON COMMIT { DELETE | PRESERVE } ROWS 
+  | OID_clause 
+  | OID_index_clause 
+  | physical_properties 
+  | table_properties 
+ ]... 
+<<>>  
+
+<<insert_set_clause>>
+SET id_eq_expr_list
+|
+SET ( id_eq_expr_list ) [ , ( id_eq_expr_list ) ]...
+<<>>
+
+<<id_eq_expr_list>>
+identifier = expr [,identifier = expr]...
+<<>>
+
+<<assertions_constraint_state>>
+constraint_state
+| dont_substitute
+<<>>
+
+<<privilege_list>>
+privilege [ ( [ ALL COLUMNS EXCEPT ] column[,column]... ) ]
+  [, privilege [ ( [ ALL COLUMNS EXCEPT ] column[,column]... ) ] ]
+<<>>
+
+<<zonemap_refresh_clause>>
+REFRESH
+{ FAST | COMPLETE | FORCE | ON { DEMAND | COMMIT | LOAD | DATA MOVEMENT | LOAD DATA MOVEMENT } }...
+<<>>

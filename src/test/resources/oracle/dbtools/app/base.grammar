@@ -1,0 +1,114 @@
+atest: assertion
+    |  output
+    |  comment
+    | jsBlock
+    | grantDba
+    | revokeDba
+    | atest assertion
+    | atest output
+    | atest comment
+    | atest jsBlock
+    | atest grantDba
+    | atest revokeDba
+;
+
+grantDba: 'grant' 'dba' ';'
+;
+
+revokeDba: 'revoke' 'dba' ';'
+;
+
+assertion:         
+       parameters?  input '-' '>'   ';'
+     | parameters?  input '-' '>' result ';'
+     | parameters?  input '=' '>' program ';'
+;
+
+comment : '#' idigits ';'   -- skipped from lexical analysis output in JS context
+        | '+' '+' digits ';'
+;
+
+dotted_name: identifier
+     | identifier '.' identifier
+     | '*'
+     | identifier '.' '*'
+     | quoted_string
+     | StringLiteral
+     --too ambiguous: | identifier '.'
+     --not used? | identifier '.' identifier '.' identifier
+;
+
+element: dotted_name
+     |  '-' dotted_name   /* not included */
+     |  code              /* for formatter test */
+     |  '-' code
+     |  filename ':' code
+     |  '-' filename ':' code
+;
+
+idigits : '#'
+       | '*'
+       | ':'
+       | identifier
+       | digits
+       | idigits idigits
+;
+
+jsBlock:   '{' javascript '}'
+;
+
+
+marker:  '!'
+     |  '>' '!' '<'
+;
+
+output: input ';'
+     |  parameters input ';'
+;
+
+parameters:
+       dotted_name '=' dotted_name ','
+     | dotted_name '=' digits ','
+     | parameters dotted_name '=' dotted_name ','
+     | parameters dotted_name '=' digits ','
+     | addendum -- defined in addendumRules()
+;     
+
+input:
+     | entry
+     | input entry
+;
+
+entry:
+       code
+     | code marker  -- completer
+     | marker code  -- completer
+     | code marker code-- completer
+     | filename ':' code
+;
+
+input:
+     | code marker code
+     | entry
+     |
+;
+
+filename: identifier
+         | filename '/' identifier
+         | filename '-' identifier
+         | filename '.' identifier
+;
+
+result: element
+     |  result_limit
+     |  time_limit
+     |  result element
+     |  result result_limit
+     |  result time_limit
+;
+
+result_limit: 'card' '<' digits
+;
+
+time_limit: 'time' '<' digits
+;

@@ -1,0 +1,104 @@
+atest: assertion
+    |  output
+    |  comment
+    | atest assertion 
+    | atest output 
+    | atest comment 
+;
+
+assertion: program_with_input '-' '>' tables ';'
+         | program_with_input '-' '>' tables namedValues ';'
+; 
+
+comment : '+' '+' idigits ';'
+;
+
+content:     value
+          |  content value
+;
+
+attribute:   identifier
+          |  identifier '.' identifier
+          |  identifier '^' 
+          |  identifier '^' '^'
+          |  identifier '^' '^' '^'
+          |  identifier '+' digits         
+          |  identifier '-' digits         
+;
+header:      attribute
+          |  header attribute
+          |  header ',' attribute
+;
+
+
+idigits : '#'
+       | '*'
+       | ':'
+       | identifier
+       | digits
+       | idigits idigits
+;
+
+marker:  '!'
+     |  '>' '!' '<'
+;
+
+output: program_with_input '-' '>' ';'
+; 
+
+
+program_with_input :
+     program_code_or_filename ':' "sql prefix"
+   | program_code_or_filename ':' "sql prefix" marker "sql postfix"
+;
+
+program_code_or_filename :
+   identifier 
+;
+
+
+sql_token: string_literal
+        | identifier
+        | digits
+        | ':' | '=' | '(' | ')' | ';' | '>' | '<' | ',' | '/' | '+' | '|' | '.' | '*' | '-'
+        
+;
+
+"sql prefix":  'SELECT' 
+    |            'UPDATE'
+    |            'DECLARE'
+    |            'BEGIN'
+    |            'DELETE'
+    |            'CREATE'
+    |            'INSERT'
+    |            'EXEC'
+    |            'WITH'
+    | "sql prefix" sql_token
+;
+"sql postfix":  sql_token
+    | "sql postfix" sql_token
+;
+
+
+table:       identifier '=' '[' header ']'
+          |  identifier '=' '[' header ']' content
+;
+
+namedValue:   identifier '=' identifier   -- such as "pred1.EvalSpace" = "3x5"
+;
+
+
+tables:      table
+          |  tables  table
+;
+
+namedValues:  namedValue
+           |  namedValues  namedValue
+;
+
+
+value:     '[' digits ',' digits ')' identifier 
+         | '[' digits ',' digits ')' string_literal
+         | '[' digits ',' digits ')' digits
+;
+

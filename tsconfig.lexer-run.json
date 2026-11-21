@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.lexer-test.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "declaration": false,
+    "outDir": "./dist/lexer-regression"
+  }
+}

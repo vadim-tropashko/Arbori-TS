@@ -1,0 +1,320 @@
+-- ****** adapted from https://github.com/antlr/grammars-v4/blob/master/javascript/ecmascript/JavaScript/ECMAScript.g4
+
+javascript
+ : "sourceElements"
+ ;
+
+"sourceElements"
+ : sourceElement
+ | "sourceElements" sourceElement
+ ;
+
+sourceElement
+ :  jsStatement
+ | functionDeclaration
+ ;
+
+jsStatement
+ : block
+ | variableStatement
+ | emptyStatement
+
+ | "singleExpression"       --was: expressionStatement
+ | ifStatement
+ | iterationStatement
+ | continueStatement
+ | breakStatement
+ | returnStatement
+ | withStatement
+ | labelledStatement
+ | switchStatement
+ | throwStatement
+ | tryStatement
+ | debuggerStatement
+ ;
+ 
+
+block
+ : '{'  '}'
+ | '{' statementList '}'
+ ;
+
+statementList
+ : jsStatement+
+ ;
+
+variableStatement
+ : jModifier variableDeclarationList --';'?
+ ;
+ 
+jModifier:
+    'var'
+  | 'const'
+  | 'let'
+;    
+
+variableDeclarationList
+ : variableDeclaration ( ',' variableDeclaration )*
+ ;
+
+variableDeclaration
+ : identifier initialiser?
+ ;
+
+initialiser
+ : '=' "singleExpression"
+ ;
+
+emptyStatement
+ : ';'
+ ;
+
+expressionStatement
+ : expressionSequence
+ ;
+
+ifStatement
+ : 'if' '(' expressionSequence ')' jsStatement ( 'else' jsStatement )?
+ ;
+
+iterationStatement
+ : 'do' jsStatement 'while' '(' expressionSequence ')' --';'?                                                 
+ | 'while' '(' expressionSequence ')' jsStatement                                                        
+ | 'for' '(' expressionSequence? ';' expressionSequence? ';' expressionSequence? ')' jsStatement         
+ | 'for' '(' 'var' variableDeclarationList ';' expressionSequence? ';' expressionSequence? ')' jsStatement
+ | 'for' '(' "singleExpression" 'in' expressionSequence ')' jsStatement                                      
+ | 'for' '(' 'var' variableDeclaration 'in' expressionSequence ')' jsStatement                               
+ | 'for' '(' "singleExpression" 'of' expressionSequence ')' jsStatement                                      
+ | 'for' '(' 'var' variableDeclaration 'of' expressionSequence ')' jsStatement                               
+ ;
+
+continueStatement
+ : 'continue' identifier? --';'?
+ ;
+
+breakStatement:
+   'break' 
+ --| 'break' ';'
+ | 'break' identifier 
+ --| 'break' identifier ';'
+ ;
+
+returnStatement
+ : 'return' expressionSequence? --';'?
+ ;
+
+withStatement
+ : 'with' '(' expressionSequence ')' jsStatement
+ ;
+
+switchStatement
+ : 'switch' '(' expressionSequence ')' caseBlock
+ ;
+
+caseBlock
+ : '{' caseClauses? ( defaultClause caseClauses? )? '}'
+ ;
+
+caseClauses
+ : caseClause+
+ ;
+
+caseClause
+ : 'case' expressionSequence ':' statementList?
+ ;
+
+defaultClause
+ : 'default' ':' statementList?
+ ;
+
+labelledStatement
+ : identifier ':' jsStatement
+ ;
+
+throwStatement
+ : 'throw'  expressionSequence --';'?
+ ;
+
+tryStatement
+ : 'try' block catchProduction
+ | 'try' block finallyProduction
+ | 'try' block catchProduction finallyProduction
+ ;
+
+catchProduction
+ : 'catch' '(' identifier ')' block
+ ;
+
+finallyProduction
+ : 'finally' block
+ ;
+
+debuggerStatement
+ : 'debugger' --';'?
+ ;
+
+functionDeclaration
+ : 'function' identifier '(' formalParameterList? ')' '{' functionBody '}'
+ ;
+
+formalParameterList
+ : identifier ( ',' identifier )*
+ ;
+
+functionBody
+ : "sourceElements"?
+ ;
+    
+arrayLiteral
+ : '['  ']'
+ | '[' elision ']'
+ | '['  ',' ']'
+ | '[' elementList  ']'
+ | '['  ',' elision ']'
+ | '[' elementList  elision ']'
+ | '[' elementList ','  ']'
+ | '[' elementList ',' elision ']'
+ ;
+
+elementList
+ : elision? "singleExpression" ( ',' elision? "singleExpression" )*
+ ;
+
+elision
+ : ','+
+ ;
+
+objectLiteral
+ : '{' '}'
+ | '{' propertyNameAndValueList ','? '}'
+ ;
+
+propertyNameAndValueList
+ : propertyAssignment ( ',' propertyAssignment )*
+ ;
+    
+propertyAssignment
+ : propertyName ':' "singleExpression"                            
+ | getter '(' ')' '{' functionBody '}'                          
+ | setter '(' propertySetParameterList ')' '{' functionBody '}' 
+ ;           
+    
+getter
+ : identifier propertyName
+ ;
+
+setter
+ :  identifier propertyName
+ ;
+    
+    
+propertyName
+ : identifier
+ | StringLiteral
+ | numericLiteral
+ ;
+    
+propertySetParameterList
+ : identifier
+ ;
+
+arguments
+ : '('  ')'
+ | '(' argumentList ')'
+ ;
+    
+argumentList
+ : "singleExpression" 
+ | "singleExpression" ( ',' "singleExpression" )+
+ ;
+    
+expressionSequence
+ : "singleExpression" 
+ | "singleExpression" ( ',' "singleExpression" )+
+ ;
+
+"singleExpression"
+ : 'function' identifier? '(' formalParameterList? ')' '{' functionBody '}' 
+ | "singleExpression" '[' expressionSequence ']'                            
+ | "singleExpression" '.' identifier                                   
+ | "singleExpression" arguments                                             
+ | 'new' "singleExpression" arguments?                                        
+ | "singleExpression"  '+' '+'                         
+ | "singleExpression"  '-' '-'                         
+ | 'delete' "singleExpression"                                                
+ | 'void' "singleExpression"                                                  
+ | 'typeof' "singleExpression"                                                
+ | '+' '+' "singleExpression"                                                  
+ | '-' '-' "singleExpression"                                                  
+ | '+' "singleExpression"                                                   
+ | '-' "singleExpression"                                                   
+ | '~' "singleExpression"                                                   
+ | '!' "singleExpression"                                                   
+ | "singleExpression" ( '*' | '/' | '%' ) "singleExpression"                  
+ | "singleExpression" ( '+' | '-' ) "singleExpression"                        
+ | "singleExpression" ( '<' '<' | '>' '>' | '>' '>' '>' ) "singleExpression"              
+ | "singleExpression" ( '<' | '>' | '<' '=' | '>' '=' ) "singleExpression"          
+ | "singleExpression" 'instanceof' "singleExpression"                          
+ | "singleExpression" 'in' "singleExpression"                                   
+ | "singleExpression" ( '=' '=' | '!' '=' | '=' '=' '=' | '!' '=' '=' ) "singleExpression"      
+ | "singleExpression" '&' "singleExpression"                                  
+ | "singleExpression" '^' "singleExpression"                                  
+ | "singleExpression" '|' "singleExpression"                                  
+ | "singleExpression" '&' '&' "singleExpression"                                 
+ | "singleExpression" '|' '|' "singleExpression"                                 
+ | "singleExpression" '?' "singleExpression" ':' "singleExpression"             
+ | "singleExpression" '=' expressionSequence                                
+ | "singleExpression" assignmentOperator expressionSequence                 
+ | 'this'                                                                   
+ | identifier                                                             
+ | jLiteral                                                                
+ | arrayLiteral                                                           
+ | objectLiteral                                                          
+ | '(' expressionSequence ')' 
+ | "regularExpression"                                            
+ ;
+ 
+"regularExpression": '/' identifier '/' identifier /* e.g. / World /g */
+;
+
+assignmentOperator
+ : '*' '=' 
+ | '/' '=' 
+ | '%' '=' 
+ | '+' '=' 
+ | '-' '=' 
+ | '<' '<' '=' 
+ | '>' '>' '=' 
+ | '>' '>' '>' '=' 
+ | '&' '=' 
+ | '^' '=' 
+ | '|' '='
+ ;
+
+jLiteral
+ : ( 'null' 
+   | BooleanLiteral
+   | StringLiteral
+   | RegularExpressionLiteral
+   )
+ | numericLiteral
+ ;
+
+numericLiteral
+ : IntegerLiteral
+ |   FloatingPointLiteral
+ | HexIntegerLiteral
+ | OctalIntegerLiteral
+ ;
+
+IntegerLiteral: digits;
+FloatingPointLiteral: 
+       digits '.' digits     
+     | digits '.' digits 'f'
+;  
+--CharacterLiteral:
+StringLiteral: string_literal;
+BooleanLiteral:
+      'true'
+     |'false'
+;   

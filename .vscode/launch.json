@@ -1,0 +1,79 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "DocStatementsTest (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:doc-statements"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Lexer regression (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:lexer-regression"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "SQL parse-tree regression (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/test/typescript/SqlRegression.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["--experimental-strip-types"],
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "SQL Insight integration (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/doc-statements/test/typescript/oracle/dbtools/app/SqlInsightTest.js",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["--import", "${workspaceFolder}/scripts/register-text-resource-loader.mjs"],
+      "preLaunchTask": "Build JSweet SqlInsightTest TypeScript",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Grammar extension (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/test/typescript/GrammarExtensionTest.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["--experimental-strip-types"],
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "MSC parser performance (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "benchmark:msc-preprocess"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "dbtools.app.ArboriTest (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:arbori-test"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}

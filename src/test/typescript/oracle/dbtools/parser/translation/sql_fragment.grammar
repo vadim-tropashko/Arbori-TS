@@ -1,0 +1,55 @@
+------------------ Grammar fragment ---------------------
+create_table:
+   'CREATE' 'TABLE' identifier '(' attr_list ')'
+;   
+
+attr_list:
+    attribute
+   | attr_list ',' attribute
+;
+
+attribute:
+        identifier 'NUMBER' padding_tokens
+     |  identifier 'VARCHAR2' padding_tokens
+     |  identifier 'INTERVAL' padding_tokens
+     |  'CONSTRAINT' padding_tokens
+;     
+   
+statement: create_table 
+         /*| insert_table*/
+;
+
+------------------- Boiler plate (can be in separate file) ---------------------
+
+unrecognized_token: string_literal
+        | identifier
+        | digits
+        | ';' --???
+        | ':' | '=' | '(' | ')' | /*'>' |*/ '<' | ',' | '/' | '+' | '-' | '|' | '.' | '*' | '!' 
+        
+;
+
+padding_tokens: 
+       unrecognized_token+
+;
+
+
+"padded_statement":
+     statement
+   | statement padding_tokens
+;
+
+"padded_statement_sequence":
+     "padded_statement"
+   | "padded_statement_sequence" "padded_statement"
+;
+
+
+"statements":
+     "padded_statement_sequence" 
+   | padding_tokens "padded_statement_sequence" 
+   | "padded_statement_sequence" statement
+;  
+   
+top: "statements";
+   

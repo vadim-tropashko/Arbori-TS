@@ -1,0 +1,1363 @@
+grant dba;
+
+++0;
+`select * from hr.employees where ` ! ->
+employee_id
+first_name 
+-add_job_history
+-po_person
+time < 5000
+;
+revoke dba;
+
+++1;
+`select 1 from `  ! ->
+--regions
+-- should have alternatives here!
+countries
+--departments
+-add_job_history
+;
+
+++2;
+`select 1 from c`!
+->
+COUNTRIES
+-- doesn't work; makes test grammar ambiguous:   
+-- CTXSYS.
+;
+
+grant dba;
+
+++3;
+`select a from hr.`! ->
+countries
+-add_job_history -- 38305851
+-` from hr`
+;
+
+++4;
+`select a from hr.l`!
+->
+locations
+-countries
+-` from hr`
+;
+revoke dba;
+
+++5;
+`select  * from jobs where `! ->
+job_id
+job_title
+max_salary
+min_salary
+;
+
+grant dba;
+
+++6;
+`select  * from hr.jobs where j`! ->
+job_id
+-max_salary
+;
+
+++7;
+`select  * from hr.jobs job where job.`! ->
+job_id
+-` from job`
+;
+revoke dba;
+
+++8;
+`select `!`* from employees` ->
+DEPARTMENT_ID
+MANAGER_ID
+;
+
+++9;
+`select 1 from all_ob`!
+->
+ALL_OBJECTS
+-` from all_ob`
+;
+
+++10;
+`desc dbms_ou`! ->
+DBMS_OUTPUT
+;
+
+grant dba;
+
+++11;
+`desc hr.add_j`! ->
+ADD_JOB_HISTORY
+;
+revoke dba;
+
+
+++12;
+`select `  ! ` from jobs j, employees e`->
+e.employee_id
+e.first_name 
+e.hire_date
+e.job_id
+j.job_id
+j.job_title
+j.max_salary
+j.min_salary
+;
+
+++13;
+`select j`! ` from jobs j, employees e`->
+j.job_id
+j.job_title
+j.max_salary
+j.min_salary
+;
+
+++14;
+`select * from h`! ->
+`hr.`
+;
+
+grant dba;
+
+++15;
+--24681126
+`select * from hr.employees peeps where peeps.c`!->
+-EMAIL
+-` from peeps`
+;
+revoke dba;
+
+++16;
+--25445439
+`select `!` from employees, departments
+where employees.deptno = departments.deptno`
+->
+employees.DEPARTMENT_ID
+ employees.EMAIL
+  employees.EMPLOYEE_ID
+   employees.FIRST_NAME
+departments.DEPARTMENT_ID
+ departments.DEPARTMENT_NAME
+  departments.LOCATION_ID
+   departments.MANAGER_ID
+;
+
+
+++17;
+--25368456
+`SELECT
+    *
+FROM
+    departments
+WHERE
+    deptno NOT IN (
+        SELECT
+            distinct deptno,  `!` --invoke helper here -> will show columns from dep instead of emp
+        FROM
+            employees
+    ) `->
+employees.DEPARTMENT_ID
+ employees.EMAIL
+  employees.EMPLOYEE_ID
+   employees.FIRST_NAME
+departments.DEPARTMENT_ID
+ departments.DEPARTMENT_NAME
+  departments.LOCATION_ID
+   departments.MANAGER_ID
+;
+
+++18;
+--26315866
+`select *
+from user_objects
+where ` !
+->
+OBJECT_NAME
+OBJECT_TYPE
+;
+
+++19;
+-- 26624563
+`select job_id from employees mi`!` select job_id from jobs;`
+->
+MINUS
+--`SET_OPER: >!< 'MINUS' ...`
+;
+
+++20;
+-- 26610734
+`select * from jobs union select * from `!
+->
+countries
+--departments
+;
+
+++21;
+-- 26624614
+`select employee_id,jobs.job_id from employees left join jobs partition by (`!`)
+on(jobs.job_id=employees.job_id)`
+->
+jobs.MIN_SALARY
+;
+
+++22;
+-- 26609137
+`select * from employees `!
+->
+-EMPLOYEES
+;
+
+++23;
+-- 27124326
+`select * from employees e, departments d where `!
+->
+`e.department_id = d.department_id`
+;
+
+++24;
+-- 27356390
+`insert into `!
+->
+COUNTRIES
+--CATEGORY
+;
+
+++25;
+-- 27836731 
+`delete from `!
+->
+COUNTRIES
+--CATEGORY
+;
+
+++26;
+-- 27836503 
+`SELECT count(`!`) FROM departments`
+->
+DEPARTMENT_ID
+;
+
+++27;
+-- 27835179 
+`select * from jobs INNER JOIN countries on `!
+-> 
+jobs.JOB_TITLE
+countries.country_name
+;
+
+++28;
+-- 26624700 
+`dbms_output.`!
+-> 
+GET_LINE
+;
+
+++29;
+`begin dbms_output.`!
+-> 
+ENABLE
+GET_LINE
+;
+++30;
+`begin dbms_output.en`!
+-> 
+ENABLE
+-DISABLE
+;
+
+++31; -- 30684401
+`begin
+ po_person.validation(` !
+->
+`p_person_id=>p/*number*/`
+;
+
+++32;   --30684401
+`insert into employees (` !
+->
+salary
+;
+
+
+-- ++33;   
+-- `begin
+--  po_person.second_proc(` !
+-- ->
+-- `num_id=>n/*number*/,arg2=>a/*number*/`
+-- ;
+
+-- ++34
+
+++35;
+`select * from e` ! `dual`->
+employees 
+;
+
+/*******  sqldev desktop tests 38-68 with numbering matched *******/
+++38;  --9133653
+`insert into departments values(`!`
+`->
+--"[department_id],[department_name],[manager_id],[location_id]"
+--"[DEPARTMENT_ID, DEPARTMENT_NAME, LOCATION_ID, MANAGER_ID]"
+DEPARTMENT_ID
+DEPARTMENT_NAME
+LOCATION_ID
+MANAGER_ID
+;
+
+
+++42;
+`select *
+     from   tmp_bow_data_aloy1 x
+     inner join
+     (
+       select *
+       from   employees y
+       where  y. `!`
+     ) `
+->
+--y.email      query fails to parse (due to missing on condition) 
+--             consequently the outer query block is not visible
+--             It sees one table and no join, so SqlCompleter sets 
+--             concatenateAlias=false and emits bare EMAIL
+email
+-` from y`
+;
+++43;
+`update departments t
+   set    t.`!` `->
+manager_id
+;
+++44;
+`delete from departments t
+   where  t.`!` `->
+manager_id
+;
+
+grant dba;
+
+++45;
+`select `!` from hr.departments, hr.employees` ->
+-hr.DEPARTMENT_ID
+departments.department_id
+;
+revoke dba;
+
+++48;
+`with X as (
+ select a,b,c from tableY
+ start with d=0
+ connect by prior d=e
+)
+select f.`!` from X f` ->
+a
+b
+c
+-` from f`
+;
+
+--12828770
+++52;
+`select * from job`!->
+--jobs
+/*PUBLIC.*/--job    
+ALL_SCHEDULER_JOBS   -- wider match
+;
+
+++68; -- bug 25550135
+`select empl`!` from dual
+`->
+EMPLOYEES_SEQ.nextval
+- CONTACTS_SEQ.nextval
+;
+
+++70; -- bug 26407461
+`declare
+ customer_id customers.custid%type := 1;
+ customer_record customers%rowtype;
+begin
+ select *
+  into `!` -- INVOKE INSIGHT HERE --
+ from customers
+ where custid = customer_id;
+end;
+/
+`->
+customer_id
+customer_record
+;
+
+++71;
+`DECLARE
+   simple_typed_var integer;
+   implicit_typed_var customer.id%type;
+   x   integer;
+BEGIN
+  select 1 into x,`!` from potato;
+END;
+`->
+implicit_typed_var
+simple_typed_var
+;
+
+++72;
+/*32592699*/
+-- create table "Mytest where  :1 is not null --" (id number);
+`select * from `!
+->
+--"Interval_t"
+-- cut by limit 50: 
+"Mytest where  :1 is not null --"
+;
+
+++73;
+/*32805033*/
+`select job_id from employees; select * from jobs where `!
+->
+JOB_ID
+-employees.EMPLOYEE_ID
+-EMPLOYEE_ID
+;
+
+++74;
+`DECLARE
+  sX integer;
+BEGIN
+  WHILE sX > 0
+  LOOP
+    sX := 0;
+    s`!` 
+  END LOOP;
+END;`
+->
+sX
+;
+
+/*
+++75;
+`connect x/y@` !
+->
+ORA12
+ORADB192
+;
+
+++76;
+`connect x/y@ORAD` !
+->
+-ORA12
+ORADB192
+;
+*/
+
+++77;
+`DECLARE
+  sX integer;
+BEGIN
+  WHILE sX > 0
+  LOOP
+    sX := 0;
+    `!` 
+  END LOOP;
+END;`
+->
+sX
+;
+
+++78;
+`DECLARE
+  sX integer;
+BEGIN
+  WHILE sX > 0
+  LOOP
+    sX := 0;
+    s := s`!`; 
+  END LOOP;
+END;`
+->
+sX
+;
+
+++79;
+`DECLARE
+  sX integer;
+BEGIN
+  WHILE sX > 0
+  LOOP
+    sX := 0;
+    s := s`!` 
+  END LOOP;
+END;`
+->
+sX
+;
+
+++80;
+`DECLARE
+pA NUMBER(1,2);
+PB DATE;
+PC CLOB;
+PD BLOB;
+PE VARCHAR2(10);
+BEGIN
+add_job_history(`!`
+END; 
+/`->
+`P_EMP_ID=>P/*NUMBER*/,P_START_DATE=>P/*DATE*/,P_END_DATE=>P/*DATE*/,P_JOB_ID=>P/*VARCHAR2*/,P_DEPARTMENT_ID=>P/*NUMBER*/`
+pA
+PB
+; 
+++81;
+`DECLARE
+PA NUMBER(1,2);
+BEGIN
+add_job_history(`!`);
+END; 
+/`->
+`p_emp_id=>p/*number*/,p_start_date=>p/*date*/,p_end_date=>p/*date*/,p_job_id=>p/*varchar2*/,p_department_id=>p/*number*/`
+pa
+;    
+/*   
+++82;
+`connect x/y@` ! ` as sysdba`
+->
+ORA12
+ORADB192
+;
+
+++83;
+`tnsping ` ! 
+->
+ORA12
+ORADB192
+;
+*/
+
+++84;
+/* 33279888 */
+`SELECT * FROM
+employees ORDER BY ` ! 
+->
+employee_id
+first_name 
+;
+   
+/*++85;
+`datapump export ` !
+->
+`-` 
+;*/
+
+/*++86;
+`datapump export -` !
+->
+
+CC 
+DUMPFILE
+DUMPURI
+JOBNAME
+LF
+NOEXEC
+SCHEMAS
+;*/ 
+
+
+/*++87;
+`datapump export -noexec  -reusefile f` !
+->
+FALSE  
+;*/ 
+
+++88; /*33531746*/
+`SEL` !
+->
+SELECT
+/*SET*/  
+; 
+
+++89; /*33531746*/
+`SELECT ` !
+->
+/* `*` */
+-SELECT  
+; 
+  
+++90; /*33531746*/
+`begin null; ` !
+->
+PROC -- more relevant than END  
+; 
+  
+++91; /*21104302*/
+`desc em` !
+->
+EMPLOYEES
+`EMPLOYEES_SEQ.nextval`
+EMP_EMAIL_UK
+; 
+
+++92; 
+`script
+   var input = 'select * from emp';
+   var ParsedSql = Java.type('oracle.dbtools.parser.`!`js.JavaScript');
+ /` 
+->
+`js.` 
+`plsql.` 
+--Cell   regr?
+--Earley
+; 
+
+/*++93; 
+`script
+   var input = 'select * from emp';
+   var ParsedSql = Java.type('oracle.dbtools.parser.`!
+->
+`js.` 
+`plsql.` 
+--Cell 
+--Earley 
+;
+
+++94;
+`script
+   var ParsedSql = Java.type('oracle.dbtools.parser.js.JavaScript');
+   Pars`!
+->
+ParsedSql
+;*/
+ 
+++95; /*34105647*/
+`delete`!
+->
+DELETE
+; 
+ 
+++96; /*34430175*/
+ `SELECT * from employees_synonym where `!
+->
+FIRST_NAME
+; 
+
+++97;
+`INSERT INTO EMPLOYEES VALUES (
+    '1',
+    systimestamp
+);
+
+SELECT 
+    `!`*
+FROM
+    DEPARTMENTS;`
+->
+-EMPLOYEES.FIRST_NAME
+; 
+
+++98;
+`declare
+   j number;
+begin
+   p`!`;
+end;
+`
+->
+PROC
+;      
+   
+++99;
+`
+begin
+   po_person.`!`;
+`
+->
+-DUMMY
+-DELETE
+VALIDATION
+;   
+
+++100; /*34609764*/
+`
+begin
+   po_person_synonym.`!`;
+`
+->
+-DUMMY
+-DELETE
+VALIDATION
+; 
+
+++101; /*34561140*/
+`
+select * from ALL_OBJECTS a where a.o`!`;
+`
+->
+-OSON
+-'OJVMSYS.'
+-'OLAPSYS.' 
+-'ORACLE_OCM.'
+-'ORDS_METADATA.'
+-'OUTLN.'
+OBJECT_ID
+-` from a`
+;  
+
+++102; 
+`
+select d.`!`
+  from EMPLOYEES e, DEPARTMENTS d
+where rownum < 101 and
+e.department_id = d.department_id;
+`
+->
+d.DEPARTMENT_ID
+-e.DEPARTMENT_ID
+-ADD_JOB_HISTORY
+-` from d`
+;  
+
+++103; 
+`
+select d.d`!`
+  from EMPLOYEES e, DEPARTMENTS d
+where rownum < 101 and
+e.department_id = d.department_id;
+`
+->
+d.DEPARTMENT_ID
+-e.DEPARTMENT_ID
+-ADD_JOB_HISTORY
+-` from d`
+;  
+
+
+++104;   /* 34699063 */
+`
+select *
+  from EMPLOYEES e, DEPARTMENTS d
+where d.`!
+->
+d.DEPARTMENT_ID
+-e.DEPARTMENT_ID
+-` from d`
+;  
+
+++105;   /* 20041903 */
+`
+GRANT CREATE SESSION T`!
+->
+TO
+-- -TABLE
+;  
+
+/*++106;
+`CREATE OR REPLACE MLE MODULE jsmodule
+LANGUAGE JAVASCRIPT
+AS
+module.exports.getSalAfterRaise = function (sal) {
+    return sal * 1.05;
+}
+module.exports.getTotalSal = function () {
+    const oracledb = require('oracledb');
+    try {
+        var totalSal = 0;
+        const conn = oracledb.defaultConnection();
+        var result = co`!
+->
+conn
+;
+
+++107;
+`CREATE OR REPLACE MLE MODULE jsmodule
+LANGUAGE JAVASCRIPT
+AS
+module.exports.getTotalSal = function () {
+    const oracledb = require('oracledb');
+    try {
+        var totalSal = 0;
+        const conn = ora`!
+->
+oracledb
+;*/
+
+++108; /* 34731817 */
+`PO_PE`!
+->
+PO_PERSON
+;
+
+++109; /* 34731817 */
+`begin PO_PE`!
+->
+PO_PERSON
+;
+
+
+++110;
+`
+SET SERVEROUTPUT ON;
+DECLARE
+ctx DBMS_MLE . context_handle_t ;
+snippet CLOB;
+BEGIN
+ctx := DBMS_MLE . create_context () ;    -- prompt method
+snippet := ' console . log (" Hello , World ") ; ';
+DBMS_MLE . eval (ctx , ' JAVASCRIPT ', snippet );
+DBMS_MLE .`!` drop_context ( ctx );
+END;
+/`->
+;
+
+++111;
+`
+SET SERVEROUTPUT ON;
+DECLARE
+ctx DBMS_MLE . context_handle_t ;
+snippet CLOB;
+BEGIN
+ctx := DBMS_MLE . create_context () ;
+snippet := q '~
+import * as oracledb from "mle -js - oracledb "
+const sql = " SELECT 1 + 1 FROM dual ";         // prompt table
+const result = oracledb . defaultConnection () . execute ( sql );
+console . log ( result );
+~ ';
+DBMS_MLE . eval (ctx , ' JAVASCRIPT ', snippet , options => '
+js_mode = module ');
+DBMS_MLE . eval (ctx , ' JAVASCRIPT ', snippet , options => '
+js_mode = module ');
+DBMS_MLE . `!`drop_context ( ctx );
+END;
+/`->
+;
+
+
+++112;
+`
+BEGIN
+ctx := DBMS_MLE . create_context () ;
+snippet := q '~
+import * as oracledb from 'mle -js - oracledb '
+var conn = oracledb . defaultConnection () ;
+var rows = conn . execute (                // prompt execute
+" SELECT EMPNO , ENAME FROM EMP "
+). rows ;
+for ( var row of rows ) {
+console . `!`log ("[" + row . EMPNO + ", " + row . ENAME + "]") ;
+};
+~ ';
+DBMS_MLE . eval (ctx , ' JAVASCRIPT ', snippet , options => '
+js_mode = module ');
+DBMS_MLE . drop_context ( ctx );
+END;
+/
+`->
+;
+
+/*34710792*/
+++113;
+`DE`!
+->
+DELETE
+;
+
+++114;
+`D`!
+->
+DELETE
+;
+
+++115;  /* 34914897 */
+`select * `!`FROM`
+->
+FROM
+INTO
+-CONNECT
+-GROUP
+-UNION
+-WHERE
+;
+
+++116;  
+`select * `!
+->
+FROM
+INTO
+-CONNECT
+-GROUP
+-UNION
+-WHERE
+;
+
+++117;  
+`select *`!
+->
+FROM
+INTO
+-CONNECT
+-GROUP
+-UNION
+-WHERE
+;
+
+++118;  
+`select * F`!
+->
+FROM
+-FETCH
+-FOR
+-INTO
+-BULK
+;
+
+
+++120;  /* 35977987 */
+`
+set sqlformat failedtoparse
+select e.`!`
+from employees e, departments d`
+->
+e.first_name  
+-` from e`
+;
+
+++121;  /* https://forums.oracle.com/ords/apexds/post/intellisense-packages-procedures-6861 */
+`SELECT get_`!`
+  FROM dual;`
+->
+GET_SOMETHING  
+;
+
+++122;  
+`BEGIN
+  dbms_output.put_line(get_`!`);
+END;
+/`
+->
+GET_SOMETHING  
+;
+
+++123;  
+`CREATE OR REPLACE PROCEDURE test_something
+AS
+BEGIN
+  dbms_output.put_line(get_`!`);
+END test_something;
+/`
+->
+GET_SOMETHING  
+;
+
+++124;  
+`DECLARE 
+  l_test BOOLEAN; 
+BEGIN 
+  l_test := FALSE; 
+  l_test := FALSE; 
+`!`  
+END; 
+/`
+->
+L_TEST  
+;
+
+++125; /* https://forums.oracle.com/ords/apexds/post/cases-where-auto-competion-is-not-working-3877 */
+`
+DECLARE
+  l_dummy test_me.dummy%TYPE;  -- table suggested, column **NOT** suggested
+BEGIN
+  SELECT tst.dummy    -- table alias NOT suggested (low priority), column suggested
+  INTO `!`l_dummy        -- variable **NOT** suggested
+  FROM test_me tst;   -- table suggested
+END;`
+->
+l_dummy
+;
+
+++126;
+`
+DECLARE
+  l_dummy test_me.dummy%TYPE;  -- table suggested, column **NOT** suggested
+BEGIN
+  SELECT `!`tst.dummy    -- table alias NOT suggested (low priority), column suggested
+  INTO l_dummy        -- variable **NOT** suggested
+  FROM test_me tst;   -- table suggested
+END;`
+->
+`tst.`
+dummy
+;
+
+++127;
+`
+DECLARE
+  l_dummy test_me.`!`dummy%TYPE;  -- table suggested, column **NOT** suggested
+BEGIN
+  SELECT tst.dummy    -- table alias NOT suggested (low priority), column suggested
+  INTO l_dummy        -- variable **NOT** suggested
+  FROM test_me tst;   -- table suggested
+END;`
+->
+`dummy%TYPE`
+;
+
+
+++131; /* 36627790 */
+`select 1 from employees e where 1 between e.` !
+->
+SALARY
+-` from e`
+;
+
+++132; /* 36627790 */
+`select 1 from employees e where 1 between e.`!` and e.salary+100;`
+->
+SALARY
+-` from e`
+;
+
+++133; /* 36591434 */
+`select 1 from employees where x between `!
+->
+SALARY
+;
+
+grant dba;
+
+++134; /* 36741442 */
+`begin hr.add`!
+->
+ADD_JOB_HISTORY
+;
+
+++135; /* 36932974 */
+`select * from hr.employees e 
+          join hr.departments d on e.department_id = d.department_id;
+
+select * from hr.employees where `!
+->
+-ADD_JOB_HISTORY
+-hr.salary
+salary
+;
+revoke dba;
+
+++136; /*   37868658 */
+`select vect`!
+->
+VECTOR_DISTANCE
+VECTOR_EMBEDDING
+VECTOR_DIMS
+;
+
+++137; /*   SQLCL-5753 */
+`SET SQLFORMAT `!
+->
+-VOCAL
+DEFAULT
+CSV
+TEXT
+;
+
+/*++138; 
+`SET `!
+--->
+--PRINTTHEME
+;*/
+
+++139; 
+`SET PRINTTHEME `!
+->
+ULTRA_LIGHT
+LIGHT
+HEAVY
+ULTRA_LIGHT_ASCII
+HEAVY_ASCII
+;
+
+grant dba;
+
+++140;    --  38305851 
+`
+begin
+select * from hr.`!
+`end;`
+->
+countries
+-add_job_history 
+-` from hr`
+;
+
+++141;    
+`
+begin 
+  begin
+    select * from hr.`!`
+end;`
+->
+countries
+-add_job_history 
+-` from hr`
+;
+
+++142;    
+`
+begin 
+    select * from hr.`!
+->
+countries
+-add_job_history 
+-` from hr`
+;
+
+revoke dba;
+
+++143;    
+`
+set line`!
+->
+linenumbers 
+;
+
+++144;    
+`
+set auto`!
+->
+autosuggestions
+;
+
+++145;
+`
+select employees.employee_id`!
+->
+` from employees`
+;
+
+++146;
+`
+select employees.fi`!
+->
+first_name
+`first_name from employees`
+;
+
+++147;
+`
+select employees.`!
+->
+`* from employees`
+`first_name from employees`
+- first_name
+- employees.FIRST_NAME
+- `employees. from employees`
+- ` from employees`
+- `from employees`
+card < 13
+;
+
+++148;
+`
+select employees.fi`!`rst_name`
+->
+`first_name from employees`
+-first_name
+-` from employees`
+card < 2
+;
+
+++149;
+`
+select employees.employee_id, employees.fi`!
+->
+first_name
+card < 3
+;
+
+++150;
+`
+select departments.de`!
+->
+`department_id from departments`
+`department_name from departments`
+-`departments.department_id from departments`
+-`departments.department_name from departments`
+card < 5
+;
+
+++151;
+`
+select employees.fi `!
+->
+FROM
+-first_name
+card < 5
+;
+
+++152;
+`
+select a. from EMPLOYEES a;
+`!
+->
+-` from a`
+-` From a`
+-` FROM a`
+-` FROM A`
+card < 1
+;
+
+++153;
+`
+select a. from EMPLOYEES a;
+se`!
+->
+/*no select?*/
+card < 1
+time < 500
+;
+
+
+++154;
+`
+select a.`!
+->
+-` from a`
+card < 1
+;
+
+++155;
+`
+select emp`!
+->
+`employees.* from employees`
+`employees.email from employees`
+-KU$_TEMP_SUBPART_T
+card < 51
+;
+
+++156;
+`
+select employees.employee_id, `!
+->
+- first_name
+- `first_name from employees`
+`employees.first_name from employees`
+- `employees.employee_id from employees`
+`* from employees`
+card < 51
+;
+
+++157;
+`
+select * from all_o`!
+->
+all_objects
+card < 51
+;
+
+++158;
+`
+select all_`!
+->
+-KU$_DUMMY_DV_AUTH_FIREWALL_T
+-UTL_CALL_STACK
+card < 51
+;
+
+++159;
+`
+select all_o`!
+->
+`all_objects.* from all_objects`
+card < 51
+;
+
+grant dba;
+
+++160;
+`
+select * from v$sql`!
+->
+v$sql
+v$sql_bind_capture
+card < 51
+;
+
+++161;
+`
+select * from v$sql_`!
+->
+-v$sql
+v$sql_bind_capture
+card < 51
+;
+
+++162;
+`
+select v$sql.`!
+->
+`sql_id from v$sql`
+card < 51
+;
+
+++163;
+`
+select v$sql`!
+->
+{
+`v$sql.* from v$sql`
+`v$sql_history.* from v$sql_history`
+`v$sql_monitor_statname.* from v$sql_monitor_statname`
+`v$sqlfn_arg_metadata.* from v$sqlfn_arg_metadata`
+`v$sqlfn_metadata.* from v$sqlfn_metadata`
+`v$sqlpa_metric.* from v$sqlpa_metric`
+-`v$sql_history.application_wait_time from v$sql_history`
+}
+|
+{
+`v$sql.* from v$sql`
+`v$sqlfn_arg_metadata.* from v$sqlfn_arg_metadata`
+`v$sqlfn_metadata.* from v$sqlfn_metadata`
+`v$sqlpa_metric.* from v$sqlpa_metric`
+-`v$sql_history.application_wait_time from v$sql_history`
+}
+card < 51
+;
+revoke dba;
+
+++164;
+`
+with X as (select a from employees) select employees.`!` from employees`
+->
+-` from employees`
+;
+
+
+
+
+/****** MySQL test ******/
+
+{
+    testInstance.fullConnStr = "jdbc:mysql://dbtools-dev.oraclecorp.com:9906/sakila?user=root&password=oracle";
+    print(testInstance.fullConnStr);   
+}
+
+
+++1000;  /* 35334373 */
+`select * `!`FROM`
+->
+FROM
+;
+
+/*34710792*/
+++1001;
+`DE`!
+->
+DELETE
+;
+
+/*++1002;
+`D`!
+->
+DELETE
+;*/

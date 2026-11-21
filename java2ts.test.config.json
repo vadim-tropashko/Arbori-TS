@@ -1,0 +1,13 @@
+{
+  "packageRoot": "src/test/typescript",
+  "outputPath": "src/test/typescript",
+  "javaLib": "jree",
+  "options": {
+    "sourceMappings": [
+      {
+        "sourcePath": "src/main/typescript",
+        "importPath": "/Users/vtropash/sandbox/Arbori-TS/src/main/typescript"
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noCheck": true,
+    "rootDir": "src",
+    "outDir": "dist/arbori-test",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "declaration": false
+  },
+  "include": [
+    "src/test/typescript/oracle/dbtools/app/ArboriTest.ts"
+  ]
+}

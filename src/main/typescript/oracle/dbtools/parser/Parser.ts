@@ -70,6 +70,10 @@ export abstract class Parser {
                 }
             }
         }
+        // Java collects these names in a TreeSet before assigning their numeric
+        // symbols. Keep the same lexical order because persisted grammar-frequency
+        // data and parser tables are keyed by those symbol IDs.
+        tmpSymbols.sort();
         let k: number = this.allSymbols.length;
         this.allSymbols = /* copyOf */this.allSymbols.slice(0,this.allSymbols.length + /* size */(<number>tmpSymbols.length));
         for(let index = 0; index < tmpSymbols.length; index++) {
@@ -96,6 +100,7 @@ export abstract class Parser {
                 }
             }
         }
+        tmpSymbols.sort();
         this.allSymbols = (s => { let a=[]; while(s-->0) a.push(null); return a; })(/* size */(<number>tmpSymbols.length));
         this.symbolIndexes = <any>({});
         let k: number = 0;

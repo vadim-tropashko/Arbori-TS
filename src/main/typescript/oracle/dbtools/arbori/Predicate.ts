@@ -378,6 +378,12 @@ export class JSFunc implements Predicate {
             }
             const runtimeProgram = this.program as any;
             const globals = runtimeProgram.getGlobals?.();
+            const hostMethod = runtimeProgram.struct?.[this.name];
+            if (typeof hostMethod === "function") {
+                const result = hostMethod.call(runtimeProgram.struct, attributePositions, t, src);
+                if (typeof result !== "boolean") throw new TypeError(`Arbori callback ${this.name} must return boolean`);
+                return result;
+            }
             const callback = globals?.get?.(this.name) ?? (globalThis as any)[this.name];
             if (typeof callback !== "function") return true;
             globals?.put?.("tuple", tuple);
@@ -401,6 +407,12 @@ export class JSFunc implements Predicate {
     public eval$oracle_dbtools_parser_Parsed(target: Parsed): MaterializedPredicate {
         const runtimeProgram = this.program as any;
         const globals = runtimeProgram.getGlobals?.();
+        const hostMethod = runtimeProgram.struct?.[this.name];
+        if (typeof hostMethod === "function") {
+            const result = hostMethod.call(runtimeProgram.struct);
+            if (typeof result !== "boolean") throw new TypeError(`Arbori callback ${this.name} must return boolean`);
+            return result ? True.INSTANCE.eval$oracle_dbtools_parser_Parsed(target) : new False().eval$oracle_dbtools_parser_Parsed(target);
+        }
         const callback = globals?.get?.(this.name) ?? (globalThis as any)[this.name];
         if (typeof callback !== "function") return new False().eval$oracle_dbtools_parser_Parsed(target);
         if (this.args.length > 2) throw new Error(`Wrong number of arguments (=${this.args.length})`);

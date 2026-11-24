@@ -48,12 +48,14 @@ h1 { margin: 0; color: #182431; font-size: clamp(27px, 3vw, 38px); letter-spacin
 .tab-panel { position: relative; min-height: 380px; padding: 0 20px 22px; }
 .sql-panel { min-height: 460px; }
 .sql-editor-wrap { position: relative; }
-#syntax-highlight { display: none; }
-#syntax-highlight .syntax-error-mark { text-decoration-line: underline; text-decoration-style: wavy; text-decoration-color: #d12828; text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+#syntax-error-overlay { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; overflow: hidden; pointer-events: none; }
+#syntax-error-overlay[hidden] { display: none; }
+#syntax-error-underline { fill: none; stroke: #d12828; stroke-width: 1.6px; stroke-linecap: round; stroke-linejoin: round; pointer-events: stroke; cursor: help; }
+#syntax-error-underline:focus { outline: none; filter: drop-shadow(0 0 2px #d1282860); }
 #sql-editor { position: relative; z-index: 1; display: block; width: 100%; min-height: 430px; resize: vertical; padding: 16px; border: 1px solid #dfe6eb; border-radius: 9px; outline: none; background: #fbfcfd; color: #273b49; -webkit-text-fill-color: #273b49; caret-color: #273b49; font: 13px/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace; tab-size: 2; }
 #sql-editor::selection { background: #9ecce8; color: #273b49; -webkit-text-fill-color: #273b49; }
 #sql-editor:focus { border-color: #68a9bf; box-shadow: 0 0 0 3px #dff0f5; }
-.syntax-tooltip { position: fixed; z-index: 30; max-width: min(560px, calc(100vw - 24px)); padding: 9px 12px; border: 1px solid #d8a29b; border-radius: 7px; background: #fff8f7; box-shadow: 0 7px 20px #263c4a30; color: #7e2d25; font: 12px/1.45 "SFMono-Regular", Consolas, "Liberation Mono", monospace; white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none; }
+.syntax-tooltip { position: fixed; z-index: 30; max-width: min(560px, calc(100vw - 24px)); max-height: min(240px, calc(100vh - 24px)); overflow: auto; padding: 9px 12px; border: 1px solid #d8a29b; border-radius: 7px; background: #fff8f7; box-shadow: 0 7px 20px #263c4a30; color: #7e2d25; font: 12px/1.45 "SFMono-Regular", Consolas, "Liberation Mono", monospace; white-space: pre-wrap; overflow-wrap: anywhere; pointer-events: none; }
 .syntax-tooltip[hidden] { display: none; }
 .suggestion-list { display: grid; gap: 3px; margin: 0; padding: 5px 0; list-style: none; }
 .suggestion-list li { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 29px; padding: 4px 9px; border: 1px solid #e0e8ed; border-radius: 6px; background: #fbfcfd; color: #31566a; font: 12px/1.35 "SFMono-Regular", Consolas, "Liberation Mono", monospace; }

@@ -127,7 +127,10 @@ export class SyntaxError {
                     for(let i: number = 0; i < top.size(); i++) {{
                         const tuple: Parser.Tuple = earley.rules[top.getRule(i)];
                         const candidate: string = earley.allSymbols[tuple.head];
-                        if (candidate === s)return null;
+                        // A root rule name in the full-span cell is insufficient: the
+                        // parser also stores unfinished Earley states there. Treat the
+                        // input as accepted only when that root production is complete.
+                        if (candidate === s && top.getPosition(i) === tuple.rhs.length)return null;
                     };}
                 }
             }
@@ -330,24 +333,20 @@ export class SyntaxError {
     }
 
     public topNsuggestions(): Array<number> {
-        const topN: any = <any>({});
+        // Java uses TreeMap<Long, Integer>; keep its key ordering for stable
+        // tie-breaking when equal-frequency suggestions are ranked.
+        const topN = new Map<number, number>();
         const N: number = 10;
         for(let index = 0; index < this.weightedRules.length; index++) {
             let rp = this.weightedRules[index];
             {
                 let minVar: number = -1;
                 let minVal: number = 2147483647;
-                {
-                    let array = /* keySet */((m) => { let r=[]; if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) r.push(m.entries[i].key); return r; })(<any>topN);
-                    for(let index1 = 0; index1 < array.length; index1++) {
-                        let s = array[index1];
-                        {
-                            const tmp: number = /* get */((m,k) => { if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) if(m.entries[i].key==null && k==null || m.entries[i].key.equals!=null && m.entries[i].key.equals(k) || m.entries[i].key===k) { return m.entries[i].value; } return null; })(<any>topN, s);
-                            if (tmp < minVal){
-                                minVar = s;
-                                minVal = tmp;
-                            }
-                        }
+                for (const s of [...topN.keys()].sort((a, b) => a - b)) {
+                    const tmp = topN.get(s)!;
+                    if (tmp < minVal){
+                        minVar = s;
+                        minVal = tmp;
                     }
                 }
                 const suggestedVar: number = SyntaxError.parentChildSymbols(rp, this.earley);
@@ -357,44 +356,33 @@ export class SyntaxError {
                 if (this.hasParent(topN, this.earley.allSymbols[Service.lY(suggestedVar)]))continue;
                 let suggestedVal: number = /* get */((m,k) => { if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) if(m.entries[i].key==null && k==null || m.entries[i].key.equals!=null && m.entries[i].key.equals(k) || m.entries[i].key===k) { return m.entries[i].value; } return null; })(<any>HarvestDoc.getFrequencies(), suggestedVar);
                 if (suggestedVal == null)suggestedVal = 0;
-                if (/* size */((m) => { if(m.entries==null) m.entries=[]; return m.entries.length; })(<any>topN) === N){
+                if (topN.size === N){
                     if (suggestedVal != null && minVal < suggestedVal){
-                        /* remove */((m,k) => { if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) if(m.entries[i].key==null && k==null || m.entries[i].key.equals!=null && m.entries[i].key.equals(k) || m.entries[i].key===k) { return m.entries.splice(i,1)[0]; } })(<any>topN, minVar);
-                        /* put */((m,k,v) => { if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) if(m.entries[i].key==null && k==null || m.entries[i].key.equals!=null && m.entries[i].key.equals(k) || m.entries[i].key===k) { m.entries[i].value=v; return; } m.entries.push({key:k,value:v,getKey: function() { return this.key }, getValue: function() { return this.value }}); })(<any>topN, suggestedVar, suggestedVal);
+                        topN.delete(minVar);
+                        topN.set(suggestedVar, suggestedVal);
                     }
-                } else /* put */((m,k,v) => { if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) if(m.entries[i].key==null && k==null || m.entries[i].key.equals!=null && m.entries[i].key.equals(k) || m.entries[i].key===k) { m.entries[i].value=v; return; } m.entries.push({key:k,value:v,getKey: function() { return this.key }, getValue: function() { return this.value }}); })(<any>topN, suggestedVar, suggestedVal);
+                } else topN.set(suggestedVar, suggestedVal);
             }
         }
-        const myList: any[] = [];
-        {
-            let array = /* entrySet */((m) => { if(m.entries==null) m.entries=[]; return m.entries; })(<any>topN);
-            for(let index = 0; index < array.length; index++) {
-                let e = array[index];
-                /* add */(myList.push(e)>0)
-            }
-        }
-        /* sort */((l,c) => { if((<any>c).compare) l.sort((e1,e2)=>(<any>c).compare(e1,e2)); else l.sort(<any>c); })(myList,new SyntaxError.SyntaxError$1(this));
+        const myList = [...topN.entries()].sort((a, b) => a[0] - b[0]);
+        myList.sort((a, b) => b[1] - a[1]);
         const ret: Array<number> = <any>([]);
         let i: number = 0;
         for(let index = 0; index < myList.length; index++) {
             let e = myList[index];
             {
                 if (N < i)break;
-                /* add */(ret.push(e.getKey())>0);
+                /* add */(ret.push(e[0])>0);
                 i++;
             }
         }
         return ret;
     }
 
-    hasParent(topN: any, cmp: string): boolean {
-        {
-            let array = /* keySet */((m) => { let r=[]; if(m.entries==null) m.entries=[]; for(let i=0;i<m.entries.length;i++) r.push(m.entries[i].key); return r; })(<any>topN);
-            for(let index = 0; index < array.length; index++) {
-                let l = array[index];
-                if (cmp === (this.earley.allSymbols[Service.lY(l)])){
-                    return true;
-                }
+    hasParent(topN: Map<number, number>, cmp: string): boolean {
+        for (const l of topN.keys()) {
+            if (cmp === this.earley.allSymbols[Service.lY(l)]){
+                return true;
             }
         }
         return false;

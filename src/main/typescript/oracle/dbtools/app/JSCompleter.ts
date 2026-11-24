@@ -1,6 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { CompletionItem } from './CompletionItem.js';
 import { Earley } from '../parser/Earley.js';
 import { LexerToken } from '../parser/LexerToken.js';
@@ -49,7 +48,7 @@ export class JSCompleter {
     }
 
     private packageRoots(): Array<{ packageName: string; path: string }> {
-        const here = dirname(fileURLToPath(import.meta.url));
+        const here = resolve(process.cwd(), 'src/main/typescript/oracle/dbtools/app');
         return [
             { packageName: 'oracle.dbtools', path: resolve(here, '..') },
             { packageName: 'oracle.dbtools.app', path: here },

@@ -1,0 +1,1661 @@
+++0; 
+    kwCase = Case.lower,
+`meRge INTO employees e
+USING hr_records h ON ( e.id = h.emp_id )
+WHEN MATCHED THEN UPDATE
+SET e.address = h.address
+, e.col1 = b.col1
+, e.col2 = b.col2
+, e.col3 = b.col3`
+->
+"merge into employees e
+using hr_records h on ( e.id = h.emp_id )
+when matched then update
+set e.address = h.address,
+    e.col1 = b.col1,
+    e.col2 = b.col2,
+    e.col3 = b.col3"  -- case sensitive comparison with double quote 
+;  
+
+++1; --https://community.oracle.com/message/15540233++15540233
+   breaksAfterSelect = false,        
+   breaksComma       = Breaks.Before,
+`MERGE INTO employees e
+USING hr_records h ON ( e.id = h.emp_id )
+WHEN MATCHED THEN UPDATE
+SET e.address = h.address
+, e.col1 = b.col1
+, e.col2 = b.col2
+, e.col3 = b.col3`
+->
+`MERGE INTO employees e
+USING hr_records h ON ( e.id = h.emp_id )
+WHEN MATCHED THEN UPDATE
+SET e.address = h.address
+  , e.col1 = b.col1
+  , e.col2 = b.col2
+  , e.col3 = b.COL3`   -- not case sensitive with back quote
+;  
+
+++2;
+    kwCase = Case.UPPER,
+`SELECT rtd.col1
+      ,CASE
+          WHEN rtd.col1 = 'N'      THEN (rtd.col1 / 100) * - 1
+          WHEN rtd.col1 = 'Y'      THEN (rtd.col1 / 100) * - 1
+          WHEN rtd.col1 != 'Y'     THEN (rtd.col1 / 100) * - 1
+          ELSE (rtd.col1 / 100) * 1
+        END AS prod_prc
+      ,t99.col1
+  FROM table1;`
+->
+"SELECT
+    rtd.col1,
+    CASE
+        WHEN rtd.col1 = 'N'  THEN
+            ( rtd.col1 / 100 ) * - 1
+        WHEN rtd.col1 = 'Y'  THEN
+            ( rtd.col1 / 100 ) * - 1
+        WHEN rtd.col1 != 'Y' THEN
+            ( rtd.col1 / 100 ) * - 1
+        ELSE
+            ( rtd.col1 / 100 ) * 1
+    END AS prod_prc,
+    t99.col1
+FROM
+    table1;"
+;  
+
+++3;
+    kwCase = Case.UPPER,
+`SELECT
+    rtd.col1,
+    CASE
+        WHEN rtd.col1 = 'Y' THEN
+            ( rtd.col1 / 100 )  - 1
+        ELSE
+            ( rtd.col1 / 100 ) * 1
+    END AS prod_prc,
+    t99.col1
+FROM
+         table1 rtd
+    JOIN table2  t99 ON rtd.str_no = t99.str_no
+                       AND CASE
+        WHEN rtd.col1 = 'N' THEN
+            rtd.col1  - 1
+        ELSE
+            rtd.col1 / 100 * 1
+                           END = rtd.extd_prc
+                       AND CASE
+        WHEN rtd.can_key_fg = 'N' THEN
+            'A'
+        ELSE
+            'V'
+                           END = t99.void_fg`
+->
+"SELECT
+    rtd.col1,
+    CASE
+        WHEN rtd.col1 = 'Y' THEN
+            ( rtd.col1 / 100 ) - 1
+        ELSE
+            ( rtd.col1 / 100 ) * 1
+    END AS prod_prc,
+    t99.col1
+FROM
+         table1 rtd
+    JOIN table2 t99 ON rtd.str_no = t99.str_no
+                       AND CASE
+                               WHEN rtd.col1 = 'N' THEN
+                                   rtd.col1 - 1
+                               ELSE
+                                   rtd.col1 / 100 * 1
+                           END = rtd.extd_prc
+                       AND CASE
+                               WHEN rtd.can_key_fg = 'N' THEN
+                                   'A'
+                               ELSE
+                                   'V'
+                           END = t99.void_fg"
+;    
+
+++4;
+    kwCase = Case.UPPER,
+`SELECT
+    table_name  AS col_alias,
+    prod        AS col_alias2,
+    CASE owner
+        WHEN 'SYS'     THEN
+         'The owner is SYS'
+        WHEN 'SYSTEM'  THEN
+         'The owner is SYSTEM'
+        ELSE
+           'The owner is another value'
+    END AS col_alias3
+FROM all_tables;`
+->
+"SELECT
+    table_name AS col_alias,
+    prod       AS col_alias2,
+    CASE owner
+        WHEN 'SYS'    THEN
+            'The owner is SYS'
+        WHEN 'SYSTEM' THEN
+            'The owner is SYSTEM'
+        ELSE
+            'The owner is another value'
+    END        AS col_alias3
+FROM
+    all_tables;"
+;
+
+++5;
+    kwCase = Case.UPPER,
+`SELECT
+    table_name  AS col_alias,
+    prod   AS col_alias2,
+    salary,
+    coalesce(table_name, prod, costs, salary, 5, 6, 7)  AS col_alias3
+FROM
+    all_tables;`
+->
+"SELECT
+    table_name     AS col_alias,
+    prod           AS col_alias2,
+    salary,
+    coalesce(table_name, prod, costs, salary, 5,
+             6, 7) AS col_alias3
+FROM
+    all_tables;"
+;
+
+++6; --https://community.oracle.com/thread/4310878
+   breaksAfterSelect = false,        
+   breaksComma       = Breaks.Before,
+   commasPerLine     = 1,
+   kwCase = Case.UPPER,
+`SELECT
+    order_cd,
+    SUM(orders)
+    OVER(PARTITION BY col1, col2, col3
+         ORDER BY date1
+    )     col1,
+    RANK(units_ordered)
+    OVER(PARTITION BY col1, col2, col3
+         ORDER BY date1
+    ) col2,
+    COUNT(units_ordered)
+    OVER(PARTITION BY col1, col2, col3
+         ORDER BY date1
+    )  col3,
+    units_ordered
+FROM
+    dual`
+->
+"SELECT order_cd
+     , SUM(orders)
+         OVER(PARTITION BY col1
+                         , col2
+                         , col3
+              ORDER BY date1
+         ) col1
+     , RANK(units_ordered)
+         OVER(PARTITION BY col1
+                         , col2
+                         , col3
+              ORDER BY date1
+         ) col2
+     , COUNT(units_ordered)
+         OVER(PARTITION BY col1
+                         , col2
+                         , col3
+              ORDER BY date1
+         ) col3
+     , units_ordered
+FROM dual"
+;
+
+
+++7; -- Bug 31188204
+   breaksAfterSelect = false,
+   extraLinesAfterSignificantStatements = BreaksX2.Keep,         
+   kwCase = Case.UPPER,
+`SELECT 1
+FROM dual;
+
+-- test comment
+   -- comment 2  
+SELECT 2
+FROM dual;
+
+SELECT 3
+FROM dual;`
+->
+"SELECT 1
+FROM dual;
+
+-- test comment
+   -- comment 2  
+SELECT 2
+FROM dual;
+
+SELECT 3
+FROM dual;";
+
+
+++8; 
+   breaksAfterSelect = false,
+   extraLinesAfterSignificantStatements = BreaksX2.Keep,         
+   kwCase = Case.UPPER,
+`SELECT 1
+FROM dual;
+-- test comment
+-- comment 2  
+SELECT 2
+FROM dual;
+SELECT 3
+FROM dual;`
+->
+"SELECT 1
+FROM dual;
+-- test comment
+-- comment 2  
+SELECT 2
+FROM dual;
+SELECT 3
+FROM dual;";
+
+
+++9; 
+   breaksAfterSelect = false,
+`SELECT 1
+FROM Dual;
+ -- test comment
+SELECT 2
+FROM dual;
+SELECT 3
+FROM dual;`
+->
+`SELECT 1
+FROM dual;
+ -- test comment
+SELECT 2
+FROM dual;
+
+SELECT 3
+FROM dual;`;
+
+
+++10; 
+   breaksAfterSelect = false,
+   extraLinesAfterSignificantStatements = BreaksX2.Keep,         
+`SELECT 1 FROM Dual;
+
+SELECT 2 FROM dual;
+
+
+SELECT 3 FROM dual;`
+->
+`SELECT 1
+FROM Dual;
+
+SELECT 2
+FROM dual;
+
+
+SELECT 3
+FROM dual;`;
+
+
+++11; 
+   breaksAfterSelect = false,
+`/*
+ * comment 1
+ */
+SELECT 1 FROM Dual;
+
+/*
+ * comment 2
+ */
+SELECT 2 FROM dual;
+
+
+/*
+ * comment 3
+ */
+SELECT 3 FROM dual;`
+->
+
+`/*
+ * comment 1
+ */
+SELECT 1
+FROM dual;
+
+/*
+ * comment 2
+ */
+SELECT 2
+FROM dual;
+
+/*
+ * comment 3
+ */
+SELECT 3
+FROM dual;`
+;
+
+
+++12; 
+`SELECT 1
+FROM            
+NATURAL_ACCOUNT_D T16306 /* NATURAL_ACCOUNT_D_Base */  inner join (
+     LEDGER_D T301 /* LEDGER_D */  inner join (
+          GL_CODE_COMBINATION_D T229 /* GL_CODE_COMBINATION_D */  inner join (
+               FISCAL_DAY_D T1343 /* FISCAL_DAY_D */  inner join (
+                    PARTY_D T7439 /* PARTY_D_SUPPLIER */  inner join (
+                         INTERNAL_ORG_D T7447 /* INTERNAL_ORG_D_Payables_Org */  inner join (
+                              FISCAL_DAY_D T24059 /* FISCAL_DAY_D_InvoiceDate_Fiscal_Calendar */  inner join (
+                                   CODE_VALUES_LKP_TL T25919 /* CODE_VALUES_LKP_TL_AP_Transaction_Type */  inner join (
+                                        CODE_VALUES_LKP_TL T25438 /* CODE_VALUES_LKP_TL_AP_Source */  
+                                        inner join AP_SLA_EXPENSE_DIST_CF T59301 /* Fact_AP_SLA_EXPENSE_DIST_CF */  
+                                        On T25438.LANGUAGE = 'US' ) 
+                                   On T25919.CODE = T59301.INVOICE_TYPE_CODE ) 
+                              On T24059.FISCAL_DAY_DATE = T59301.INVOICED_ON_DATE ) 
+                          On T7447.ORGANIZATION_ID = T59301.PAYABLES_BU_ID) 
+                     On T7439.PARTY_ID = T59301.SUPPLIER_PARTY_ID) On T1343.ADJUSTMENT_PERIOD_FLAG = 'N'  ) 
+                On T229.CODE_COMBINATION_ID = T59301.GL_CODE_COMBINATION_ID) On T301.LEDGER_ID = T59301.XLA_LEDGER_ID) 
+           On T16306.NATURAL_ACCOUNT_SEGMENT = T59301.NATURAL_ACCOUNT_SEGMENT;`
+->
+`SELECT
+    1
+FROM
+         natural_account_d t16306 /* NATURAL_ACCOUNT_D_Base */
+    INNER JOIN (
+             ledger_d t301 /* LEDGER_D */
+        INNER JOIN (
+                 gl_code_combination_d t229 /* GL_CODE_COMBINATION_D */
+            INNER JOIN (
+                     fiscal_day_d t1343 /* FISCAL_DAY_D */
+                INNER JOIN (
+                         party_d t7439 /* PARTY_D_SUPPLIER */
+                    INNER JOIN (
+                             internal_org_d t7447 /* INTERNAL_ORG_D_Payables_Org */
+                        INNER JOIN (
+                                 fiscal_day_d t24059 /* FISCAL_DAY_D_InvoiceDate_Fiscal_Calendar */
+                            INNER JOIN (
+                                     code_values_lkp_tl t25919 /* CODE_VALUES_LKP_TL_AP_Transaction_Type */
+                                INNER JOIN (
+                                         code_values_lkp_tl t25438 /* CODE_VALUES_LKP_TL_AP_Source */
+                                    INNER JOIN ap_sla_expense_dist_cf t59301 /* Fact_AP_SLA_EXPENSE_DIST_CF */ ON t25438.language = 'US'
+                                ) ON t25919.code = t59301.invoice_type_code
+                            ) ON t24059.fiscal_day_date = t59301.invoiced_on_date
+                        ) ON t7447.organization_id = t59301.payables_bu_id
+                    ) ON t7439.party_id = t59301.supplier_party_id
+                ) ON t1343.adjustment_period_flag = 'N'
+            ) ON t229.code_combination_id = t59301.gl_code_combination_id
+        ) ON t301.ledger_id = t59301.xla_ledger_id
+    ) ON t16306.natural_account_segment = t59301.natural_account_segment;`
+;
+
+++13; 
+`SELECT 1
+FROM            
+NATURAL_ACCOUNT_D T16306   inner join (
+     LEDGER_D T301   inner join (
+          GL_CODE_COMBINATION_D T229   inner join (
+               FISCAL_DAY_D T1343  inner join (
+                    PARTY_D T7439   inner join (
+                         INTERNAL_ORG_D T7447   inner join (
+                              FISCAL_DAY_D T24059   inner join (
+                                   CODE_VALUES_LKP_TL T25919   inner join (
+                                        CODE_VALUES_LKP_TL T25438  
+                                        inner join AP_SLA_EXPENSE_DIST_CF T59301  
+                                        On T25438.LANGUAGE = 'US' ) 
+                                   On T25919.CODE = T59301.INVOICE_TYPE_CODE ) 
+                              On T24059.FISCAL_DAY_DATE = T59301.INVOICED_ON_DATE ) 
+                          On T7447.ORGANIZATION_ID = T59301.PAYABLES_BU_ID) 
+                     On T7439.PARTY_ID = T59301.SUPPLIER_PARTY_ID) On T1343.ADJUSTMENT_PERIOD_FLAG = 'N'  ) 
+                On T229.CODE_COMBINATION_ID = T59301.GL_CODE_COMBINATION_ID) On T301.LEDGER_ID = T59301.XLA_LEDGER_ID) 
+           On T16306.NATURAL_ACCOUNT_SEGMENT = T59301.NATURAL_ACCOUNT_SEGMENT;`
+->`SELECT
+    1
+FROM
+         natural_account_d t16306
+    INNER JOIN (
+             ledger_d t301
+        INNER JOIN (
+                 gl_code_combination_d t229
+            INNER JOIN (
+                     fiscal_day_d t1343
+                INNER JOIN (
+                         party_d t7439
+                    INNER JOIN (
+                             internal_org_d t7447
+                        INNER JOIN (
+                                 fiscal_day_d t24059
+                            INNER JOIN (
+                                     code_values_lkp_tl t25919
+                                INNER JOIN (
+                                         code_values_lkp_tl t25438
+                                    INNER JOIN ap_sla_expense_dist_cf t59301 ON t25438.language = 'US'
+                                ) ON t25919.code = t59301.invoice_type_code
+                            ) ON t24059.fiscal_day_date = t59301.invoiced_on_date
+                        ) ON t7447.organization_id = t59301.payables_bu_id
+                    ) ON t7439.party_id = t59301.supplier_party_id
+                ) ON t1343.adjustment_period_flag = 'N'
+            ) ON t229.code_combination_id = t59301.gl_code_combination_id
+        ) ON t301.ledger_id = t59301.xla_ledger_id
+    ) ON t16306.natural_account_segment = t59301.natural_account_segment;`
+;
+
+++14;
+`BEGIN  
+    -- a comment  
+    NULL;
+    NULL;
+    /* another comment */
+    NULL;    
+END;   
+/`
+->
+`BEGIN  
+    -- a comment  
+    NULL;
+    NULL;
+    /* another comment */
+    NULL;
+END;
+/`
+;
+
+++15; --
+   commasPerLine = 100,        
+   maxCharLineSize = 190,
+   extraLinesAfterSignificantStatements = BreaksX2.Keep,
+`BEGIN
+    print('Updating existing %s entry: %s:%s:%s:%s:%s:%s:%s... ', 
+    l_type, son(l_id), son(p_namespace), son(p_key), son(p_scope), son(p_value), son(p_visible), 
+    son(p_register_zeichen));  
+
+      UPDATE
+    configuration
+       SET value = p_value
+     WHERE id = l_id;  
+
+  UPDATE configuration SET value = p_value
+     WHERE id = l_id;  
+END;`
+->
+`BEGIN
+    print('Updating existing %s entry: %s:%s:%s:%s:%s:%s:%s... ',
+          l_type,
+          son(l_id),
+          son(p_namespace),
+          son(p_key),
+          son(p_scope),
+          son(p_value),
+          son(p_visible),
+          son(p_register_zeichen));
+
+    UPDATE configuration
+    SET
+        value = p_value
+    WHERE
+        id = l_id;
+
+    UPDATE configuration
+    SET
+        value = p_value
+    WHERE
+        id = l_id;
+END;`
+;
+
+++16;   -- 31746369
+`BEGIN
+    create_session(p_app_id => 1005, p_app_user => 'SVRAMAN',
+                  p_app_page_id => 259);
+END;
+/`-> 
+`BEGIN
+    create_session(
+        p_app_id      => 1005,
+        p_app_user    => 'SVRAMAN',
+        p_app_page_id => 259
+    );
+END;
+/`;
+
+++17;   -- 31746369
+commasPerLine = 1, 
+`BEGIN
+    create_session(p_app_id => 1005, p_app_user => 'SVRAMAN',
+                  p_app_page_id => 259);
+END;
+/`->
+`BEGIN
+    create_session(
+        p_app_id      => 1005,
+        p_app_user    => 'SVRAMAN',
+        p_app_page_id => 259
+    );
+END;
+/`
+;
+
+++18;   -- 31733259
+`declare
+ x date;
+begin
+ null;
+ /* -- some sqlcl stuff
+cd c:\users\jdsmith\desktop\wine_reviews
+script load_json_files.js
+ */
+ select sysdate into x from dual;
+ dbms_output.put_line(x);
+ -- comment
+ x := x+1;
+end;
+/`->
+`DECLARE
+    x DATE;
+BEGIN
+    NULL;
+ /* -- some sqlcl stuff
+cd c:\users\jdsmith\desktop\wine_reviews
+script load_json_files.js
+ */
+    SELECT
+        sysdate
+    INTO x
+    FROM
+        dual;
+
+    dbms_output.put_line(x);
+ -- comment
+    x := x + 1;
+END;
+/`
+;
+
+++19; -- 31812983
+   kwCase = Case.UPPER,
+`BEGIN
+    return;
+END;
+/`
+->
+"BEGIN
+    RETURN;
+END;
+/"
+;
+
+++20; -- https://community.oracle.com/thread/4347112
+`-- comment
+UPDATE --+ any_hint    
+policy a
+set a.n01 = 1;`
+->
+`-- comment
+UPDATE --+ any_hint    
+ policy a
+SET
+    a.n01 = 1;`
+;
+
+++21; --Bug 32531563
+   alignAssignments = true,
+`begin
+   x(1+2+3) := 'a';
+   x(3 + 4 + 5) := 'b';
+   x( 3  +  4 ) := 'c';
+   x( 3  +  4  +   5) := 'd';
+   x( 3+  4  +   5 +6) := 'e';
+end;
+/`
+->
+`BEGIN
+    x(1 + 2 + 3)     := 'a';
+    x(3 + 4 + 5)     := 'b';
+    x(3 + 4)         := 'c';
+    x(3 + 4 + 5)     := 'd';
+    x(3 + 4 + 5 + 6) := 'e';
+END;
+/`   
+; 
+
+++22; -- https://github.com/Trivadis/plsql-formatter-settings/issues/26
+`CREATE TABLESPACE my_table_space
+    DATAFILE 'my_tablespace_file.dbf' SIZE 50M
+    AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE;`
+->
+`CREATE TABLESPACE my_table_space
+    DATAFILE 'my_tablespace_file.dbf' SIZE 50M
+    AUTOEXTEND ON NEXT 10M MAXSIZE UNLIMITED
+    EXTENT MANAGEMENT LOCAL AUTOALLOCATE;`
+;
+
+++23;
+/*32697742*/
+    breaksComma = Breaks.Before,
+`SELECT
+    a,
+    b /* multi line comment*/,
+    c
+FROM
+    t;`
+->
+`SELECT
+    a
+  , b /* multi line comment*/
+  , c
+FROM
+    t;`
+;
+
+++24;
+--maxCharLineSize  = 125, 
+`SELECT
+    1
+FROM
+    x
+WHERE
+    owner IN (
+              'HWBUDGADMN', 'HWBT', 'MYHWBT_SCHEMA', 'HWBT_SCHEMA', 'CLUVFY_SCHEMA', 'CLUVFY_PROD', 'DBFARMDASH_READ'
+          )
+    AND data_type IN (
+              'ORDIMAGE', 'ORDIMAGESIGNATURE', 'ORDAUDIO', 'ORDVIDEO', 'ORDDOC', 'ORDSOURCE', 'ORDDICOM', 'ORDDATASOURCE', 'SI_STILLIMAGE',
+              'SI_COLOR', 'SI_AVERAGECOLOR', 'SI_POSITIONALCOLOR', 'SI_TEXTURE', 'SI_COLORHISTOGRAM', 'SI_FEATURELIST'
+          )
+    AND data_type_owner IN (
+              'ORDSYS', 'PUBLIC'
+          )`
+->
+`SELECT
+    1
+FROM
+    x
+WHERE
+    owner IN ( 'HWBUDGADMN', 'HWBT', 'MYHWBT_SCHEMA', 'HWBT_SCHEMA', 'CLUVFY_SCHEMA',
+               'CLUVFY_PROD', 'DBFARMDASH_READ' )
+    AND data_type IN ( 'ORDIMAGE', 'ORDIMAGESIGNATURE', 'ORDAUDIO', 'ORDVIDEO', 'ORDDOC',
+                       'ORDSOURCE', 'ORDDICOM', 'ORDDATASOURCE', 'SI_STILLIMAGE', 'SI_COLOR',
+                       'SI_AVERAGECOLOR', 'SI_POSITIONALCOLOR', 'SI_TEXTURE', 'SI_COLORHISTOGRAM', 'SI_FEATURELIST' )
+    AND data_type_owner IN ( 'ORDSYS', 'PUBLIC' )`          
+;
+
+++25;  /*33461042*/
+`set serveroutput on
+spool install_options.tmp
+declare
+   procedure print (in_line in varchar2) is
+   begin
+      dbms_output.put_line(in_line);
+   end print;
+begin
+   print('Hello World');
+end;
+/ `
+->
+`set serveroutput on
+spool install_options.tmp
+
+DECLARE
+    PROCEDURE print (
+        in_line IN VARCHAR2
+    ) IS
+    BEGIN
+        dbms_output.put_line(in_line);
+    END print;
+
+BEGIN
+    print('Hello World');
+END;
+/`
+;
+
+++26;  /*33461042*/
+`define table_folder = 'table'
+set define on
+@./demo/&&table_folder/drop_demo_tables.sql
+set define off`
+->
+`define table_folder = 'table'
+set define on
+@./demo/&&table_folder/drop_demo_tables.sql
+set define off`
+;
+
+++27;
+`select nvl(sysdate, sysdate) from dual;`
+->
+`SELECT
+    nvl(sysdate, sysdate)
+FROM
+    dual;`
+;   
+
+++28;
+/*33936876*/
+`SELECT
+    decode(:p_period_type,
+           'PTD', decode(:p_currency_type,
+                  'T', nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                  'S', nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                  'E', decode(glb.translated_flag,
+                         'R',
+                         nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                         nvl(begin_balance_dr_beq, 0) - nvl(begin_balance_cr_beq, 0)),
+                  'C', nvl(begin_balance_dr_beq, 0) - nvl(begin_balance_cr_beq, 0)),
+           'PJTD',
+           decode(:p_currency_type, 'T', 0, 'S', 0,  'E', 0, 'C', 0),
+           'QTD')
+FROM
+    dual;`
+->  
+`SELECT
+    decode(:p_period_type,
+           'PTD',
+           decode(:p_currency_type,
+                  'T',
+                  nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                  'S',
+                  nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                  'E',
+                  decode(glb.translated_flag,
+                         'R',
+                         nvl(begin_balance_dr, 0) - nvl(begin_balance_cr, 0),
+                         nvl(begin_balance_dr_beq, 0) - nvl(begin_balance_cr_beq, 0)),
+                  'C',
+                  nvl(begin_balance_dr_beq, 0) - nvl(begin_balance_cr_beq, 0)),
+           'PJTD',
+           decode(:p_currency_type, 'T', 0, 'S', 0,
+                  'E', 0, 'C', 0),
+           'QTD')
+FROM
+    dual;`
+;
+
+++29;
+/*34116753*/
+`BEGIN
+    CASE
+        WHEN deleting THEN
+            abc_code.abc_data#some_targettable_details__abc_code#some_targettable_details_v$tmt.del(p_some_targettable_detail_id => :old.some_targettable_detail_id, p_row_version => :old.row_version);
+    END CASE;
+END;`
+->
+`BEGIN
+    CASE
+        WHEN deleting THEN
+            abc_code.abc_data#some_targettable_details__abc_code#some_targettable_details_v$tmt.del(
+                p_some_targettable_detail_id => :old.some_targettable_detail_id,
+                p_row_version                => :old.row_version
+            );
+    END CASE;
+END;`
+;     
+
+++30;
+/*36096306*/
+`begin
+   dbms_output.put_line(';/');
+end;
+/`
+->
+`BEGIN
+    dbms_output.put_line(';/');
+END;
+/`
+;   
+
+++31;
+/*34115625*/
+`begin
+  l_job_arguments :=
+    job_argument_t(
+      job_argument_record_t('p_file_id', p_file_id),
+      job_argument_record_t('p_app_user', p_app_user),
+      job_argument_record_t('p_registry_id', p_registry_id),
+      job_argument_record_t('p_consent_html', p_consent_html)
+    );  
+      job_argument_t(
+      job_argument_record_t('p_file_id', p_file_id),
+      job_argument_record_t('p_app_user', p_app_user),
+      job_argument_record_t('p_registry_id', p_registry_id)
+    );    
+      
+end;
+/`
+->
+`BEGIN
+    l_job_arguments := job_argument_t(
+        job_argument_record_t('p_file_id', p_file_id),
+        job_argument_record_t('p_app_user', p_app_user),
+        job_argument_record_t('p_registry_id', p_registry_id),
+        job_argument_record_t('p_consent_html', p_consent_html)
+    );
+
+    job_argument_t(
+        job_argument_record_t('p_file_id', p_file_id),
+        job_argument_record_t('p_app_user', p_app_user),
+        job_argument_record_t('p_registry_id', p_registry_id)
+    );
+
+END;
+/`
+;     
+
+++32;
+/*34115625*/
+`begin
+  logger.append_param(l_params, 'p_some_param_yn',  p_caregiver_yn );
+  logger.append_param(l_params, 'p_main_first_name', p_main_first_name);
+  logger.append_param(l_params, 'p_main_last_name', p_main_last_name);
+  logger.append_param(l_params, 'p_other_first_name', p_other_first_name);
+  logger.append_param(l_params, 'p_other_last_name', p_other_last_name);
+  logger.append_param(l_params, 'p_email', p_email );
+  logger.append_param(l_params, 'p_mobile_country_prefix', 
+p_mobile_country_prefix);
+  logger.append_param(l_params, 'p_mobile_number', p_mobile_number);
+  logger.append_param(l_params, 'p_postal_code', p_postal_code);
+  logger.log('START', l_scope, null, l_params);
+end;
+/`
+->
+`BEGIN
+    logger.append_param(l_params, 'p_some_param_yn', p_caregiver_yn);
+    logger.append_param(l_params, 'p_main_first_name', p_main_first_name);
+    logger.append_param(l_params, 'p_main_last_name', p_main_last_name);
+    logger.append_param(l_params, 'p_other_first_name', p_other_first_name);
+    logger.append_param(l_params, 'p_other_last_name', p_other_last_name);
+    logger.append_param(l_params, 'p_email', p_email);
+    logger.append_param(l_params, 'p_mobile_country_prefix', p_mobile_country_prefix);
+    logger.append_param(l_params, 'p_mobile_number', p_mobile_number);
+    logger.append_param(l_params, 'p_postal_code', p_postal_code);
+    logger.log('START', l_scope, NULL, l_params);
+END;
+/`
+;  
+
+++33;
+`BEGIN
+   y(1, 2, 3, 4, 5,6, 7, 8, 9, 10, 11, 12, 13);
+END;
+/`
+->
+`BEGIN
+    y(1, 2, 3, 4, 5,
+      6, 7, 8, 9, 10,
+      11, 12, 13);
+END;
+/`
+;
+
+++34;  /* 36358167 */
+`CREATE VIEW OPPORTUNITIES_V (ID, ROW_KEY, STATUS_CODE, IS_OPEN, CUSTOMER_TAGS) AS 
+  select d.id, 
+    d.row_key,
+    c.id customer_id,
+     c.tags customer_tags
+  from eba_sales_deals d
+  join eba_sales_customers c
+    on c.id = d.customer_id 
+;`
+->
+`CREATE VIEW opportunities_v (
+    id,
+    row_key,
+    status_code,
+    is_open,
+    customer_tags
+) AS
+    SELECT
+        d.id,
+        d.row_key,
+        c.id   customer_id,
+        c.tags customer_tags
+    FROM
+             eba_sales_deals d
+        JOIN eba_sales_customers c ON c.id = d.customer_id;`
+; 
+
+++35;
+`SELECT
+    country,
+    prod,
+    year,
+    s
+FROM
+    sales_view_ref
+MODEL
+    PARTITION BY ( country ) DIMENSION BY ( prod,
+                                            year )
+    MEASURES ( sale s )
+    IGNORE NAV UNIQUE DIMENSION
+    RULES UPSERT SEQUENTIAL ORDER ( s[prod = 'Mouse Pad', year = 2000]= s['Mouse Pad',
+    1998]+ s['Mouse Pad',
+    1999],
+    s['Standard Mouse', 2001]= s['Standard Mouse',
+    2000])`
+->
+`SELECT
+    country,
+    prod,
+    year,
+    s
+FROM
+    sales_view_ref
+MODEL
+    PARTITION BY ( country ) DIMENSION BY ( prod,
+                                            year )
+    MEASURES ( sale s )
+    IGNORE NAV UNIQUE DIMENSION
+    RULES UPSERT SEQUENTIAL ORDER (
+        s[prod = 'Mouse Pad', year = 2000]= s['Mouse Pad', 1998]+ s['Mouse Pad', 1999],
+        s['Standard Mouse', 2001]= s['Standard Mouse', 2000]
+    )`
+;
+    
+++36;
+`CREATE DOMAIN day_of_week AS CHAR(3 CHAR)
+    CONSTRAINT day_of_week_c
+        CHECK ( upper(value) IN ( 'MON', 'TUE', 'WED', 'THU', 'FRI',
+                                  'SAT', 'SUN' ) )
+        DEFERRABLE INITIALLY DEFERRED
+    DISPLAY substr(value, 1, 2);`
+->
+`CREATE DOMAIN day_of_week AS CHAR(3 CHAR)
+    CONSTRAINT day_of_week_c
+        CHECK ( upper(value) IN ( 'MON', 'TUE', 'WED', 'THU', 'FRI',
+                                  'SAT', 'SUN' ) )
+        DEFERRABLE INITIALLY DEFERRED
+    DISPLAY substr(value, 1, 2);`
+;    
+
+++37;
+removeDoubleQuotes = true, 
+`CREATE TABLE "HR"."REGIONS" (
+    "REGION_ID"   NUMBER
+        CONSTRAINT "REGION_ID_NN" NOT NULL ENABLE,
+    "REGION_NAME" VARCHAR2(25)
+);
+
+CREATE UNIQUE INDEX "HR"."REG ID_PK" ON
+    "HR"."REGIONS" (
+        "REGION_ID"
+    );
+
+ALTER TABLE "HR"."REGIONS"
+    ADD CONSTRAINT "REG_ID_PK" PRIMARY KEY ( "REGION_ID" )
+        USING INDEX "HR"."REG_ID_PK"
+    ENABLE;
+
+CREATE OR REPLACE TRIGGER "HR"."TRIGGER1"
+BEFORE UPDATE ON "HR"."REGIONS"  BEGIN NULL; END;    
+`->
+`CREATE TABLE hr.regions (
+    region_id   NUMBER
+        CONSTRAINT region_id_nn NOT NULL ENABLE,
+    region_name VARCHAR2(25)
+);
+
+CREATE UNIQUE INDEX hr."REG ID_PK" ON
+    hr.regions (
+        region_id
+    );
+
+ALTER TABLE hr.regions
+    ADD CONSTRAINT reg_id_pk
+        PRIMARY KEY ( region_id )
+            USING INDEX hr.reg_id_pk ENABLE;
+
+CREATE OR REPLACE TRIGGER hr.trigger1 BEFORE
+    UPDATE ON hr.regions
+BEGIN
+    NULL;
+END;`
+;
+
+++38; --36803202
+   maxCharLineSize = 30,        
+`BEGIN
+    send_request(
+        uri => '.......' || l_topic_ocid
+    );
+---------0---------0---------0
+    l_row.dont_break_on_dot__ := :new.DESCRIPTION;
+    l_row.dont_break_on_colon_____ := :new.some_targettable_id;   
+END;`
+->
+`BEGIN
+    send_request(uri => '.......' || l_topic_ocid
+    );
+---------0---------0---------0
+    l_row.dont_break_on_dot__ := :new.description
+    ;
+    l_row.dont_break_on_colon_____ := :new.some_targettable_id
+    ;
+END;`
+; 
+
+++39; --36044219
+`begin
+        if REGEXP_LIKE(v_version, '^[[:digit:]]+$') or v_version 
+    like '%,%' or v_version like '%any%' or v_version like '%all%' or 
+ v_version like '%,%' then
+            v_valid := 'N';
+        end if;
+        select 1 from a where 1=2 or 2=3;
+end;
+/`
+->
+`BEGIN
+    IF regexp_like(v_version, '^[[:digit:]]+$')
+    OR v_version LIKE '%,%'
+    OR v_version LIKE '%any%'
+    OR v_version LIKE '%all%'
+    OR v_version LIKE '%,%' THEN
+        v_valid := 'N';
+    END IF;
+
+    SELECT
+        1
+    FROM
+        a
+    WHERE
+        1 = 2
+        OR 2 = 3;
+
+END;
+/`
+;  
+ 
+++40; 
+`create or replace 
+noneditionable trigger gsmadmin_internal.gsmlogoff 
+before logoff on gsmcatuser.schema 
+call dbms_gsm_cloudadmin.checkgsmdown
+/`
+->`CREATE OR REPLACE NONEDITIONABLE TRIGGER gsmadmin_internal.gsmlogoff
+    BEFORE LOGOFF ON gsmcatuser.SCHEMA
+        CALL dbms_gsm_cloudadmin.checkgsmdown
+/`
+;  
+ 
+++41; 
+`create flexible domain export_test.expense_details ( val1,
+                                                     val2,
+                                                     val4 ) 
+                                                     choose domain 
+                                                     using ( typ varchar2(10) ) 
+                                                     from case when typ = 'Meals' then
+export_test.meals_details(val1, val2, val4) when typ like 'Lodg%' then
+export_test.lodging_details(val1, val4) end;
+
+CREATE FLEXIBLE DOMAIN expense_details (val1, val2, val3, val4)
+    CHOOSE DOMAIN USING (typ VARCHAR2(10))
+    FROM DECODE(typ,
+              'Flight', flight_details(val1, val2, val3),
+              'Meals', meals_details(val1, val2, val4),
+              'Lodging', lodging_details(val1, val4));
+`
+->`CREATE FLEXIBLE DOMAIN export_test.expense_details ( val1,
+                                                     val2,
+                                                     val4 )
+    CHOOSE DOMAIN USING ( typ VARCHAR2(10) )
+FROM CASE
+    WHEN typ = 'Meals' THEN
+    export_test.meals_details(val1, val2, val4)
+    WHEN typ LIKE 'Lodg%' THEN
+    export_test.lodging_details(val1, val4)
+END;
+
+CREATE FLEXIBLE DOMAIN expense_details ( val1,
+                                         val2,
+                                         val3,
+                                         val4 )
+    CHOOSE DOMAIN USING ( typ VARCHAR2(10) )
+FROM DECODE ( typ,
+              'Flight', flight_details ( val1, val2, val3 ),
+              'Meals', meals_details ( val1, val2, val4 ),
+              'Lodging', lodging_details ( val1, val4 ) );`
+;  
+ 
+++42; 
+`create materialized view export_test.emp_data ( employee_id, first_name, x,y )
+    build immediate
+using index
+    refresh
+                            fast
+                            on demand
+                        start with sysdate + 0
+                    next sysdate + 7
+                with primary key
+            using enforced constraints
+disable on query computation disable query rewrite disable concurrent refresh as
+    select 1;`
+->
+`CREATE MATERIALIZED VIEW export_test.emp_data (
+    employee_id,
+    first_name,
+    x,
+    y
+) BUILD IMMEDIATE USING INDEX
+    REFRESH FAST
+    ON DEMAND
+    START WITH sysdate + 0
+    NEXT sysdate + 7
+    WITH PRIMARY KEY
+    USING ENFORCED CONSTRAINTS
+    DISABLE ON QUERY COMPUTATION
+    DISABLE QUERY REWRITE
+    DISABLE CONCURRENT REFRESH
+AS
+    SELECT
+        1;`
+; 
+
+++43;
+removeDoubleQuotes = true, 
+`create or replace view foo.v
+as
+  select 1 "LEVEL",
+    2 "TABLE"
+    from dual;    
+`->`CREATE OR REPLACE VIEW foo.v AS
+    SELECT
+        1 "LEVEL",
+        2 "TABLE"
+    FROM
+        dual;`
+;
+
+++44;
+`declare bsdeleted constant binary_integer := 2 ** 2; begin null; end;`
+->`DECLARE
+    bsdeleted CONSTANT BINARY_INTEGER := 2 ** 2;
+BEGIN
+    NULL;
+END;`
+;
+
+++45; -- 38033997
+`create or replace mle module cms.ge_js_output_homepage_json language javascript as
+     function showhomepage ( p_id )
+         {
+             if ( item.level === 1 )
+                 {
+                     i++;
+                 }
+         }
+     export{showhomepage};
+ /`
+->`CREATE OR REPLACE MLE MODULE cms.ge_js_output_homepage_json LANGUAGE javascript AS
+    function showhomepage ( p_id )
+         {
+             if ( item.level === 1 )
+                 {
+                     i++;
+                 }
+         }
+     export{showhomepage};
+/`
+;
+
+++46; -- 38058004
+`create table foo.t (
+  c number,
+  c2 date,
+  c3 timestamp as (trunc(c2, 'mm')) materialized
+);
+
+alter table tkimcsc1_2_nocomp add c46 varchar2(1789 char) generated always as
+(substr (to_char(c36),1,1789)) virtual;
+
+ALTER TABLE emp2 ADD (income AS (salary + (salary*commission_pct)));
+
+ALTER TABLE tbl ADD (new_hash_column AS (STANDARD_HASH(column)));`
+->
+`CREATE TABLE foo.t (
+    c  NUMBER,
+    c2 DATE,
+    c3 TIMESTAMP AS ( trunc(c2, 'mm') ) MATERIALIZED
+);
+
+ALTER TABLE tkimcsc1_2_nocomp ADD
+    c46 VARCHAR2(1789 CHAR) GENERATED ALWAYS AS ( substr(
+        to_char(c36),
+        1,
+        1789
+    ) ) VIRTUAL;
+
+ALTER TABLE emp2 ADD (
+    income AS ( salary + ( salary * commission_pct ) )
+);
+
+ALTER TABLE tbl ADD (
+    new_hash_column AS ( standard_hash(column) )
+);`
+;
+
+++47; -- 38134302
+`create table slack_bugs (
+    request_id  varchar2(100) default ( 'REQ0'
+                 || slack_bugs_request_id_seq.nextval ),
+    bug_description   varchar2(250)
+);
+
+BEGIN
+    l_signature_raw := 'v0:'
+                  || l_request_timestamp
+                       || ':'
+                       || l_body_text_raw;
+        l_signature_raw := 'v0:'
+                       || l_request_timestamp;
+    
+    dbms_output.put_line('hello' || 'world');
+END;`
+->
+`CREATE TABLE slack_bugs (
+    request_id      VARCHAR2(100) DEFAULT ( 'REQ0' || slack_bugs_request_id_seq.NEXTVAL ),
+    bug_description VARCHAR2(250)
+);
+
+BEGIN
+    l_signature_raw := 'v0:'
+                       || l_request_timestamp
+                       || ':'
+                       || l_body_text_raw;
+    l_signature_raw := 'v0:' || l_request_timestamp;
+    dbms_output.put_line('hello' || 'world');
+END;`
+;
+
+++48; -- 38166938
+    forceLinebreaksBeforeComment = true,
+`CREATE pAcKaGe emp_mgmt AS 
+   
+   
+   
+   /* ? */
+   PROCEDURE increase_comm; 
+   
+   
+   
+   // ??
+   no_comm EXCEPTION; 
+END emp_mgmt;
+/
+`->`CREATE PACKAGE emp_mgmt AS
+    /* ? */
+    PROCEDURE increase_comm;
+
+    // ??
+    no_comm EXCEPTION;
+END emp_mgmt;
+/`
+;
+
+++49;
+`CREATE TABLE TABLE10 (
+     i  NUMBER
+          GENERATED ALWAYS AS IDENTITY
+     NOT NULL ENABLE,
+     c  VARCHAR2(10 BYTE),
+          c2 NUMBER GENERATED ALWAYS AS ( F0(TO_NUMBER(c)) ) VIRTUAL
+);`
+->
+"CREATE TABLE table10 (
+    i  NUMBER GENERATED ALWAYS AS IDENTITY NOT NULL ENABLE,
+    c  VARCHAR2(10 BYTE),
+    c2 NUMBER GENERATED ALWAYS AS ( f0(TO_NUMBER(c)) ) VIRTUAL
+);"
+;
+
+++50; -- 38138659 | SQLCL-5815
+    forceLinebreaksBeforeComment = true,
+`CREATE PACKAGE X AS
+    -- Comment line 2 before procedure call
+    -- Comment line 3 before procedure call
+
+
+    procedure pHeaderOnly;
+
+    -- Comment line 7 after procedure call
+    -- Comment line 8 after procedure call
+
+
+    -- Comment line 10 before procedure call
+    -- Comment line 11 before procedure call
+
+    procedure pHeaderWithArgs (
+         arg1    in number,
+         arg2    in number,
+         arg3     out varchar2,
+         arg4   in binary_integer default 0,
+         arg5 in boolean
+    );
+
+    -- Comment line 21 after procedure call
+    -- Comment line 22 after procedure call
+
+    -- Comment line 24 before procedure call
+    -- Comment line 25 before procedure call
+
+
+
+    procedure pHeaderWithArg (
+         arg in boolean
+    );
+    -- Comment line 31 after procedure call
+    -- Comment line 32 after procedure call
+END;
+`->`create package x as
+    -- comment line 2 before procedure call
+    -- comment line 3 before procedure call
+
+    procedure pheaderonly;
+
+    -- comment line 7 after procedure call
+    -- comment line 8 after procedure call
+
+    -- comment line 10 before procedure call
+    -- comment line 11 before procedure call
+
+    procedure pheaderwithargs (
+        arg1 in number,
+        arg2 in number,
+        arg3 out varchar2,
+        arg4 in binary_integer default 0,
+        arg5 in boolean
+    );
+
+    -- comment line 21 after procedure call
+    -- comment line 22 after procedure call
+
+    -- comment line 24 before procedure call
+    -- comment line 25 before procedure call
+
+    procedure pheaderwitharg (
+        arg in boolean
+    );
+
+    -- comment line 31 after procedure call
+    -- comment line 32 after procedure call
+end;`
+;
+
+++51;  -- 
+breaksComma= Breaks.Before,
+`
+CREATE OR REPLACE VIEW sh.vsales4 (
+        prod_id
+, cust_id
+, time_id
+, channel_id
+, promo_id
+, quantity_sold
+, amount_sold
+) AS
+        SELECT
+                "PROD_ID"
+                , "CUST_ID"
+                , "TIME_ID"
+                , "CHANNEL_ID"
+                , "PROMO_ID"
+                , "QUANTITY_SOLD"
+                , "AMOUNT_SOLD"
+        FROM
+                sales4;
+`
+->
+`CREATE OR REPLACE VIEW sh.vsales4 (
+    prod_id
+  , cust_id
+  , time_id
+  , channel_id
+  , promo_id
+  , quantity_sold
+  , amount_sold
+) AS
+    SELECT
+        "PROD_ID"
+      , "CUST_ID"
+      , "TIME_ID"
+      , "CHANNEL_ID"
+      , "PROMO_ID"
+      , "QUANTITY_SOLD"
+      , "AMOUNT_SOLD"
+    FROM
+        sales4;`
+;
+
+++52;  -- 	38991669
+removeDoubleQuotes= true,
+idCase=Case.lower,
+kwCase=Case.lower,
+`
+create table T1
+(
+"COMMENT" NVARCHAR2(2000),
+aBc integer
+);
+
+comment on column T1."COMMENT" is 'text';`
+->
+"create table t1 (
+    \"COMMENT\" nvarchar2(2000),
+    abc       integer
+);
+
+comment on column t1.\"COMMENT\" is
+    'text';"
+;
+
+++53;  
+`
+INSERT INTO DEPARTMENTS (DEPARTMENT_ID, DEPARTMENT_NAME, MANAGER_ID, LOCATION_ID)
+ VALUES 
+(10,'Administration',200,1700),
+(20,'Marketing',201,1800)
+;`
+->
+"INSERT INTO departments (
+    department_id,
+    department_name,
+    manager_id,
+    location_id
+) VALUES
+    ( 10,
+      'Administration',
+      200,
+      1700 ),
+    ( 20,
+      'Marketing',
+      201,
+      1800 );"
+;
+
+++54;
+removeDoubleQuotes = true,
+`begin
+     dbms_scheduler.create_job(
+         job_name            => '"OUSSAMA"."JoB1"',
+         job_type            => 'STORED_PROCEDURE',
+         job_action          => 'MY_SCHEMA.MY_PROC',
+         start_date          => timestamp '2026-04-15 15:49:24.786532',
+         repeat_interval     => 'FREQ=DAILY; BYHOUR=0; BYMINUTE=0; BYSECOND=0',
+         end_date            => null,
+         job_class           => 'DEFAULT_JOB_CLASS',
+         comments            => null,
+         auto_drop           => true,
+         number_of_arguments => 0
+     );
+
+     dbms_scheduler.set_attribute(
+         name      => '"OUSSAMA"."JoB1"',
+         attribute => 'logging_level',
+         value     => dbms_scheduler.logging_off
+     );
+
+     sys.dbms_aqadm.CREATE_QUEUE_TABLE(
+          queue_table        => '"OUSSAMA"."MY_QT"',
+          queue_payload_type => '"SYS"."AQ$_JMS_BYTES_MESSAGE"'
+     );
+ end;
+/`
+->
+`BEGIN
+    dbms_scheduler.create_job(
+        job_name            => 'OUSSAMA."JoB1"',
+        job_type            => 'STORED_PROCEDURE',
+        job_action          => 'MY_SCHEMA.MY_PROC',
+        start_date          => TIMESTAMP '2026-04-15 15:49:24.786532',
+        repeat_interval     => 'FREQ=DAILY; BYHOUR=0; BYMINUTE=0; BYSECOND=0',
+        end_date            => NULL,
+        job_class           => 'DEFAULT_JOB_CLASS',
+        comments            => NULL,
+        auto_drop           => TRUE,
+        number_of_arguments => 0
+    );
+
+    dbms_scheduler.set_attribute(
+        name      => 'OUSSAMA."JoB1"',
+        attribute => 'logging_level',
+        value     => dbms_scheduler.logging_off
+    );
+
+    sys.dbms_aqadm.create_queue_table(
+        queue_table        => 'OUSSAMA.MY_QT',
+        queue_payload_type => 'SYS.AQ$_JMS_BYTES_MESSAGE'
+    );
+END;
+/`
+;
+
+++55;
+removeDoubleQuotes = true,
+`begin
+     dbms_scheduler.create_group(
+         group_name => '"OUSSAMA"."MY_GROUP"',
+         group_type => 'WINDOW',
+         comments   => null,
+         member     => '"SYS"."WINDOW1","SYS"."WIN,DOW2","SYS"."WIN.DOW3","MIXED"."WiN4"'
+     );
+end;
+/`
+->
+`BEGIN
+    dbms_scheduler.create_group(
+        group_name => 'OUSSAMA.MY_GROUP',
+        group_type => 'WINDOW',
+        comments   => NULL,
+        member     => 'SYS.WINDOW1,SYS."WIN,DOW2",SYS."WIN.DOW3",MIXED."WiN4"'
+    );
+END;
+/`
+;
+
+++56;
+`select
+    json{'_id' : ce_latest.clinical_event_id,
+         'eventId' : ce_latest.event_id,
+         'eventCd' : ce_latest.event_cd,
+         'encounter' :[select
+                                   json{'organization' :[select
+                                                                                  json{'orgName' : org.org_name,
+                                                                                       'orgId' : org.organization_id}
+                                                                                 from organization org
+                                                          where org.organization_id = encntr.organization_id
+                                   ]}
+                                  from encounter encntr
+                   where encntr.encntr_id = ce_latest.encntr_id
+    ],
+         'caseReport' :[select
+                                     json{'catalogCd' : cr.catalog_cd}
+                                    from case_report cr
+                    where cr.event_id = ce_latest.event_id
+    ]}
+   from dual;`
+->
+`SELECT
+    JSON {
+        '_id' : ce_latest.clinical_event_id,
+         'eventId' : ce_latest.event_id,
+         'eventCd' : ce_latest.event_cd,
+         'encounter' : [
+            SELECT
+                JSON {
+                    'organization' : [
+                        SELECT
+                            JSON {
+                                'orgName' : org.org_name,
+                                'orgId' : org.organization_id
+                            }
+                        FROM
+                            organization org
+                        WHERE
+                            org.organization_id = encntr.organization_id
+                    ]
+                }
+            FROM
+                encounter encntr
+            WHERE
+                encntr.encntr_id = ce_latest.encntr_id
+        ],
+         'caseReport' : [
+            SELECT
+                JSON {
+                    'catalogCd' : cr.catalog_cd
+                }
+            FROM
+                case_report cr
+            WHERE
+                cr.event_id = ce_latest.event_id
+        ]
+    }
+FROM
+    dual;`
+;
+
+++57; -- 39758779
+`create or replace view sqlcl_format_nested_vw as
+   select someidentifier,
+          someid
+     from sqlcl_format_nested_tab sfnt nested json_data.positions[*]
+     columns (
+       someIdentifier,
+       someid number
+     );`
+->
+"CREATE OR REPLACE VIEW sqlcl_format_nested_vw AS
+    SELECT
+        someidentifier,
+        someid
+    FROM
+        sqlcl_format_nested_tab sfnt NESTED json_data.positions[*]
+            COLUMNS (
+                someIdentifier,
+                someid NUMBER
+            );"     
+;
+
+++58; -- https://forums.oracle.com/ords/apexds/post/formatter-failure-6756
+removeDoubleQuotes = true, 
+`BEGIN
+   DBMS_SCHEDULER.ENABLE('"HR"."NIGHTLY_JOB1"');
+   DBMS_SCHEDULER.ENABLE('"HR"."NIGHTLY_JOB1"');
+END;
+/`
+-> 
+`BEGIN
+    dbms_scheduler.enable('HR.NIGHTLY_JOB1');
+    dbms_scheduler.enable('HR.NIGHTLY_JOB1');
+END;
+/`     
+;

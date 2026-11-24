@@ -33,7 +33,9 @@
     "test:unified-parser": "node --experimental-strip-types src/test/typescript/UnifiedParserTest.ts",
     "build:msc-preprocess": "tsc -p tsconfig.msc-preprocess.json",
     "benchmark:msc-preprocess": "npm run build:msc-preprocess && node dist/msc-preprocess/test/typescript/oracle/dbtools/parser/plsql/MscPreProccessTest.js",
-    "dump:sql-matrix": "node --experimental-strip-types src/test/typescript/SqlMatrixDump.ts"
+    "dump:sql-matrix": "node --experimental-strip-types src/test/typescript/SqlMatrixDump.ts",
+    "build:format-regression": "tsc -p tsconfig.format-regression.json && node scripts/fix-emitted-import-extensions.mjs dist/format-regression",
+    "test:format-regression": "npm run build:format-regression && node dist/format-regression/test/typescript/oracle/dbtools/app/FormatRegressionTest.js"
   },
   "dependencies": {
     "oracledb": "^26.0.0"

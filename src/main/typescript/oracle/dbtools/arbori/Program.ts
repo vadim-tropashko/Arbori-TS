@@ -1197,28 +1197,19 @@ export class Program extends Scripting {
 
     public getBoolBindVar(name: string): boolean {
         if (this.struct == null)throw Object.defineProperty(new Error("_getBoolBindVar(" + name + ") failed, struct == null"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Error','java.lang.Object','java.lang.AssertionError'] });
-        try {
-            const field: any = /* getField */((c,p) => { return {owner:c,name:p}; })((<any>this.struct.constructor),name);
-            if (field.getType() === Boolean)return field.getBoolean(this.struct);
-        } catch(__e) {
-            if(__e != null && (__e["__classes"] && __e["__classes"].indexOf("java.lang.NoSuchFieldException") >= 0)) {
-                const e: Error = <Error>__e;
-
-            }
-            if(__e != null && (__e["__classes"] && __e["__classes"].indexOf("java.lang.Exception") >= 0) || __e != null && __e instanceof <any>Error) {
-                const e: Error = <Error>__e;
-                throw Object.defineProperty(new Error("field.getBoolean failed due to " + e.message), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Error','java.lang.Object','java.lang.AssertionError'] });
-
-            }
-        }
-        try {
-            const method: { owner: any, name: string, fn : Function } = /* getMethod */((c,p) => { if(c.prototype.hasOwnProperty(p) && typeof c.prototype[p] == 'function') return {owner:c,name:p,fn:c.prototype[p]}; else return null; })((<any>this.struct.constructor),name);
-            if (method.getReturnType() === Boolean)try {
-                return <boolean>/* invoke */method.fn.apply(this.struct);
+        // Java reflection looks up a public boolean field first, then a public
+        // zero-argument boolean method. In TS the runtime value and prototype
+        // function provide the equivalent information directly.
+        const field = this.struct[name];
+        if (typeof field === 'boolean')return field;
+        const method = this.struct[name];
+        if (typeof method === 'function' && method.length === 0) {
+            try {
+                const value = method.call(this.struct);
+                if (typeof value === 'boolean')return value;
             } catch(e) {
                 throw Object.defineProperty(new Error("method.invoke failed due to " + e.message), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Error','java.lang.Object','java.lang.AssertionError'] });
             }
-        } catch(e1) {
         }
         throw Object.defineProperty(new Error("_getBoolBindVar(" + name + ") failed"), '__classes', { configurable: true, value: ['java.lang.Throwable','java.lang.Error','java.lang.Object','java.lang.AssertionError'] });
     }

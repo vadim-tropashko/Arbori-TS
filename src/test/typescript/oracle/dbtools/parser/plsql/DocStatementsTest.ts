@@ -4,6 +4,7 @@ import { LexerRegressionTest } from "../LexerRegressionTest.js";
 import { ArboriTest } from "../../app/ArboriTest.js";
 import { GrammarExtensionTest } from "./GrammarExtensionTest.js";
 import { SqlInsightTest } from "../../app/SqlInsightTest.js";
+import { SyntaxErrorTest } from "./SyntaxErrorTest.js";
 
 /** Runs the SQL parser regression and documentation DSL fixtures in sequence. */
 export class DocStatementsTest {
@@ -29,8 +30,8 @@ export class DocStatementsTest {
         arboriTest.test();
         if (!ArboriTest.unitTestIsOK) throw new Error("Arbori engine tests failed");
 
-        // Temporarily disabled while the SyntaxError expected-suggestion cases are reconciled.
-        // if (!new SyntaxErrorTest().test()) throw new Error("SQL syntax error tests failed");
+        console.log("\n=== SQL syntax error DSL ===");
+        if (!new SyntaxErrorTest().test()) throw new Error("SQL syntax error DSL tests failed");
 
         console.log("\n=== SQL Insight ===");
         await SqlInsightTest.main([]);

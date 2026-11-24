@@ -58,7 +58,9 @@
         <div class="view-heading"><h2 id="view-title">SQL</h2><span id="view-meta"></span></div>
         <section class="tab-panel sql-panel" id="panel-sql" role="tabpanel" aria-labelledby="tab-sql" tabindex="0">
           <div id="sql-editor-wrap" class="sql-editor-wrap">
-            <pre id="syntax-highlight" aria-hidden="true"></pre>
+            <svg id="syntax-error-overlay">
+              <path id="syntax-error-underline" tabindex="0" role="img" aria-label="SQL syntax error" aria-describedby="syntax-tooltip"></path>
+            </svg>
             <textarea id="sql-editor" spellcheck="false" aria-label="SQL input" aria-describedby="syntax-tooltip"></textarea>
             <div id="syntax-tooltip" class="syntax-tooltip" role="tooltip" hidden></div>
           </div>

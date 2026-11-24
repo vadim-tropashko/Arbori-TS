@@ -24,6 +24,17 @@
       "skipFiles": ["<node_internals>/**"]
     },
     {
+      "name": "Format regression (TypeScript)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test:format-regression"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "noDebug": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
       "name": "SQL parse-tree regression (TypeScript)",
       "type": "node",
       "request": "launch",

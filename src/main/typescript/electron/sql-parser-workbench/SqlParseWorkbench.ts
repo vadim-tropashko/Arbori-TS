@@ -50,11 +50,40 @@ export type SqlWorkbenchParseResult = {
   matrix: SqlWorkbenchMatrix;
   tree: SqlWorkbenchTreeNode | null;
   syntaxError: string | null;
+  errorRange: { start: number; end: number } | null;
   furthest: number;
+};
+
+export type SqlWorkbenchSyntaxResult = {
+  syntaxError: string | null;
+  errorRange: { start: number; end: number } | null;
 };
 
 /** Adapts the Java-translated SqlEarley matrix/tree to the workbench's browser view model. */
 export function parseSqlForWorkbench(input: string): SqlWorkbenchParseResult {
+  const analysis = analyzeSql(input);
+  const { tokens, parser, matrix, syntaxError, errorRange } = analysis;
+  const root = syntaxError
+    ? null
+    : parser.forest$java_util_List$oracle_dbtools_parser_Matrix$boolean$java_lang_String(tokens, matrix, true, input);
+
+  return {
+    tokens: tokens.map(({ content, begin, end, type }) => ({ content, begin, end, type: Token[type] })),
+    matrix: serializeMatrix(matrix, parser, tokens.length),
+    tree: root ? serializeTree(root, tokens, parser) : null,
+    syntaxError: syntaxError?.getDetailedMessage() ?? null,
+    errorRange,
+    furthest: matrix.lastY(),
+  };
+}
+
+/** Syntax-only path for edit feedback; it avoids serializing the matrix and tree. */
+export function checkSqlSyntaxForWorkbench(input: string): SqlWorkbenchSyntaxResult {
+  const { syntaxError, errorRange } = analyzeSql(input);
+  return { syntaxError: syntaxError?.getDetailedMessage() ?? null, errorRange };
+}
+
+function analyzeSql(input: string) {
   const tokens = LexerToken.parse$java_lang_String(input);
   const parser = SqlEarley.getInstance();
   const matrix = new Matrix(parser);
@@ -67,17 +96,39 @@ export function parseSqlForWorkbench(input: string): SqlWorkbenchParseResult {
     parser,
     matrix,
   );
-  const root = syntaxError
-    ? null
-    : parser.forest$java_util_List$oracle_dbtools_parser_Matrix$boolean$java_lang_String(tokens, matrix, true, input);
+  const errorRange = syntaxError ? syntaxMarkerRange(input, syntaxError) : null;
 
   return {
-    tokens: tokens.map(({ content, begin, end, type }) => ({ content, begin, end, type: Token[type] })),
-    matrix: serializeMatrix(matrix, parser, tokens.length),
-    tree: root ? serializeTree(root, tokens, parser) : null,
-    syntaxError: syntaxError?.getDetailedMessage() ?? null,
-    furthest: matrix.lastY(),
+    tokens,
+    parser,
+    matrix,
+    syntaxError,
+    errorRange,
   };
+}
+
+function syntaxMarkerRange(input: string, error: SyntaxError): { start: number; end: number } {
+  let lineStart = 0;
+  for (let line = 0; line < error.line; line++) {
+    const newline = input.indexOf("\n", lineStart);
+    if (newline < 0) return { start: input.length, end: input.length };
+    lineStart = newline + 1;
+  }
+  const newline = input.indexOf("\n", lineStart);
+  const lineEnd = newline < 0 ? input.length : newline;
+  const markerStart = Math.max(lineStart, Math.min(lineEnd, lineStart + error.offset));
+  const firstCaret = error.marker?.indexOf("^") ?? -1;
+  const markerLength = firstCaret < 0
+    ? 3
+    : error.marker.lastIndexOf("^") - firstCaret + 1;
+  const markerEnd = Math.min(lineEnd, markerStart + markerLength);
+
+  // At end-of-line, underline the available characters immediately before the
+  // popup marker, with the underline ending at the same error position.
+  if (markerEnd === markerStart && markerStart > lineStart) {
+    return { start: Math.max(lineStart, markerStart - markerLength), end: markerStart };
+  }
+  return { start: markerStart, end: markerEnd };
 }
 
 function serializeMatrix(matrix: Matrix, parser: SqlEarley, tokenCount: number): SqlWorkbenchMatrix {

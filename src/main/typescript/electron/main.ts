@@ -5,7 +5,7 @@ import oracledb from "oracledb";
 import type { Connection } from "oracledb";
 import { CompletionItem } from "../oracle/dbtools/app/CompletionItem.js";
 import { SqlCompleter } from "../oracle/dbtools/app/SqlCompleter.js";
-import { parseSqlForWorkbench } from "./sql-parser-workbench/SqlParseWorkbench.js";
+import { checkSqlSyntaxForWorkbench, parseSqlForWorkbench } from "./sql-parser-workbench/SqlParseWorkbench.js";
 
 const DEFAULT_SQL_PATH = "/Users/VTROPASH/sandbox/example.sql";
 
@@ -35,6 +35,11 @@ function createWindow(): void {
 ipcMain.handle("parser:parse", (_event, input: unknown) => {
   if (typeof input !== "string") throw new TypeError("SQL input must be a string.");
   return parseSqlForWorkbench(input);
+});
+
+ipcMain.handle("parser:syntax-check", (_event, input: unknown) => {
+  if (typeof input !== "string") throw new TypeError("SQL input must be a string.");
+  return checkSqlSyntaxForWorkbench(input);
 });
 
 ipcMain.handle("lexer:default-sql", () => readFile(DEFAULT_SQL_PATH, "utf8"));

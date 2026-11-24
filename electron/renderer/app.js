@@ -7,6 +7,9 @@ const sqlInsightButton = document.querySelector("#sql-insight-button");
 const fileName = document.querySelector("#file-name");
 const status = document.querySelector("#status");
 const sqlEditor = document.querySelector("#sql-editor");
+const syntaxErrorOverlay = document.querySelector("#syntax-error-overlay");
+const syntaxErrorUnderline = document.querySelector("#syntax-error-underline");
+const syntaxTooltip = document.querySelector("#syntax-tooltip");
 const connectionUser = document.querySelector("#connection-user");
 const connectionPassword = document.querySelector("#connection-password");
 const connectionString = document.querySelector("#connection-string");
@@ -21,6 +24,9 @@ sqlInsightButton.disabled = !sqlInsightAvailable;
 electronBridge?.onDictionaryQuery?.((log) => appendDictionaryLogs([log]));
 let dictionaryQueryCount = 0;
 let completionRequestSequence = 0;
+let syntaxErrorState = null;
+let syntaxCheckSequence = 0;
+let syntaxCheckTimer = null;
 
 sqlEditor.addEventListener("input", () => {
   fileName.textContent = `Edited copy of: ${inputSourceName}`;
@@ -28,7 +34,16 @@ sqlEditor.addEventListener("input", () => {
   completionRequestSequence++;
   sqlInsightButton.disabled = !sqlInsightAvailable;
   clearResults();
+  scheduleSyntaxCheck();
 });
+sqlEditor.addEventListener("scroll", updateSyntaxErrorDecoration);
+document.querySelector("#sql-editor-wrap").addEventListener("pointermove", updateSyntaxTooltipHover);
+document.querySelector("#sql-editor-wrap").addEventListener("pointerleave", hideSyntaxTooltip);
+syntaxErrorUnderline.addEventListener("focus", showSyntaxTooltip);
+syntaxErrorUnderline.addEventListener("blur", hideSyntaxTooltip);
+window.addEventListener("resize", updateSyntaxErrorDecoration);
+window.addEventListener("scroll", updateSyntaxErrorDecoration, true);
+new ResizeObserver(updateSyntaxErrorDecoration).observe(sqlEditor);
 
 fileInput.addEventListener("change", async () => {
   const file = fileInput.files?.[0];
@@ -39,6 +54,7 @@ fileInput.addEventListener("change", async () => {
   fileName.textContent = file.name;
   status.textContent = `${sqlEditor.value.length.toLocaleString()} characters loaded from ${file.name}.`;
   clearResults();
+  scheduleSyntaxCheck(0);
 });
 
 loadFileButton.addEventListener("click", () => fileInput.click());
@@ -47,6 +63,7 @@ parseButton.addEventListener("click", () => void runParse());
 sqlInsightButton.addEventListener("click", () => void runSqlInsight());
 
 async function runParse() {
+  cancelQueuedSyntaxCheck();
   clearResults();
   try {
     if (typeof window.sqlWorkbenchElectron?.parseSql !== "function") {
@@ -54,7 +71,7 @@ async function runParse() {
     }
     status.textContent = "Lexing and parsing with SqlEarley…";
     const result = await window.sqlWorkbenchElectron.parseSql(sqlEditor.value);
-    const { tokens, matrix, tree, syntaxError, furthest } = result;
+    const { tokens, matrix, tree, syntaxError, errorRange, furthest } = result;
     renderLexed(tokens);
     renderMatrix(matrix, tokens);
     renderTree(tree, matrix, syntaxError);
@@ -64,7 +81,8 @@ async function runParse() {
     status.textContent = syntaxError
       ? `SqlEarley found a syntax error near token ${furthest}.`
       : `SqlEarley parsed ${tokens.length} tokens.`;
-    activateTab(document.querySelector(syntaxError ? "#tab-tree" : "#tab-lexed"));
+    activateTab(document.querySelector(syntaxError ? "#tab-sql" : "#tab-lexed"));
+    renderSyntaxError(syntaxError, errorRange);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     status.textContent = "Could not parse this input.";
@@ -282,6 +300,7 @@ function emptyState(panel, empty) {
 }
 
 function clearResults() {
+  clearSyntaxError();
   clearMatrixView();
   document.querySelector("#lexed-table tbody").replaceChildren();
   document.querySelector("#tree-view").replaceChildren();
@@ -294,6 +313,184 @@ function clearResults() {
   treeEmptyState.textContent = "Choose Parse to build the SqlEarley parse tree.";
   treeEmptyState.classList.remove("syntax-error");
   document.querySelector("#view-meta").textContent = "";
+}
+
+function renderSyntaxError(message, range) {
+  clearSyntaxError();
+  if (!message || !range) return;
+  syntaxErrorState = { message, start: range.start, end: range.end };
+  sqlEditor.setAttribute("aria-invalid", "true");
+  sqlEditor.setAttribute("aria-describedby", "syntax-tooltip");
+  syntaxTooltip.textContent = message;
+  revealSyntaxErrorRange();
+  updateSyntaxErrorDecoration();
+  showSyntaxTooltip();
+}
+
+function clearSyntaxError() {
+  syntaxErrorState = null;
+  syntaxErrorUnderline.removeAttribute("d");
+  syntaxErrorUnderline.removeAttribute("aria-label");
+  syntaxErrorOverlay.hidden = true;
+  syntaxTooltip.hidden = true;
+  syntaxTooltip.textContent = "";
+  sqlEditor.removeAttribute("aria-invalid");
+}
+
+function scheduleSyntaxCheck(delay = 350) {
+  clearTimeout(syntaxCheckTimer);
+  const sequence = ++syntaxCheckSequence;
+  const input = sqlEditor.value;
+  syntaxCheckTimer = setTimeout(async () => {
+    try {
+      const result = await electronBridge.checkSqlSyntax(input);
+      if (sequence !== syntaxCheckSequence || sqlEditor.value !== input) return;
+      renderSyntaxError(result.syntaxError, result.errorRange);
+      status.textContent = result.syntaxError
+        ? "Syntax error found. See the highlighted location."
+        : `SQL syntax is valid (${input.length.toLocaleString()} characters).`;
+    } catch (error) {
+      if (sequence !== syntaxCheckSequence || sqlEditor.value !== input) return;
+      clearSyntaxError();
+      const message = error instanceof Error ? error.message : String(error);
+      status.textContent = `Could not check SQL syntax: ${message}`;
+    }
+  }, delay);
+}
+
+function cancelQueuedSyntaxCheck() {
+  clearTimeout(syntaxCheckTimer);
+  syntaxCheckSequence++;
+}
+
+function revealSyntaxErrorRange() {
+  if (!syntaxErrorState) return;
+  const style = getComputedStyle(sqlEditor);
+  const lineHeight = Number.parseFloat(style.lineHeight) || 21.45;
+  const paddingTop = Number.parseFloat(style.paddingTop) || 0;
+  const paddingLeft = Number.parseFloat(style.paddingLeft) || 0;
+  const borderTop = Number.parseFloat(style.borderTopWidth) || 0;
+  const borderLeft = Number.parseFloat(style.borderLeftWidth) || 0;
+  const source = sqlEditor.value;
+  const start = Math.max(0, Math.min(syntaxErrorState.start, source.length));
+  const lineStart = source.lastIndexOf("\n", Math.max(0, start - 1)) + 1;
+  const lineIndex = source.slice(0, start).split("\n").length - 1;
+  const lineTop = borderTop + paddingTop + lineIndex * lineHeight;
+  if (lineTop < sqlEditor.scrollTop || lineTop + lineHeight > sqlEditor.scrollTop + sqlEditor.clientHeight) {
+    sqlEditor.scrollTop = Math.max(0, lineTop - sqlEditor.clientHeight / 2);
+  }
+  const context = getTextMeasureContext(style);
+  const charWidth = context.measureText(" ").width;
+  const tabWidth = charWidth * (Number.parseFloat(style.tabSize) || 2);
+  const errorX = borderLeft + paddingLeft + measureEditorText(source.slice(lineStart, start), context, tabWidth);
+  if (errorX < sqlEditor.scrollLeft || errorX > sqlEditor.scrollLeft + sqlEditor.clientWidth - 24) {
+    sqlEditor.scrollLeft = Math.max(0, errorX - sqlEditor.clientWidth / 3);
+  }
+}
+
+function updateSyntaxErrorDecoration() {
+  if (!syntaxErrorState) return;
+  const editorStyle = getComputedStyle(sqlEditor);
+  const wrap = document.querySelector("#sql-editor-wrap");
+  const width = wrap.clientWidth;
+  const height = wrap.clientHeight;
+  syntaxErrorOverlay.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  syntaxErrorOverlay.setAttribute("width", String(width));
+  syntaxErrorOverlay.setAttribute("height", String(height));
+
+  const source = sqlEditor.value;
+  const start = Math.max(0, Math.min(syntaxErrorState.start, source.length));
+  const lineStart = source.lastIndexOf("\n", Math.max(0, start - 1)) + 1;
+  const lineIndex = source.slice(0, start).split("\n").length - 1;
+  const columnText = source.slice(lineStart, start);
+  const lineHeight = Number.parseFloat(editorStyle.lineHeight) || 21.45;
+  const fontSize = Number.parseFloat(editorStyle.fontSize) || 13;
+  const paddingLeft = Number.parseFloat(editorStyle.paddingLeft) || 0;
+  const paddingTop = Number.parseFloat(editorStyle.paddingTop) || 0;
+  const borderLeft = Number.parseFloat(editorStyle.borderLeftWidth) || 0;
+  const borderTop = Number.parseFloat(editorStyle.borderTopWidth) || 0;
+  const context = getTextMeasureContext(editorStyle);
+  const charWidth = context.measureText(" ").width;
+  const tabSize = Number.parseFloat(editorStyle.tabSize) || 2;
+  const xPrefix = measureEditorText(columnText, context, charWidth * tabSize);
+  const errorText = source.slice(start, Math.max(start, syntaxErrorState.end));
+  const errorWidth = measureEditorText(errorText, context, charWidth * tabSize);
+  const x = borderLeft + paddingLeft + xPrefix - sqlEditor.scrollLeft;
+  const y = borderTop + paddingTop + lineIndex * lineHeight - sqlEditor.scrollTop + lineHeight * 0.84;
+  const xEnd = x + errorWidth;
+
+  if (y < 0 || y > height || xEnd < 0 || x > width) {
+    syntaxErrorUnderline.style.display = "none";
+    syntaxTooltip.hidden = true;
+    return;
+  }
+  syntaxErrorOverlay.hidden = false;
+  syntaxErrorUnderline.style.display = "";
+  syntaxErrorUnderline.setAttribute("aria-label", `Syntax error: ${syntaxErrorState.message}`);
+  syntaxErrorUnderline.setAttribute("d", makeSquigglePath(x, xEnd, y, fontSize));
+  syntaxErrorState.anchorX = Math.max(8, Math.min(x, width - 8));
+  syntaxErrorState.anchorY = Math.max(8, Math.min(y, height - 8));
+  if (!syntaxTooltip.hidden) positionSyntaxTooltip();
+}
+
+let textMeasureCanvas;
+function getTextMeasureContext(style) {
+  textMeasureCanvas ??= document.createElement("canvas");
+  const context = textMeasureCanvas.getContext("2d");
+  context.font = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  return context;
+}
+
+function measureEditorText(text, context, tabWidth) {
+  let width = 0;
+  for (const character of text) {
+    if (character === "\t") width = (Math.floor(width / tabWidth) + 1) * tabWidth;
+    else width += context.measureText(character).width;
+  }
+  return width;
+}
+
+function makeSquigglePath(startX, endX, baseline, fontSize) {
+  const amplitude = Math.max(1.1, Math.min(1.8, fontSize * 0.12));
+  const step = 3.5;
+  let path = `M ${startX} ${baseline}`;
+  let x = startX;
+  let direction = 1;
+  while (x < endX) {
+    x = Math.min(endX, x + step);
+    path += ` L ${x} ${baseline + amplitude * direction}`;
+    direction *= -1;
+  }
+  return path;
+}
+
+function showSyntaxTooltip() {
+  if (!syntaxErrorState || syntaxErrorUnderline.style.display === "none" || !Number.isFinite(syntaxErrorState.anchorX)) return;
+  syntaxTooltip.hidden = false;
+  positionSyntaxTooltip();
+}
+
+function hideSyntaxTooltip() {
+  syntaxTooltip.hidden = true;
+}
+
+function updateSyntaxTooltipHover(event) {
+  if (!syntaxErrorState || syntaxErrorUnderline.style.display === "none") return;
+  const rect = syntaxErrorUnderline.getBoundingClientRect();
+  const tolerance = 5;
+  const overMarker = event.clientX >= rect.left - tolerance && event.clientX <= rect.right + tolerance
+    && event.clientY >= rect.top - tolerance && event.clientY <= rect.bottom + tolerance;
+  if (overMarker) showSyntaxTooltip();
+  else hideSyntaxTooltip();
+}
+
+function positionSyntaxTooltip() {
+  if (!syntaxErrorState) return;
+  const wrapRect = document.querySelector("#sql-editor-wrap").getBoundingClientRect();
+  const left = Math.min(window.innerWidth - syntaxTooltip.offsetWidth - 12, wrapRect.left + syntaxErrorState.anchorX);
+  const top = Math.min(window.innerHeight - syntaxTooltip.offsetHeight - 12, wrapRect.top + syntaxErrorState.anchorY + 10);
+  syntaxTooltip.style.left = `${Math.max(12, left)}px`;
+  syntaxTooltip.style.top = `${Math.max(12, top)}px`;
 }
 
 function showError(panel, message) {
@@ -316,5 +513,6 @@ async function loadDefaultInput() {
   }
   fileName.textContent = "Default: /Users/VTROPASH/sandbox/example.sql";
   parseButton.disabled = typeof window.sqlWorkbenchElectron?.parseSql !== "function";
-  status.textContent = `${sqlEditor.value.length.toLocaleString()} characters loaded. Choose Parse to run SqlEarley.`;
+  status.textContent = `${sqlEditor.value.length.toLocaleString()} characters loaded. Checking SQL syntax…`;
+  scheduleSyntaxCheck(0);
 }
